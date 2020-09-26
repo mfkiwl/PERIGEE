@@ -86,6 +86,9 @@ BoundaryCond::BoundaryCond( const IMesh * const &mesh, const int &bc_type)
     case 23:
       BC_type_23(mesh);
       break;
+    case 24:
+      BC_type_24(mesh);
+      break;      
     case 101:
       BC_type_101(mesh);
       break;
@@ -2009,6 +2012,18 @@ void BoundaryCond::BC_type_23( const IMesh * const &mesh )
 
   std::cout<<"-----> NBC on top and bottom; Front-Back C0 periodic;";
   std::cout<<" Right: Following edge 37; Left: Dirichlet. \n";
+}
+
+void BoundaryCond::BC_type_24( const IMesh * const &mesh )
+{
+  // all nodes are dirichlet
+  std::vector<int> nodes_front, nodes_back, nodes_left, nodes_right, nodes_top, nodes_bottom;
+  Generate_BCNodes_A(mesh, nodes_front, nodes_back, nodes_left,
+      nodes_right, nodes_top, nodes_bottom );
+  dir_nodes.clear();
+  num_dir_nodes = 0;
+    
+  std::cout<<"----->  BC: no flux . \n"; 
 }
 
 void BoundaryCond::BC_type_101( const IMesh * const &mesh )

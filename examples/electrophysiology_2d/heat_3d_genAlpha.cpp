@@ -44,10 +44,13 @@
 #include "PDNSolution_heatEqn.hpp"
 #include "TimeMethod_GenAlpha.hpp"
 #include "PLocAssem_NLHeat_3D_GenAlpha.hpp"
-#include "PGAssem.hpp"
+//#include "PGAssem.hpp"
+#include "PGAssem_NLHeat_GenAlpha.hpp"
 #include "PLinear_Solver_PETSc.hpp"
 #include "PNonlinear_Solver.hpp"
-#include "PTime_Solver.hpp"
+//#include "PTime_Solver.hpp"
+#include "PTime_Solver_NLHeat_GenAlpha.hpp"
+#include "IonicModel.hpp"
 
 int main(int argc, char *argv[])
 {
@@ -66,18 +69,19 @@ int main(int argc, char *argv[])
   
   // Time step initailization
   double initial_time = 0.0;
-  double initial_step = 0.1;
+  double initial_step = 1.0;
   int initial_index = 0;
-  double final_time = 1.0;
+  double final_time = 200.0;
 
   // Time solver parameters
   std::string sol_bName("SOL_");
-  int ttan_renew_freq = 1;
-  int sol_record_freq = 1;
+  int ttan_renew_freq = 10;
+  int sol_record_freq = 5;
 
   PetscMPIInt rank, size;
   // ======= PETSc Initialize =======
   PetscInitialize(&argc, &argv, (char *)0, PETSC_NULL);
+  
   MPI_Comm_size(PETSC_COMM_WORLD, &size);
   MPI_Comm_rank(PETSC_COMM_WORLD, &rank);
 
@@ -149,7 +153,11 @@ int main(int argc, char *argv[])
   delete h5reader;
 
   if(size != PartBasic->get_cpu_size())
-    MPI_Abort(PETSC_COMM_WORLD, 1);
+  {
+    PetscPrintf(PETSC_COMM_WORLD,
+        "Error: Assigned CPU number does not match the partition number. \n");
+    MPI_Abort(PETSC_COMM_WORLD,1);
+  }
 
   PetscPrintf(PETSC_COMM_WORLD, "\n===> %d processor(s) are assigned for FEM analysis. ", size);
 
@@ -187,22 +195,31 @@ int main(int argc, char *argv[])
 
   // ======= Finite Element Analysis =======
   // 2.1 Solution Initialization
-  PDNSolution * disp = new PDNSolution_heatEqn(pNode, locBC, 0);
-  PDNSolution * velo = new PDNSolution_heatEqn(pNode, locBC, 0);
-
+  PDNSolution * disp = new PDNSolution_heatEqn(pNode, fNode, locBC, 3);
+  PDNSolution * velo = new PDNSolution_heatEqn(pNode, fNode, locBC, 0);
+  PDNSolution * hist = new PDNSolution_heatEqn(pNode, fNode, locBC, 0);
+//
   PDNTimeStep * timeinfo = new PDNTimeStep(initial_index, initial_time, initial_step);
+
+  // FEA.1.5 Ionic model setup
+  SYS_T::commPrint("===> Generate Ionic Model ... \n");
+  IonicModel * ionicmodel_ptr = new IonicModel () ;
+  ionicmodel_ptr -> print_info();
 
   // 2.2 Local Assembly pointer
   SYS_T::commPrint("===> Genereate the Generalized-alpha time scheme ... \n");
-  TimeMethod_GenAlpha * tm_galpha_ptr = new TimeMethod_GenAlpha(0.5);
+  //this was 0.5
+  TimeMethod_GenAlpha * tm_galpha_ptr = new TimeMethod_GenAlpha(1.0,1.0,1.0);
 
   SYS_T::commPrint("===> Initialize local assembly routine ... \n");
-  IPLocAssem * locAssem_ptr = new PLocAssem_NLHeat_3D_GenAlpha(
-      tm_galpha_ptr, GMIptr->get_nLocBas(), Int_w->get_num() );
+  IPLocAssem * locAssem_ptr =
+    new PLocAssem_NLHeat_3D_GenAlpha(tm_galpha_ptr, ionicmodel_ptr,
+				     GMIptr->get_nLocBas(), Int_w->get_num() );
 
   // 2.3 Global Assembly pointer
   int vpetsc_type = 0; // petsc version controller
-  PGAssem * gloAssem_ptr = new PGAssem(locAssem_ptr, GMIptr, pNode, vpetsc_type);
+  PGAssem_NLHeat_GenAlpha * gloAssem_ptr
+    = new PGAssem_NLHeat_GenAlpha(locAssem_ptr, GMIptr, pNode, vpetsc_type);
 
   // 2.4 Estimate the matrix structure
   gloAssem_ptr->Assem_nonzero_estimate( locElem, locAssem_ptr, locIEN, pNode, locBC );
@@ -218,21 +235,24 @@ int main(int argc, char *argv[])
 
   // 2.6 Assembly mass matrix and solve for consistent initial solution
   gloAssem_ptr->Clear_KG();
-  gloAssem_ptr->Assem_mass_residual( disp, locElem, locAssem_ptr, locIEN, pNode,
-      fNode, Int_w, elemArray, locBC );
+  gloAssem_ptr->Assem_mass_residual( disp, hist, timeinfo, ionicmodel_ptr,
+				     locElem, locAssem_ptr, locIEN, pNode,
+				     fNode, Int_w, elemArray, locBC );
 
   lsolver->Solve( gloAssem_ptr->K, gloAssem_ptr->G, velo); 
   SYS_T::commPrint("initial solution's time derivative obtained. \n"); 
 
   // 2.7 Setup nonlinear solver context
-  PNonlinear_Solver * nsolver = new PNonlinear_Solver(nl_rtol, nl_atol,
-      nl_dtol, nl_maxits, nl_refreq);
+  PNonlinear_Solver_NLHeat_GenAlpha * nsolver
+    = new PNonlinear_Solver_NLHeat_GenAlpha(nl_rtol, nl_atol,
+					    nl_dtol, nl_maxits, nl_refreq);
   SYS_T::commPrint("===> Nonlinear solver setted up:\n");
   nsolver->Info();
 
   // 2.8 Setup time marching context
-  PTime_Solver * tsolver = new PTime_Solver( sol_bName, sol_record_freq,
-      ttan_renew_freq, final_time );
+  PTime_Solver_NLHeat_GenAlpha * tsolver =
+    new PTime_Solver_NLHeat_GenAlpha( sol_bName, sol_record_freq,
+				      ttan_renew_freq, final_time );
 
   SYS_T::commPrint("===> Time marching solver setted up:\n");
   tsolver->Info();
@@ -240,9 +260,9 @@ int main(int argc, char *argv[])
   SYS_T::commPrint("===> Start Finite Element Analysis:\n");
 
   tsolver->TM_generalized_alpha(
-      velo, disp, timeinfo, tm_galpha_ptr, locElem, locIEN, pNode,
-      fNode, locBC, Int_w, elemArray, locAssem_ptr, gloAssem_ptr,
-      lsolver, nsolver );
+      velo, disp, hist, timeinfo, tm_galpha_ptr, locElem, locIEN, pNode,
+      fNode, locBC, Int_w, elemArray, ionicmodel_ptr, locAssem_ptr,
+      gloAssem_ptr, lsolver, nsolver );
 
   // ======= PETSc Finalize =======
   SYS_T::commPrint("\n===> Clean memory ... \n");
@@ -259,8 +279,10 @@ int main(int argc, char *argv[])
   delete Int_w;
   delete disp;
   delete velo;
+  delete hist;  
   delete timeinfo;
   delete tm_galpha_ptr;
+  delete ionicmodel_ptr;
   delete locAssem_ptr;
   delete gloAssem_ptr;
   delete lsolver;
@@ -269,8 +291,7 @@ int main(int argc, char *argv[])
   std::vector<FEAElement *>::iterator it_elema;
   for(it_elema = elemArray.begin(); it_elema != elemArray.end(); ++it_elema)
     delete *it_elema;
-  // ---------------------------------------
-
+  //---------------------------------------
   SYS_T::commPrint("===> Exit program. \n");
   PetscFinalize();
   return 0;

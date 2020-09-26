@@ -94,7 +94,7 @@ void PLocAssem_NLHeat_2D_GenAlpha::Assem_Residual(
     {
       E_Im[ii] = 0 - chi * Iion[ii]; //E_Istim=0
       E_dIm[ii] = 0 - chi * dPhi_Iion[ii];//E_dIstim=0
-    }
+    } //is this ok for parallel proc
 
   Zero_Residual(); // zero all values for assembly
 
@@ -175,13 +175,16 @@ void PLocAssem_NLHeat_2D_GenAlpha::Assem_Tangent_Residual(
       E_Im[ii] = 0 - chi * Iion[ii]; //E_Istim=0
       E_dIm[ii] = 0 - chi * dPhi_Iion[ii];//E_dIstim=0
     }
+
+
     
   Zero_Tangent_Residual(); // zero all values for assembly
   
   for(qua =0; qua<nqp; ++qua)
   {
-    v = 0.0; d = 0.0; Im= 0.0; d_x = 0.0; d_y = 0.0;
+    v = 0.0; d = 0.0;  d_x = 0.0; d_y = 0.0;
     coor_x = 0.0; coor_y = 0.0;
+    Im= 0.0;
 
     element->get_R_gradR(qua, R, dR_dx, dR_dy);
    
@@ -198,7 +201,7 @@ void PLocAssem_NLHeat_2D_GenAlpha::Assem_Tangent_Residual(
       coor_x += eleCtrlPts_x[ii] * R[ii];
       coor_y += eleCtrlPts_y[ii] * R[ii];
     }
-
+  
     gwts = element->get_detJac(qua) * weight->get_weight(qua);
 
     //get stimulus for the volume (not the boundary)

@@ -62,13 +62,14 @@ void PDNSolution_heatEqn::Init_OneTemp( const class IALocal_BC * const &LBC )
   delete [] index; delete [] value;
 }
 
+//case 2
 void PDNSolution_heatEqn::Init_Partial( const class APart_Node * const &pNode,
 					const FEANode * const &fNode,
 					const class IALocal_BC * const &LBC)
 {
   //VecSet(solution, 1.0);
   int location;
-  double value, x_coor, y_coor; 
+  double value, x_coor, y_coor, z_coor; 
   const int nlocalnode = pNode -> get_nlocalnode();
 
   for(int ii=0; ii<nlocalnode; ++ii)
@@ -76,9 +77,10 @@ void PDNSolution_heatEqn::Init_Partial( const class APart_Node * const &pNode,
     location = pNode -> get_node_loc(ii);
     x_coor = fNode ->  get_ctrlPts_x(ii);
     y_coor = fNode ->  get_ctrlPts_y(ii);
+    z_coor = fNode ->  get_ctrlPts_z(ii);
 
     //set some nodes to 0 and some to -80
-    if ((x_coor <= 0.5)) { // && (y_coor <=0.3)
+    if ((x_coor <= 2.0)) { // 
       value = 0.0;
     }
     else {

@@ -189,8 +189,6 @@ void PNonlinear_Solver_NLHeat_GenAlpha::Gen_alpha_solve(
     bool &conv_flag,
     int &nl_counter ) const
 {
-  std::cout << "Using Pnonlinear_solver_NLHeat_GenAlpha"<<std::endl;
-  std::cout << "cur time" << curr_time <<std::endl;
   nl_counter = 0;
   double ksp_its_num;
   double ksp_max_its_num = (double) lsolver_ptr->get_ksp_maxits();

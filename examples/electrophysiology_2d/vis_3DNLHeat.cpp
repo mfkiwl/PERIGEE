@@ -55,9 +55,9 @@ int main( int argc, char * argv[] )
 
   // Solution time
   int time_start = 0;
-  int time_step = 1;
-  int time_end = 1;
-  double dt = 0.01;
+  int time_step = 5;
+  int time_end = 200;
+  double dt = 1.0;
 
   // vtk format
   bool isXML = true;

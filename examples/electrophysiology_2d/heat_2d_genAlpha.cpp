@@ -54,8 +54,8 @@ int main(int argc, char *argv[])
 
   // Time solver parameters
   std::string sol_bName("SOL_");
-  int ttan_renew_freq = 1;
-  int sol_record_freq = 1;
+  int ttan_renew_freq = 10;
+  int sol_record_freq = 10;
 
   // ======= PETSc Initialization =======
   PetscMPIInt rank, size;
@@ -175,7 +175,7 @@ int main(int argc, char *argv[])
 
   // ======= Finite Element Analysis =======6
   // FEA.1 Initial solution and history variables (1 per node)
-  PDNSolution * disp = new PDNSolution_heatEqn(pNode, fNode, locBC, 3);
+  PDNSolution * disp = new PDNSolution_heatEqn(pNode, fNode, locBC, 3);//-80overall
   //disp->PlusAX(PDNSolution_heatEqn(pNode, fNode, locBC, 1), -75);
   PDNSolution * velo = new PDNSolution_heatEqn(pNode, fNode, locBC, 0);
   PDNSolution * hist = new PDNSolution_heatEqn(pNode, fNode, locBC, 0);

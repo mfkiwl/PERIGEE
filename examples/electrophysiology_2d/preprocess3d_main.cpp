@@ -49,21 +49,21 @@ int main(int argc, char *argv[])
   int elemType = 0; // types of elements
 
   // Degree to be added in s,t,u directions
-  int addSDegree=1, addTDegree = 1, addUDegree = 1;
+  int addSDegree=0, addTDegree = 0, addUDegree = 0;
   
   // Num of knots inserted in spatial discretizations
-  int num_inserted_x = 8, num_inserted_y = 8, num_inserted_z = 8;
+  int num_inserted_x = 19, num_inserted_y = 6, num_inserted_z = 2;
 
   char * char_home_dir = getenv("HOME");
   std::string geo_file(char_home_dir);
-  geo_file.append("/PERIGEE/input/geometry_3d_cube.txt");
+  geo_file.append("/PERIGEE/examples/electrophysiology_2d/beam3d.txt");
 
   // partition file name 
   std::string part_file("part");
 
   // partition parameters
   int cpu_size = 1;
-  int in_ncommon = 9;
+  int in_ncommon =6;
   bool isDualGraph = true;
   bool isWriteCNet = true;
 
@@ -223,7 +223,7 @@ int main(int argc, char *argv[])
   // Boundary conditions
   std::vector<BoundaryCond *> BC_list;
 
-  BoundaryCond * bc_1 = new BoundaryCond(Mesh, 1);
+  BoundaryCond * bc_1 = new BoundaryCond(Mesh, 24);
 
 
   BC_list.push_back(bc_1); 

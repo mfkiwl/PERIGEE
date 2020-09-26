@@ -59,16 +59,16 @@ int main(int argc, char *argv[])
   int elemType = 0;
 
   // degree to be added
-  int addSDegree = 1, addTDegree = 1, addUDegree = 1;
+  int addSDegree = 0, addTDegree = 0, addUDegree = 0;
 
   // number of knots to be inserted
-  int num_inserted_x = 8, num_inserted_y = 8, num_inserted_z = 8;
+  int num_inserted_x = 19, num_inserted_y = 6, num_inserted_z = 2;
 
   // geometry file
   char * char_home_dir = getenv("HOME");
   string geo_file(char_home_dir);
-  geo_file.append("/PERIGEE/input/geometry_3d_cube.txt");
-
+  geo_file.append("/PERIGEE/examples/electrophysiology_2d/beam3d.txt");
+  
   // partition file base_name
   string part_file("postpart");
 

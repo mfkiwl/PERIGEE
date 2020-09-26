@@ -1,9 +1,9 @@
 #include "IonicModel.hpp"
 
 IonicModel::IonicModel()
-  :fh_1{65.0}, fh_2{35.0}, fh_3{200.0}, alpha{-0.5},
-   a{0.0}, b{-0.6}, c{50.0}, d_iso{0.1}, d_ani{0.0}, tol{1e-8},
-   chi{140}, C_m{1}
+  :ap_1{100}, ap_2{80}, ap_3{12.9}, m1{0.2}, m2{0.3},alpha{0.01},
+   gamma{0.002}, b{0.15}, c{8.0}, d_iso{0.176}, d_ani{1.158}, tol{1e-8},
+   chi{1400}, C_m{1.0}
 {
   SYS_T::commPrint("IonicModel constructor. \n");
 };
@@ -15,10 +15,10 @@ IonicModel::~IonicModel()
 
 void IonicModel::print_info () const
 {
-  PetscPrintf(PETSC_COMM_WORLD, "\t  FitzHugh Nagumo EP: \n");
-  PetscPrintf(PETSC_COMM_WORLD, "\t  fh_1 = %e \n", fh_1);
-  PetscPrintf(PETSC_COMM_WORLD, "\t  fh_2 = %e \n", fh_2);
-  PetscPrintf(PETSC_COMM_WORLD, "\t  fh_3 = %e \n", fh_3);
+  PetscPrintf(PETSC_COMM_WORLD, "\t  Aliev Panfilov EP: \n");
+  PetscPrintf(PETSC_COMM_WORLD, "\t  ap_1 = %e \n", ap_1);
+  PetscPrintf(PETSC_COMM_WORLD, "\t  ap_2 = %e \n", ap_2);
+  PetscPrintf(PETSC_COMM_WORLD, "\t  ap_3 = %e \n", ap_3);
 };
 
 double IonicModel::get_diso() const
@@ -48,55 +48,51 @@ void IonicModel::material_routine(const double &r_old_in,
 				  double &dP_fP,
 				  double &r_new) const
 {
-//  double dP_dr=0;
-//  //non dimensionalize 
-  const double Phi_nd { (Phi_in+fh_2)/fh_1};
-  const double dt_nd { dt_in/fh_3};
-//
-//  //find r_new and dP_dr from Newton Raphson iterations
-//  double Rr, dr_Rr, dp_Rr;
-//  unsigned int i_counter=0;
-//  r_new=r_old_in; //initialize
-//  Rr= r_new-r_old_in-((gamma+(m1*r_new)/(m2+Phi_nd))
-//		   *(-r_new-c*Phi_nd*(Phi_nd-b-1)))*dt_nd;
-//
-//  while (std::abs(Rr)>tol){
-//    ++i_counter;
-//    if (i_counter>=10) {
-//      std::cout << "no convergence at local newton iteration: "
-//		<< i_counter << std::endl;
-//      throw std::runtime_error("No convergence.");
-//    }
-//    dr_Rr=1+(gamma+m1/(m2+Phi_nd)*(2*r_new+c*Phi_nd*(Phi_nd-b-1)))*dt_nd;
-//    r_new=r_new-Rr/dr_Rr;//update r_new
-//    Rr= r_new-r_old_in-((gamma+(m1*r_new)/(m2+Phi_nd))
-//		     *(-r_new-c*Phi_nd*(Phi_nd-b-1)))*dt_nd;
-//  }
-//  
-//  dr_Rr=1+(gamma+m1/(m2+Phi_nd)*(2*r_new+c*Phi_nd*(Phi_nd-b-1)))*dt_nd;
-//  dp_Rr=((gamma+m1*r_new/(m2+Phi_nd))*c*(2*Phi_nd-b-1)-m1*r_new/pow((m2+Phi_nd),2)
-//	 *(r_new+c*Phi_nd*(Phi_nd-b-1)))*dt_nd;
-//  dP_dr=-dp_Rr/dr_Rr;
-//
-//  //r_new and dP_dr found now. calculate rest.
-//  f_Phi = c*Phi_nd*(Phi_nd- alpha)*(1-Phi_nd)-r_new*Phi_nd;
-//  dP_fP = c*(-3*pow(Phi_nd,2)
-//	     +2*(1+alpha)*Phi_nd-alpha)-r_new-Phi_nd*dP_dr;
-//
-  r_new = (dt_nd*(Phi_nd + a)+r_old_in) / (b*dt_nd+1.0) ;
-  f_Phi = c*(-std::pow(Phi_nd,3.0) + std::pow(Phi_nd,2.0)*(alpha+1.0)
-	     -Phi_nd*alpha - r_new);
-  dP_fP = c*(-3.0*std::pow(Phi_nd,2.0) + 2.0*(alpha+1.0)*Phi_nd-alpha)
-    -(c*dt_nd)/(b*dt_nd+1);
-  //redimensionalize
-  f_Phi=fh_1*f_Phi/fh_3;
-  dP_fP=dP_fP/fh_3;
+  double dP_dr=0;
+  //non dimensionalize 
+  const double Phi_nd { (Phi_in+ap_2)/ap_1};
+  const double dt_nd { dt_in/ap_3};
 
-//  //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-//  //for manufactured solution:
-//  r_new=dt_in;
-//  f_Phi=10;
-//  dP_fP=0;
+  //find r_new and dP_dr from Newton Raphson iterations
+  double Rr, dr_Rr, dp_Rr;
+  unsigned int i_counter=0;
+  r_new=r_old_in; //initialize
+  Rr= r_new-r_old_in-((gamma+(m1*r_new)/(m2+Phi_nd))
+		   *(-r_new-c*Phi_nd*(Phi_nd-b-1)))*dt_nd;
+
+  while (std::abs(Rr)>tol){
+    ++i_counter;
+    if (i_counter>=10) {
+      std::cout << "no convergence at local newton iteration: "
+		<< i_counter << std::endl;
+      throw std::runtime_error("No convergence.");
+    }
+    dr_Rr=1+(gamma+m1/(m2+Phi_nd)*(2*r_new+c*Phi_nd*(Phi_nd-b-1)))*dt_nd;
+    r_new=r_new-Rr/dr_Rr;//update r_new
+    Rr= r_new-r_old_in-((gamma+(m1*r_new)/(m2+Phi_nd))
+		     *(-r_new-c*Phi_nd*(Phi_nd-b-1)))*dt_nd;
+  }
+  
+  dr_Rr=1+(gamma+m1/(m2+Phi_nd)*(2*r_new+c*Phi_nd*(Phi_nd-b-1)))*dt_nd;
+  dp_Rr=((gamma+m1*r_new/(m2+Phi_nd))*c*(2*Phi_nd-b-1)-m1*r_new/pow((m2+Phi_nd),2)
+	 *(r_new+c*Phi_nd*(Phi_nd-b-1)))*dt_nd;
+  dP_dr=-dp_Rr/dr_Rr;
+
+  //r_new and dP_dr found now. calculate rest.
+  f_Phi = c*Phi_nd*(Phi_nd- alpha)*(1-Phi_nd)-r_new*Phi_nd;
+  dP_fP = c*(-3*pow(Phi_nd,2)
+	     +2*(1+alpha)*Phi_nd-alpha)-r_new-Phi_nd*dP_dr;
+
+//redimensionalize
+  f_Phi=ap_1*f_Phi/ap_3;
+  dP_fP=dP_fP/ap_3;
+
+  
+  ////!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  ////for manufactured solution:
+  //r_new=dt_in;
+  //f_Phi=10;
+  //dP_fP=0;
   
 }
 
