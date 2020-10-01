@@ -59,8 +59,8 @@ int main(int argc, char * argv[])
   string part_file("part");
 
   // partition parameters
-  int cpu_size = 1;
-  int in_ncommon = 9;
+  int cpu_size = 2;
+  int in_ncommon = 8;
   bool isDualGraph = true;
   bool isWriteCNet = true;
 

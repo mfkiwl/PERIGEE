@@ -29,6 +29,10 @@ APart_Node::APart_Node( const std::string &fbasename, const int &rank )
   dof = h5r->read_intScalar("Global_Mesh_Info", "dofNum");
 
   delete h5r; H5Fclose( file_id );
+
+
+  //print info
+  //this -> print_info();
 }
 
 APart_Node::~APart_Node()

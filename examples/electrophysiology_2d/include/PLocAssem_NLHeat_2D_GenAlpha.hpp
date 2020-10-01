@@ -130,7 +130,7 @@ class PLocAssem_NLHeat_2D_GenAlpha : public IPLocAssem
       //}
       //	  
       //return val;
-      double val;
+      double val=0.0;
 
       ////MANUFACTURED SOLUTION, constant ionic output:
       //val =140.0*(cos(2.0*pi*x)/4.0 - 1.0/4.0)*(cos(2.0*pi*y) - 1.0)
@@ -150,18 +150,18 @@ class PLocAssem_NLHeat_2D_GenAlpha : public IPLocAssem
       //	+ (t*pi*pi*cos(2.0*pi*x)*(cos(2.0*pi*y) - 1.0))/10.0 - 20125.0/9.0;
 
       ////MANUFACTURED SOLUTION, FitzHugh Nagumo Model wiht c=10 instead of 50:      
-      val=  (8750.0*cos(2.0*pi*x))/9.0 - (35.0*t)/12.0 + (8750.0*cos(2.0*pi*y))/9.0
-	- (35.0*exp((3.0*t)/1000.0)*(250.0*cos(2.0*pi*x) + 250.0*cos(2.0*pi*y)
-				     - 250.0*cos(2.0*pi*x)*cos(2.0*pi*y) - 115.0))/9.0
-	+ (35.0*t*cos(2.0*pi*x))/12.0 + (35.0*t*cos(2.0*pi*y))/12.0
-	- (8750.0*cos(2.0*pi*x)*cos(2.0*pi*y))/9.0 + 140.0*(cos(2.0*pi*x)/4.0 - 1.0/4.0)
-	*(cos(2.0*pi*y) - 1.0) + 455.0*((t*(cos(2.0*pi*x)/4.0 - 1.0/4.0)
-					 *(cos(2.0*pi*y) - 1.0))/65.0 - 9.0/13.0)
-	*((t*(cos(2.0*pi*x)/4.0 - 1.0/4.0)*(cos(2.0*pi*y) - 1.0))/65.0 - 5.0/26.0)
-	*((t*(cos(2.0*pi*x)/4.0 - 1.0/4.0)*(cos(2.0*pi*y) - 1.0))/65.0 - 22.0/13.0)
-	- (35.0*t*cos(2.0*pi*x)*cos(2.0*pi*y))/12.0
-	+ (2.0*t*pi*pi*cos(2.0*pi*y)*(cos(2.0*pi*x)/4.0 - 1.0/4.0))/5.0
-	+ (t*pi*pi*cos(2.0*pi*x)*(cos(2.0*pi*y) - 1.0))/10.0 - 4025.0/9.0;
+      //      val=  (8750.0*cos(2.0*pi*x))/9.0 - (35.0*t)/12.0 + (8750.0*cos(2.0*pi*y))/9.0
+      //	- (35.0*exp((3.0*t)/1000.0)*(250.0*cos(2.0*pi*x) + 250.0*cos(2.0*pi*y)
+      //				     - 250.0*cos(2.0*pi*x)*cos(2.0*pi*y) - 115.0))/9.0
+      //	+ (35.0*t*cos(2.0*pi*x))/12.0 + (35.0*t*cos(2.0*pi*y))/12.0
+      //	- (8750.0*cos(2.0*pi*x)*cos(2.0*pi*y))/9.0 + 140.0*(cos(2.0*pi*x)/4.0 - 1.0/4.0)
+      //	*(cos(2.0*pi*y) - 1.0) + 455.0*((t*(cos(2.0*pi*x)/4.0 - 1.0/4.0)
+      //					 *(cos(2.0*pi*y) - 1.0))/65.0 - 9.0/13.0)
+      //	*((t*(cos(2.0*pi*x)/4.0 - 1.0/4.0)*(cos(2.0*pi*y) - 1.0))/65.0 - 5.0/26.0)
+      //	*((t*(cos(2.0*pi*x)/4.0 - 1.0/4.0)*(cos(2.0*pi*y) - 1.0))/65.0 - 22.0/13.0)
+      //	- (35.0*t*cos(2.0*pi*x)*cos(2.0*pi*y))/12.0
+      //	+ (2.0*t*pi*pi*cos(2.0*pi*y)*(cos(2.0*pi*x)/4.0 - 1.0/4.0))/5.0
+      //	+ (t*pi*pi*cos(2.0*pi*x)*(cos(2.0*pi*y) - 1.0))/10.0 - 4025.0/9.0;
 
       return val; 
     } 

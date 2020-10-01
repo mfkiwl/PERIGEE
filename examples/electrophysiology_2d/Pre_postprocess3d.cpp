@@ -62,7 +62,7 @@ int main(int argc, char *argv[])
   int addSDegree = 0, addTDegree = 0, addUDegree = 0;
 
   // number of knots to be inserted
-  int num_inserted_x = 19, num_inserted_y = 6, num_inserted_z = 2;
+  int num_inserted_x = 38, num_inserted_y = 12, num_inserted_z = 4;
 
   // geometry file
   char * char_home_dir = getenv("HOME");
@@ -74,7 +74,7 @@ int main(int argc, char *argv[])
 
   // partition parameters
   int cpu_size = 1;
-  int in_ncommon = 9;
+  int in_ncommon = 6;
   bool isDualGraph = true;
 
   // flag to check the command line argument
@@ -213,6 +213,7 @@ int main(int argc, char *argv[])
 
     int check_ne, check_nex, check_ney, check_nez;
     check_reader->get_GMI_nElem(check_ne, check_nex, check_ney, check_nez);
+    //cout<<"check_ne: " << check_ne << " \n get_nelem: " << Mesh->get_nElem() ;
     assert(check_ne == Mesh->get_nElem());
     assert(check_nex == Mesh->get_nElem_x());
     assert(check_ney == Mesh->get_nElem_y());

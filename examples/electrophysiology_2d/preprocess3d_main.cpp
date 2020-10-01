@@ -52,7 +52,7 @@ int main(int argc, char *argv[])
   int addSDegree=0, addTDegree = 0, addUDegree = 0;
   
   // Num of knots inserted in spatial discretizations
-  int num_inserted_x = 19, num_inserted_y = 6, num_inserted_z = 2;
+  int num_inserted_x = 38, num_inserted_y = 12, num_inserted_z = 4;
 
   char * char_home_dir = getenv("HOME");
   std::string geo_file(char_home_dir);
@@ -62,7 +62,7 @@ int main(int argc, char *argv[])
   std::string part_file("part");
 
   // partition parameters
-  int cpu_size = 1;
+  int cpu_size = 4;
   int in_ncommon =6;
   bool isDualGraph = true;
   bool isWriteCNet = true;

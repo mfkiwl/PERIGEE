@@ -158,10 +158,12 @@ class PGAssem_NLHeat_GenAlpha
     void Assem_tangent_residual(
         const PDNSolution * const &sol_a,
         const PDNSolution * const &sol_b,
-	const PDNSolution * const &sol_c,//ionic_current
-	const PDNSolution * const &sol_d,//dphi_ionic
+	const PDNSolution * const &sol_c,//pre_hist
+	PDNSolution * const &sol_d,//new hist
         const double &curr_time,
         const double &dt,
+        const double &dt_ion,
+	const IonicModel * const &ionicmodel_ptr,
         const ALocal_Elem * const &alelem_ptr,
         IPLocAssem * const &lassem_ptr, 
         const ALocal_IEN * const &lien_ptr,
@@ -226,20 +228,22 @@ class PGAssem_NLHeat_GenAlpha
     //  sol_c is hist_dot, sol_d is hist
     // ------------------------------------------------------------------------
     void Assem_residual(
-        const PDNSolution * const &sol_a,
-        const PDNSolution * const &sol_b,
-        const PDNSolution * const &sol_c,//ionic_current
-        const PDNSolution * const &sol_d,//dphi_ionic   	
-        const double &curr_time,
-        const double &dt,
-        const ALocal_Elem * const &alelem_ptr,
-        IPLocAssem * const &lassem_ptr, 
-        const ALocal_IEN * const &lien_ptr,
-        const APart_Node * const &node_ptr,
-        const FEANode * const &fnode_ptr,
-        const AInt_Weight * const &wei_ptr,
-        const std::vector<FEAElement*> &eptr_array,
-        const IALocal_BC * const &bc_part );
+    const PDNSolution * const &sol_a, //velo
+    const PDNSolution * const &sol_b, //disp
+    const PDNSolution * const &sol_c, //pre_hist
+    PDNSolution * const &sol_d, //new hist
+    const double &curr_time,
+    const double &dt,
+    const double &dt_ion,
+    const IonicModel * const &ionicmodel_ptr,
+    const ALocal_Elem * const &alelem_ptr,
+    IPLocAssem * const &lassem_ptr, 
+    const ALocal_IEN * const &lien_ptr,
+    const APart_Node * const &node_ptr,
+    const FEANode * const &fnode_ptr,
+    const AInt_Weight * const &wei_ptr,
+    const std::vector<FEAElement*> &eptr_array,
+    const IALocal_BC * const &bc_part );
 
     
     // ------------------------------------------------------------------------

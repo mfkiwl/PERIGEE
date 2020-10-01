@@ -119,7 +119,6 @@ void PTime_Solver_NLHeat_GenAlpha::TM_generalized_alpha(
     PNonlinear_Solver_NLHeat_GenAlpha * const &nsolver_ptr
     ) const
 {
-  std::cout << "using ptime_solver_nlheat_GA!!!!!!!!!!!!!!!!!!"<<std::endl;
   PDNSolution * pre_disp = new PDNSolution(*init_disp);
   PDNSolution * cur_disp = new PDNSolution(*init_disp);
   PDNSolution * pre_velo = new PDNSolution(*init_velo);
@@ -138,44 +137,39 @@ void PTime_Solver_NLHeat_GenAlpha::TM_generalized_alpha(
   bool conv_flag, renew_flag;
   int nl_counter;
   while( time_info->get_time() < final_time )
-  {
-    if(time_info->get_index() % renew_tang_freq == 0)
-      renew_flag = true;
-    else
-      renew_flag = false;
-
-    //nsolver_ptr->Gen_alpha_solve(renew_flag, time_info->get_time(),
-    //   time_info->get_step(), pre_velo, pre_disp, tmga_ptr,
-    //    alelem_ptr, lien_ptr, anode_ptr, feanode_ptr, bc_part,
-    //    wei_ptr, ele_ptr, lassem_ptr, gassem_ptr, lsolver_ptr, 
-    //    cur_velo, cur_disp, conv_flag, nl_counter);
-
-    //gen_alpha_solve that includes history variables too. 
-    nsolver_ptr->Gen_alpha_solve(renew_flag, time_info->get_time(),
-        time_info->get_step(), pre_velo, pre_disp, pre_hist, tmga_ptr,
-        alelem_ptr, lien_ptr, anode_ptr, feanode_ptr, bc_part,
-	wei_ptr, ele_ptr, ionicmodel_ptr, lassem_ptr, gassem_ptr, 
-	lsolver_ptr, cur_velo, cur_disp, cur_hist, conv_flag, nl_counter);
-
-    time_info->TimeIncrement();
-
-    PetscPrintf(PETSC_COMM_WORLD, "Time = %e, dt = %e, index = %d \n",
-        time_info->get_time(), time_info->get_step(),
-        time_info->get_index());
-
-    if(time_info->get_index()%sol_record_freq == 0)
     {
-      sol_name = Name_Generator( time_info->get_index() );
-      hist_sol_name = "hist_" + sol_name;
-      cur_disp->WriteBinary(sol_name.c_str());
-      cur_hist->WriteBinary(hist_sol_name.c_str()); // does it overwrite?
-    }
+      if(time_info->get_index() % renew_tang_freq == 0)
+	renew_flag = true;
+      else
+	renew_flag = false;
+
+
+      //gen_alpha_solve that includes history variables too.
+      nsolver_ptr->Gen_alpha_solve(renew_flag, time_info->get_time(),
+				   time_info->get_step(), pre_velo, pre_disp, pre_hist, tmga_ptr,
+				   alelem_ptr, lien_ptr, anode_ptr, feanode_ptr, bc_part,
+				   wei_ptr, ele_ptr, ionicmodel_ptr, lassem_ptr, gassem_ptr, 
+				   lsolver_ptr, cur_velo, cur_disp, cur_hist, conv_flag, nl_counter);
+
+      time_info->TimeIncrement();
+
+      PetscPrintf(PETSC_COMM_WORLD, "Time = %e, dt = %e, index = %d \n",
+		  time_info->get_time(), time_info->get_step(),
+		  time_info->get_index());
+
+      if(time_info->get_index()%sol_record_freq == 0)
+	{
+	  sol_name = Name_Generator( time_info->get_index() );
+	  hist_sol_name = "hist_" + sol_name;
+	  cur_disp->WriteBinary(sol_name.c_str());
+	  cur_hist->WriteBinary(hist_sol_name.c_str()); // does it overwrite?
+	}
     
-    pre_disp->Copy(*cur_disp);
-    pre_velo->Copy(*cur_velo);
-    pre_hist->Copy(*cur_hist);//update history
-    //pre_hist_dot->Copy(*cur_hist_dot);//update history
-  }
+      pre_disp->Copy(*cur_disp);
+      pre_velo->Copy(*cur_velo);
+      pre_hist->Copy(*cur_hist);//update history
+      //pre_hist_dot->Copy(*cur_hist_dot);//update history
+    }
 
   delete pre_disp; delete cur_disp;
   delete pre_velo; delete cur_velo;

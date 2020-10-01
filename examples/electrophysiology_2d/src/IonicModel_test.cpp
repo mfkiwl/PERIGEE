@@ -48,28 +48,10 @@ void IonicModel::material_routine(const double &r_old_in,
 				  double &dP_fP,
 				  double &r_new) const
 {
-//  double dP_dr=0;
-//  //non dimensionalize 
-  const double Phi_nd { (Phi_in+fh_2)/fh_1};
-  const double dt_nd { dt_in/fh_3};
-//
-//
-  r_new = (dt_nd*(Phi_nd + a)+r_old_in) / (b*dt_nd+1.0) ;
-  f_Phi = c*(-std::pow(Phi_nd,3.0) + std::pow(Phi_nd,2.0)*(alpha+1.0)
-	     -Phi_nd*alpha - r_new);
-  dP_fP = c*(-3.0*std::pow(Phi_nd,2.0) + 2.0*(alpha+1.0)*Phi_nd-alpha)
-    -(c*dt_nd)/(b*dt_nd+1);
-  //redimensionalize
-  f_Phi=fh_1*f_Phi/fh_3;
-  dP_fP=dP_fP/fh_3;
+  f_Phi=1.0;
+  dP_fP=0.0;
+  r_new=0.0;
 
-//  //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-//  //for manufactured solution:
-//  r_new=dt_in;
-//  f_Phi=10;
-//  dP_fP=0;
-  
 }
-
 
 // EOF
