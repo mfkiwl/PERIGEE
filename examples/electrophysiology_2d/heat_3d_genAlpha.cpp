@@ -61,8 +61,8 @@ int main(int argc, char *argv[])
   std::string part_file("part");
 
   // Nonlinear solver parameters
-  double nl_rtol = 1.0e-3;
-  double nl_atol = 1.0e-6;
+  double nl_rtol = 1.0e-15;
+  double nl_atol = 1.0e-15;
   double nl_dtol = 0.9;
   int nl_maxits = 20;
   int nl_refreq = 4;
@@ -71,12 +71,12 @@ int main(int argc, char *argv[])
   double initial_time = 0.0;
   double initial_step = 1.0;
   int initial_index = 0;
-  double final_time = 200.0;
+  double final_time = 5.0;
 
   // Time solver parameters
   std::string sol_bName("SOL_");
   int ttan_renew_freq = 1;
-  int sol_record_freq = 5;
+  int sol_record_freq = 1;
 
   PetscMPIInt rank, size;
   // ======= PETSc Initialize =======
@@ -195,7 +195,7 @@ int main(int argc, char *argv[])
 
   // ======= Finite Element Analysis =======
   // 2.1 Solution Initialization
-  PDNSolution * disp = new PDNSolution_heatEqn(pNode, fNode, locBC, 3);
+  PDNSolution * disp = new PDNSolution_heatEqn(pNode, fNode, locBC, 0);
   PDNSolution * velo = new PDNSolution_heatEqn(pNode, fNode, locBC, 0);
   PDNSolution * hist = new PDNSolution_heatEqn(pNode, fNode, locBC, 0);
 //

@@ -125,12 +125,12 @@ class PLocAssem_NLHeat_3D_GenAlpha : public IPLocAssem
       double pi = MATH_T::PI; 
       double val ;
 
-      if ((x<=0.15) && (y<=0.15) && (z<=0.15) && (t<=2.0)){
-	val =50000;
-      }
-      else{
-	val=0;
-      }
+      //if ((x<=0.15) && (y<=0.15) && (z<=0.15) && (t<=2.0)){
+      //	val =50000;
+      //}
+      //else{
+	val=0.0;
+      //}
       return val ;
       
     } 

@@ -772,7 +772,7 @@ void PGAssem_NLHeat_GenAlpha::Assem_mass_residual(
   hist ->GetLocalArray( array_c, node_ptr);//d_iion will be assigned
   
   double r_new_tmp, r_old, dt, new_soln, dPhi_Iion_tmp, Iion_tmp;
-  dt=time_info->get_step();
+  dt=0.0; //because we dont want to update  the ionic eqns here., 
   for (int count{ 0 }; count < node_num; ++count)
     {
       new_soln = array_a[count];      

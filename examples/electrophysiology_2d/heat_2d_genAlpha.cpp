@@ -40,8 +40,8 @@ int main(int argc, char *argv[])
   std::string part_file("part");
 
   // Nonlinear solver parameters
-  double nl_rtol = 1.0e-3;
-  double nl_atol = 1.0e-5;
+  double nl_rtol = 1.0e-15;
+  double nl_atol = 1.0e-15;
   double nl_dtol = 0.9;
   int nl_maxits = 20;
   int nl_refreq = 4;
@@ -50,7 +50,7 @@ int main(int argc, char *argv[])
   double initial_time = 0.0;
   double initial_step = 1.0;
   int initial_index = 0;
-  double final_time = 200.0;
+  double final_time = 5.0;
 
   // Time solver parameters
   std::string sol_bName("SOL_");
@@ -175,7 +175,7 @@ int main(int argc, char *argv[])
 
   // ======= Finite Element Analysis =======6
   // FEA.1 Initial solution and history variables (1 per node)
-  PDNSolution * disp = new PDNSolution_heatEqn(pNode, fNode, locBC, 2);//3: -80overall
+  PDNSolution * disp = new PDNSolution_heatEqn(pNode, fNode, locBC, 0);//3: -80overall
   //disp->PlusAX(PDNSolution_heatEqn(pNode, fNode, locBC, 1), -75);
   PDNSolution * velo = new PDNSolution_heatEqn(pNode, fNode, locBC, 0);
   PDNSolution * hist = new PDNSolution_heatEqn(pNode, fNode, locBC, 0);

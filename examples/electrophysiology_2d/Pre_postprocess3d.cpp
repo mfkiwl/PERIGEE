@@ -62,7 +62,7 @@ int main(int argc, char *argv[])
   int addSDegree = 0, addTDegree = 0, addUDegree = 0;
 
   // number of knots to be inserted
-  int num_inserted_x = 38, num_inserted_y = 12, num_inserted_z = 4;
+  int num_inserted_x = 19, num_inserted_y = 6, num_inserted_z = 2;
 
   // geometry file
   char * char_home_dir = getenv("HOME");
@@ -74,7 +74,7 @@ int main(int argc, char *argv[])
 
   // partition parameters
   int cpu_size = 1;
-  int in_ncommon = 6;
+  int in_ncommon = 9;
   bool isDualGraph = true;
 
   // flag to check the command line argument

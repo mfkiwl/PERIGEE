@@ -15,10 +15,7 @@ IonicModel::~IonicModel()
 
 void IonicModel::print_info () const
 {
-  PetscPrintf(PETSC_COMM_WORLD, "\t  FitzHugh Nagumo EP: \n");
-  PetscPrintf(PETSC_COMM_WORLD, "\t  fh_1 = %e \n", fh_1);
-  PetscPrintf(PETSC_COMM_WORLD, "\t  fh_2 = %e \n", fh_2);
-  PetscPrintf(PETSC_COMM_WORLD, "\t  fh_3 = %e \n", fh_3);
+  PetscPrintf(PETSC_COMM_WORLD, "\t  Test ionic model: \n");
 };
 
 double IonicModel::get_diso() const
