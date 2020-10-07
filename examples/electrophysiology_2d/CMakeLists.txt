@@ -97,12 +97,12 @@ SET( perigee_analysis_lib_src
   ${perigee_source}/Solver/PLinear_Solver_PETSc.cpp
   ${perigee_source}/Solver/PNonlinear_Solver.cpp
   ${perigee_source}/Solver/PTime_Solver.cpp
-  ${perigee_SOURCE_DIR}/src/PLocAssem_NLHeat_2D_GenAlpha.cpp
-  ${perigee_SOURCE_DIR}/src/PLocAssem_NLHeat_3D_GenAlpha.cpp
-  ${perigee_SOURCE_DIR}/src/PDNSolution_heatEqn.cpp
-  ${perigee_SOURCE_DIR}/src/PTime_Solver_NLHeat_GenAlpha.cpp
-  ${perigee_SOURCE_DIR}/src/PNonlinear_Solver_NLHeat_GenAlpha.cpp
-  ${perigee_SOURCE_DIR}/src/PGAssem_NLHeat_GenAlpha.cpp
+  ${perigee_SOURCE_DIR}/src/PLocAssem_EP_2D.cpp
+  ${perigee_SOURCE_DIR}/src/PLocAssem_EP_3D.cpp
+  ${perigee_SOURCE_DIR}/src/PDNSolution_EP.cpp
+  ${perigee_SOURCE_DIR}/src/PTime_Solver_EP_OperatorSplit.cpp
+  ${perigee_SOURCE_DIR}/src/PNonlinear_Solver_EP.cpp
+  ${perigee_SOURCE_DIR}/src/PGAssem_EP.cpp
   ${perigee_SOURCE_DIR}/src/IonicModel.cpp
   )
 
@@ -110,8 +110,8 @@ SET( perigee_analysis_lib_src
 SET( perigee_postprocess_lib_src
   ${perigee_source}/Postproc_Tool/PostVectSolution.cpp
   ${perigee_source}/Postproc_Tool/VTK_Writer.cpp
-  ${perigee_SOURCE_DIR}/src/VisDataPrep_2DNLHeat.cpp
-  ${perigee_SOURCE_DIR}/src/VisDataPrep_3DNLHeat.cpp
+  ${perigee_SOURCE_DIR}/src/VisDataPrep_2DEP.cpp
+  ${perigee_SOURCE_DIR}/src/VisDataPrep_3DEP.cpp
   ${perigee_SOURCE_DIR}/src/Post_error.cpp
   )
 # ===============================================

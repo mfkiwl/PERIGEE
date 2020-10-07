@@ -1,13 +1,11 @@
-#ifndef PLOCASSEM_NLHEAT_3D_GENALPHA_HPP
-#define PLOCASSEM_NLHEAT_3D_GENALPHA_HPP
+#ifndef PLOCASSEM_EP_3D_HPP
+#define PLOCASSEM_EP_3D_HPP
 // ==================================================================
-// PLocAssem_NLHeat_3D_GenAlpha.hpp
-// This is the local assembly routine for nonlinear heat equation in
+// PLocAssem_EP_3D.hpp
+// This is the local assembly routine for EP equation in
 // three dimension, using generalized alpha method as time marching
 // scheme. See J.A. Cottrell, et. al Isogeometric Analysis, pp 198
 // for details.
-//
-// Date: Dec 3rd 2013
 // ==================================================================
 #include "Sys_Tools.hpp"
 #include "Math_Tools.hpp"
@@ -17,15 +15,15 @@
 #include "FEAElement.hpp"
 #include "IonicModel.hpp"
 
-class PLocAssem_NLHeat_3D_GenAlpha : public IPLocAssem
+class PLocAssem_EP_3D : public IPLocAssem
 {
   public:
-    PLocAssem_NLHeat_3D_GenAlpha(
+    PLocAssem_EP_3D(
         const class TimeMethod_GenAlpha * const &tm_gAlpha,
 	const class IonicModel * const &ionicmodel,
         const int &in_nlocbas, const int &in_nqp
         );
-    virtual ~PLocAssem_NLHeat_3D_GenAlpha();
+    virtual ~PLocAssem_EP_3D();
 
     virtual int get_dof() const {return dof_per_node;}
 
@@ -38,8 +36,8 @@ class PLocAssem_NLHeat_3D_GenAlpha : public IPLocAssem
         double time, double dt,
         const double * const &vec_a,
         const double * const &vec_b,
-	const double * const &vec_c,
-        const double * const &vec_d,
+	//const double * const &vec_c,
+        //const double * const &vec_d,
         const class FEAElement * const &element,
         const double * const &eleCtrlPts_x,
         const double * const &eleCtrlPts_y,
@@ -51,8 +49,8 @@ class PLocAssem_NLHeat_3D_GenAlpha : public IPLocAssem
         double time, double dt,
         const double * const &vec_a,
         const double * const &vec_b,
-	const double * const &vec_c,
-        const double * const &vec_d,
+	//const double * const &vec_c,
+        //const double * const &vec_d,
         const class FEAElement * const &element,
         const double * const &eleCtrlPts_x,
         const double * const &eleCtrlPts_y,
@@ -67,8 +65,8 @@ class PLocAssem_NLHeat_3D_GenAlpha : public IPLocAssem
 
     virtual void Assem_Mass_Residual(
         const double * const &vec_a,
-	const double * const &vec_b,
-	const double * const &vec_c,
+	//const double * const &vec_b,
+	//const double * const &vec_c,
         const class FEAElement * const &element,
         const double * const &eleCtrlPts_x,
         const double * const &eleCtrlPts_y,
@@ -118,7 +116,7 @@ class PLocAssem_NLHeat_3D_GenAlpha : public IPLocAssem
     }
 
 
-    // ! define the external heat source
+    // ! define the external  source
     double get_f( const double &x, const double &y, const double &z, 
         const double &t ) const
     { 

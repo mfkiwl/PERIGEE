@@ -41,15 +41,14 @@
 #include "APart_Node.hpp"
 #include "PDNSolution.hpp"
 #include "PDNTimeStep.hpp"
-#include "PDNSolution_heatEqn.hpp"
+#include "PDNSolution_EP.hpp"
 #include "TimeMethod_GenAlpha.hpp"
-#include "PLocAssem_NLHeat_3D_GenAlpha.hpp"
-//#include "PGAssem.hpp"
-#include "PGAssem_NLHeat_GenAlpha.hpp"
+#include "PLocAssem_EP_3D.hpp"
+#include "PGAssem_EP.hpp"
 #include "PLinear_Solver_PETSc.hpp"
 #include "PNonlinear_Solver.hpp"
 //#include "PTime_Solver.hpp"
-#include "PTime_Solver_NLHeat_GenAlpha.hpp"
+#include "PTime_Solver_EP_OperatorSplit.hpp"
 #include "IonicModel.hpp"
 
 int main(int argc, char *argv[])
@@ -71,7 +70,7 @@ int main(int argc, char *argv[])
   double initial_time = 0.0;
   double initial_step = 1.0;
   int initial_index = 0;
-  double final_time = 5.0;
+  double final_time = 200.0;
 
   // Time solver parameters
   std::string sol_bName("SOL_");
@@ -195,9 +194,9 @@ int main(int argc, char *argv[])
 
   // ======= Finite Element Analysis =======
   // 2.1 Solution Initialization
-  PDNSolution * disp = new PDNSolution_heatEqn(pNode, fNode, locBC, 0);
-  PDNSolution * velo = new PDNSolution_heatEqn(pNode, fNode, locBC, 0);
-  PDNSolution * hist = new PDNSolution_heatEqn(pNode, fNode, locBC, 0);
+  PDNSolution * disp = new PDNSolution_EP(pNode, fNode, locBC, 2);
+  PDNSolution * velo = new PDNSolution_EP(pNode, fNode, locBC, 0);
+  PDNSolution * hist = new PDNSolution_EP(pNode, fNode, locBC, 0);
 //
   PDNTimeStep * timeinfo = new PDNTimeStep(initial_index, initial_time, initial_step);
 
@@ -213,13 +212,13 @@ int main(int argc, char *argv[])
 
   SYS_T::commPrint("===> Initialize local assembly routine ... \n");
   IPLocAssem * locAssem_ptr =
-    new PLocAssem_NLHeat_3D_GenAlpha(tm_galpha_ptr, ionicmodel_ptr,
+    new PLocAssem_EP_3D(tm_galpha_ptr, ionicmodel_ptr,
 				     GMIptr->get_nLocBas(), Int_w->get_num() );
 
   // 2.3 Global Assembly pointer
   int vpetsc_type = 0; // petsc version controller
-  PGAssem_NLHeat_GenAlpha * gloAssem_ptr
-    = new PGAssem_NLHeat_GenAlpha(locAssem_ptr, GMIptr, pNode, vpetsc_type);
+  PGAssem_EP * gloAssem_ptr
+    = new PGAssem_EP(locAssem_ptr, GMIptr, pNode, vpetsc_type);
 
   // 2.4 Estimate the matrix structure
   gloAssem_ptr->Assem_nonzero_estimate( locElem, locAssem_ptr, locIEN, pNode, locBC );
@@ -235,7 +234,8 @@ int main(int argc, char *argv[])
 
   // 2.6 Assembly mass matrix and solve for consistent initial solution
   gloAssem_ptr->Clear_KG();
-  gloAssem_ptr->Assem_mass_residual( disp, hist, timeinfo, ionicmodel_ptr,
+  gloAssem_ptr->Assem_mass_residual( disp,// hist,
+				     timeinfo, //ionicmodel_ptr,
 				     locElem, locAssem_ptr, locIEN, pNode,
 				     fNode, Int_w, elemArray, locBC );
 
@@ -243,15 +243,15 @@ int main(int argc, char *argv[])
   SYS_T::commPrint("initial solution's time derivative obtained. \n"); 
 
   // 2.7 Setup nonlinear solver context
-  PNonlinear_Solver_NLHeat_GenAlpha * nsolver
-    = new PNonlinear_Solver_NLHeat_GenAlpha(nl_rtol, nl_atol,
+  PNonlinear_Solver_EP * nsolver
+    = new PNonlinear_Solver_EP(nl_rtol, nl_atol,
 					    nl_dtol, nl_maxits, nl_refreq);
   SYS_T::commPrint("===> Nonlinear solver setted up:\n");
   nsolver->Info();
 
   // 2.8 Setup time marching context
-  PTime_Solver_NLHeat_GenAlpha * tsolver =
-    new PTime_Solver_NLHeat_GenAlpha( sol_bName, sol_record_freq,
+  PTime_Solver_EP_OperatorSplit * tsolver =
+    new PTime_Solver_EP_OperatorSplit( sol_bName, sol_record_freq,
 				      ttan_renew_freq, final_time );
 
   SYS_T::commPrint("===> Time marching solver setted up:\n");

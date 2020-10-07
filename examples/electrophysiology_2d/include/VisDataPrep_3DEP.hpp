@@ -1,7 +1,7 @@
-#ifndef VISDATAPREP_3DNLHEAT_HPP
-#define VISDATAPREP_3DNLHEAT_HPP
+#ifndef VISDATAPREP_3DEP_HPP
+#define VISDATAPREP_3DEP_HPP
 // ==================================================================
-// VisDataPrep_3DNLHeat.hpp
+// VisDataPrep_3DEP.hpp
 // This is the data preparation for 3D Nonlinear Heat problem.
 //
 // Dec. 17 2013  
@@ -9,11 +9,11 @@
 
 #include "IVisDataPrep.hpp"
 
-class VisDataPrep_3DNLHeat : public IVisDataPrep
+class VisDataPrep_3DEP : public IVisDataPrep
 {
   public:
-    VisDataPrep_3DNLHeat();
-    virtual ~VisDataPrep_3DNLHeat();
+    VisDataPrep_3DEP();
+    virtual ~VisDataPrep_3DEP();
 
     virtual void get_pointArray(
         const std::string solution_file_name,

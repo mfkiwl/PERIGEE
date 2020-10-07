@@ -1,6 +1,6 @@
-#include "VisDataPrep_3DNLHeat.hpp"
+#include "VisDataPrep_3DEP.hpp"
 
-VisDataPrep_3DNLHeat::VisDataPrep_3DNLHeat()
+VisDataPrep_3DEP::VisDataPrep_3DEP()
 {
   arrayCompSize = 1;
   arrayNames.push_back("Temperature");
@@ -8,11 +8,11 @@ VisDataPrep_3DNLHeat::VisDataPrep_3DNLHeat()
 }
 
 
-VisDataPrep_3DNLHeat::~VisDataPrep_3DNLHeat()
+VisDataPrep_3DEP::~VisDataPrep_3DEP()
 {}
 
 
-void VisDataPrep_3DNLHeat::get_pointArray(
+void VisDataPrep_3DEP::get_pointArray(
     const std::string solution_file_name,
     const std::string analysis_node_mapping_file,
     const std::string post_node_mapping_file,

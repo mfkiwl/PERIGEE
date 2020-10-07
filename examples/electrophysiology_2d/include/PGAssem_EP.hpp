@@ -1,14 +1,14 @@
-#ifndef PGASSEM_NLHEAT_GENALPHA_HPP
-#define PGASSEM_NLHEAT_GENALPHA_HPP
+#ifndef PGASSEM_EP_HPP
+#define PGASSEM_EP_HPP
 // ==================================================================
-// PGAssem_NLHeat_GenAlpha.hpp
+// PGAssem_EP.hpp
 // Parallel Global Assembly routine.
 //
-// This class assembly the global tangent matrix / mass matrix, and
+// This class assembles the global tangent matrix / mass matrix, and
 // residual vector, with essential boundary conditions (including 
 // dirichlet bc, strongly enforced periodic bc).
 // 
-// Date: Dec 5 2013
+// Date: 
 // ==================================================================
 #include "Sys_Tools.hpp"
 #include "Vec_Tools.hpp"
@@ -31,7 +31,7 @@
 #include "IonicModel.hpp"
 #include "PDNTimeStep.hpp"
 
-class PGAssem_NLHeat_GenAlpha
+class PGAssem_EP
 {
   public:
     // K is the tangent matrix
@@ -40,7 +40,7 @@ class PGAssem_NLHeat_GenAlpha
     // G is the residual vector
     Vec G;
 
-    PGAssem_NLHeat_GenAlpha( const IPLocAssem * const &locassem_ptr,
+    PGAssem_EP( const IPLocAssem * const &locassem_ptr,
         const IAGlobal_Mesh_Info * const &agmi_ptr,
         const APart_Node * const &pnode_ptr,
         const int &petsc_version_type );
@@ -49,7 +49,7 @@ class PGAssem_NLHeat_GenAlpha
     // ! Constructor that does not need to specify the petsc version
     // ! for matrix creation. 
     // ------------------------------------------------------------------------
-    PGAssem_NLHeat_GenAlpha( const IPLocAssem * const &locassem_ptr,
+    PGAssem_EP( const IPLocAssem * const &locassem_ptr,
         const IAGlobal_Mesh_Info * const &agmi_ptr,
         const APart_Node * const &pnode_ptr );
 
@@ -58,7 +58,7 @@ class PGAssem_NLHeat_GenAlpha
     // ! Constructor that calls Get_dnz_onz to get a more accurate estimate
     //   nonzero structure of the sparse matrix.
     // ------------------------------------------------------------------------
-    PGAssem_NLHeat_GenAlpha( const IPLocAssem * const &locassem_ptr,
+    PGAssem_EP( const IPLocAssem * const &locassem_ptr,
         const IAGlobal_Mesh_Info * const &agmi_ptr,
         const ALocal_Elem * const &alelem_ptr,
         const ALocal_IEN * const &aien_ptr,
@@ -69,7 +69,7 @@ class PGAssem_NLHeat_GenAlpha
     // ------------------------------------------------------------------------
     // ! Destructor
     // ------------------------------------------------------------------------
-    virtual ~PGAssem_NLHeat_GenAlpha();
+    virtual ~PGAssem_EP();
 
     // ------------------------------------------------------------------------
     // ! Flag : Fix nonzero structure
@@ -126,25 +126,7 @@ class PGAssem_NLHeat_GenAlpha
         const APart_Node * const &node_ptr,
         const IALocal_BC * const &bc_part );
 
-    // ------------------------------------------------------------------------
-    // ! Assembly tangent matrix and residual vector
-    //       Needs the basis function quadrature info
-    //       sol_a : disp /or sol_n+1
-    //       sol_b : velo /or sol_n
-    // ------------------------------------------------------------------------
-    //void Assem_tangent_residual(
-    //    const PDNSolution * const &sol_a,
-    //    const PDNSolution * const &sol_b,
-    //    const double &curr_time,
-    //    const double &dt,
-    //    const ALocal_Elem * const &alelem_ptr,
-    //    IPLocAssem * const &lassem_ptr, 
-    //    const ALocal_IEN * const &lien_ptr,
-    //    const APart_Node * const &node_ptr,
-    //    const FEANode * const &fnode_ptr,
-    //    const AInt_Weight * const &wei_ptr,
-    //    const std::vector<FEAElement*> &eptr_array,
-    //    const IALocal_BC * const &bc_part );
+
 
     // ------------------------------------------------------------------------
     // ! Assembly tangent matrix and residual vector,
@@ -158,12 +140,12 @@ class PGAssem_NLHeat_GenAlpha
     void Assem_tangent_residual(
         const PDNSolution * const &sol_a,
         const PDNSolution * const &sol_b,
-	const PDNSolution * const &sol_c,//pre_hist
-	PDNSolution * const &sol_d,//new hist
+	//const PDNSolution * const &sol_c,//pre_hist
+	//PDNSolution * const &sol_d,//new hist
         const double &curr_time,
         const double &dt,
-        const double &dt_ion,
-	const IonicModel * const &ionicmodel_ptr,
+        //const double &dt_ion,
+	//const IonicModel * const &ionicmodel_ptr,
         const ALocal_Elem * const &alelem_ptr,
         IPLocAssem * const &lassem_ptr, 
         const ALocal_IEN * const &lien_ptr,
@@ -187,41 +169,6 @@ class PGAssem_NLHeat_GenAlpha
     //                      quadrature points for volumetric integration
     //     IAExtractor : Bezier extraction operator
     // ------------------------------------------------------------------------
-    //void Assem_tangent_residual(
-    //    const PDNSolution * const &sol_a,
-    //    const PDNSolution * const &sol_b,
-    //    const double &curr_time,
-    //    const double &dt,
-    //    const ALocal_Elem * const &alelem_ptr,
-    //    IPLocAssem * const &lassem_ptr, 
-    //    const ALocal_IEN * const &lien_ptr,
-    //    const APart_Node * const &node_ptr,
-    //    const FEANode * const &fnode_ptr,
-    //    const AInt_Weight * const &wei_ptr,
-    //    const IALocal_meshSize * const &mSize,
-    //    const BernsteinBasis_Array * const &bs,
-    //    const BernsteinBasis_Array * const &bt,
-    //    const BernsteinBasis_Array * const &bu,
-    //    const IAExtractor * const &extractor,
-    //    const IALocal_BC * const &bc_part );
-
-    
-    // ------------------------------------------------------------------------
-    // ! Assembly residual vector
-    // ------------------------------------------------------------------------
-    //void Assem_residual(
-    //    const PDNSolution * const &sol_a,
-    //    const PDNSolution * const &sol_b,
-    //    const double &curr_time,
-    //    const double &dt,
-    //    const ALocal_Elem * const &alelem_ptr,
-    //    IPLocAssem * const &lassem_ptr, 
-    //    const ALocal_IEN * const &lien_ptr,
-    //    const APart_Node * const &node_ptr,
-    //    const FEANode * const &fnode_ptr,
-    //    const AInt_Weight * const &wei_ptr,
-    //    const std::vector<FEAElement*> &eptr_array,
-    //    const IALocal_BC * const &bc_part );
 
     // ------------------------------------------------------------------------
     // ! Assembly residual vector when history variables are present
@@ -230,12 +177,12 @@ class PGAssem_NLHeat_GenAlpha
     void Assem_residual(
     const PDNSolution * const &sol_a, //velo
     const PDNSolution * const &sol_b, //disp
-    const PDNSolution * const &sol_c, //pre_hist
-    PDNSolution * const &sol_d, //new hist
+    //const PDNSolution * const &sol_c, //pre_hist
+    //PDNSolution * const &sol_d, //new hist
     const double &curr_time,
     const double &dt,
-    const double &dt_ion,
-    const IonicModel * const &ionicmodel_ptr,
+    //const double &dt_ion,
+    //const IonicModel * const &ionicmodel_ptr,
     const ALocal_Elem * const &alelem_ptr,
     IPLocAssem * const &lassem_ptr, 
     const ALocal_IEN * const &lien_ptr,
@@ -246,43 +193,15 @@ class PGAssem_NLHeat_GenAlpha
     const IALocal_BC * const &bc_part );
 
     
-    // ------------------------------------------------------------------------
-    // ! Assem residual vector for 3D problem without cached quadrature
-    //   info.
-    // ! -----------------
-    // ! The following input are needed for element quadrature evaluation
-    // ! IALocal_meshSize : object saving the mesh size
-    // ! BernsteinBasis : pre-evaluated Bernstein polynomial at Gauss 
-    // !                  quadrature points for volumetric integration
-    // ! IAExtractor : Bezier extraction operator
-    // ------------------------------------------------------------------------
-    //void Assem_residual(
-    //    const PDNSolution * const &sol_a,
-    //    const PDNSolution * const &sol_b,
-    //    const double &curr_time,
-    //    const double &dt,
-    //    const ALocal_Elem * const &alelem_ptr,
-    //    IPLocAssem * const &lassem_ptr, 
-    //    const ALocal_IEN * const &lien_ptr,
-    //    const APart_Node * const &node_ptr,
-    //    const FEANode * const &fnode_ptr,
-    //    const AInt_Weight * const &wei_ptr,
-    //    const IALocal_meshSize * const &mSize,
-    //    const BernsteinBasis_Array * const &bs,
-    //    const BernsteinBasis_Array * const &bt,
-    //    const BernsteinBasis_Array * const &bu,
-    //    const IAExtractor * const &extractor,
-    //    const IALocal_BC * const &bc_part );
-
 
     // ------------------------------------------------------------------------
     // ! Assembly mass matrix and its residual vector
     // ------------------------------------------------------------------------
     void Assem_mass_residual(
         const PDNSolution * const &sol_a,
-	const PDNSolution * const &sol_b,
+	//const PDNSolution * const &sol_b, //hist
 	const PDNTimeStep * const &time_info,
-	const IonicModel * const &ionicmodel_ptr,
+	//const IonicModel * const &ionicmodel_ptr,
         const ALocal_Elem * const &alelem_ptr,
         IPLocAssem * const &lassem_ptr, 
         const ALocal_IEN * const &lien_ptr,
@@ -303,21 +222,23 @@ class PGAssem_NLHeat_GenAlpha
     // !                  quadrature points for volumetric integration
     // ! IAExtractor : Bezier extraction operator
     // ------------------------------------------------------------------------
-  //void Assem_mass_residual(
-  //      const PDNSolution * const &sol_a,
-  //      const ALocal_Elem * const &alelem_ptr,
-  //      IPLocAssem * const &lassem_ptr, 
-  //      const ALocal_IEN * const &lien_ptr,
-  //      const APart_Node * const &node_ptr,
-  //      const FEANode * const &fnode_ptr,
-  //      const AInt_Weight * const &wei_ptr,
-  //      const IALocal_meshSize * const &mSize,
-  //      const BernsteinBasis_Array * const &bs,
-  //      const BernsteinBasis_Array * const &bt,
-  //      const BernsteinBasis_Array * const &bu,
-  //      const IAExtractor * const &extractor,
-  //      const IALocal_BC * const &bc_part );
-
+    void Update_nodal_values(
+        //const PDNSolution * const &sol_a,
+        //const PDNSolution * const &sol_b,
+	////const PDNSolution * const &sol_c,//pre_hist
+	////PDNSolution * const &sol_d,//new hist
+        //const double &curr_time,
+        //const double &dt,
+	const IonicModel * const &ionicmodel_ptr
+        //const ALocal_Elem * const &alelem_ptr,
+        //IPLocAssem * const &lassem_ptr, 
+        //const ALocal_IEN * const &lien_ptr,
+        //const APart_Node * const &node_ptr,
+        //const FEANode * const &fnode_ptr,
+        //const AInt_Weight * const &wei_ptr,
+        //const std::vector<FEAElement*> &eptr_array,
+        //const IALocal_BC * const &bc_part
+			     );  
 
     // ------------------------------------------------------------------------
     // ! Print_G : print the residual vector G on screen

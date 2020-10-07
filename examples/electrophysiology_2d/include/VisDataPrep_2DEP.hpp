@@ -1,19 +1,19 @@
-#ifndef VISDATAPREP_2DNLHEAT_HPP
-#define VISDATAPREP_2DNLHEAT_HPP
+#ifndef VISDATAPREP_2DEP_HPP
+#define VISDATAPREP_2DEP_HPP
 // ==================================================================
-// VisDataPrep_2DNLHeat.hpp
-// This is the data preparation for 2D Nonlinear Heat problem.
+// VisDataPrep_2DEP.hpp
+// This is the data preparation for 2D Nonlinear Ep problem.
 //
-// Date: April 20 2014
+// Date: oct 5 2020
 // ==================================================================
 
 #include "IVisDataPrep.hpp"
 
-class VisDataPrep_2DNLHeat : public IVisDataPrep
+class VisDataPrep_2DEP : public IVisDataPrep
 {
   public:
-    VisDataPrep_2DNLHeat();
-    virtual ~VisDataPrep_2DNLHeat();
+    VisDataPrep_2DEP();
+    virtual ~VisDataPrep_2DEP();
 
     virtual void get_pointArray(
         const std::string solution_file_name,

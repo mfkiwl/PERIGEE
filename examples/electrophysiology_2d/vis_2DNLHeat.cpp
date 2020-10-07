@@ -1,7 +1,7 @@
 // ==================================================================
-// vis_2DNLHeat.cpp
+// vis_2DEP.cpp
 // ------------------------------------------------------------------
-// This is the visualization driver to visualize 2DNLHeat solution
+// This is the visualization driver to visualize 2DEP solution
 // into VTK format.
 //
 // This is a parallel routine. The users have to prepare mesh 
@@ -19,7 +19,7 @@
 #include "APart_Basic_Info.hpp"
 #include "ALocal_meshSize_2D_NURBS.hpp"
 #include "AInt_Weight.hpp"
-#include "VisDataPrep_2DNLHeat.hpp"
+#include "VisDataPrep_2DEP.hpp"
 #include "VTK_Writer.hpp"
 
 using namespace std;
@@ -150,7 +150,7 @@ int main( int argc, char * argv[] )
   // ----------------------------------------------------------------
   // Date name and size setting
 
-  IVisDataPrep * visprep = new VisDataPrep_2DNLHeat();
+  IVisDataPrep * visprep = new VisDataPrep_2DEP();
   PetscPrintf(PETSC_COMM_WORLD, "======================================= \n");
   PetscPrintf(PETSC_COMM_WORLD, "Data to be visualized: \n");
   PetscPrintf(PETSC_COMM_WORLD, "-- %d type(s) of data. \n", visprep->get_arrayCompSize());

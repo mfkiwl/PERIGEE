@@ -1,6 +1,6 @@
-#include "VisDataPrep_2DNLHeat.hpp"
+#include "VisDataPrep_2DEP.hpp"
 
-VisDataPrep_2DNLHeat::VisDataPrep_2DNLHeat()
+VisDataPrep_2DEP::VisDataPrep_2DEP()
 {
   arrayCompSize = 1;
   arrayNames.push_back("Temperature");
@@ -8,11 +8,11 @@ VisDataPrep_2DNLHeat::VisDataPrep_2DNLHeat()
 }
 
 
-VisDataPrep_2DNLHeat::~VisDataPrep_2DNLHeat()
+VisDataPrep_2DEP::~VisDataPrep_2DEP()
 {}
 
 
-void VisDataPrep_2DNLHeat::get_pointArray(
+void VisDataPrep_2DEP::get_pointArray(
     const std::string solution_file_name,
     const std::string analysis_node_mapping_file,
     const std::string post_node_mapping_file,

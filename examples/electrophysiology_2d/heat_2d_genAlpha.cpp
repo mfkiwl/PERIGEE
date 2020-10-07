@@ -1,8 +1,8 @@
 // ==================================================================
-// heat_2d_genAlpha.cpp
+// ep_2d_genAlpha.cpp
 // ------------------------------------------------------------------
 // Objects:
-// Perform parallel 2d nonlinear heat equation FEM/IGA dynamic 
+// Perform parallel 2d nonlinear ep equation FEM/IGA dynamic 
 // analysis.
 //
 // Input:
@@ -26,9 +26,9 @@
 #include "ALocal_BC_2D.hpp"
 #include "QuadPts_Gauss.hpp"
 #include "FEAElement_NURBS_2D_der2.hpp"
-#include "PDNSolution_heatEqn.hpp"
-#include "PLocAssem_NLHeat_2D_GenAlpha.hpp"
-#include "PTime_Solver_NLHeat_GenAlpha.hpp"
+#include "PDNSolution_EP.hpp"
+#include "PLocAssem_EP_2D.hpp"
+#include "PTime_Solver_EP_OperatorSplit.hpp"
 #include "IonicModel.hpp"
 
 int main(int argc, char *argv[])
@@ -50,7 +50,7 @@ int main(int argc, char *argv[])
   double initial_time = 0.0;
   double initial_step = 1.0;
   int initial_index = 0;
-  double final_time = 5.0;
+  double final_time = 1.0;
 
   // Time solver parameters
   std::string sol_bName("SOL_");
@@ -175,11 +175,10 @@ int main(int argc, char *argv[])
 
   // ======= Finite Element Analysis =======6
   // FEA.1 Initial solution and history variables (1 per node)
-  PDNSolution * disp = new PDNSolution_heatEqn(pNode, fNode, locBC, 0);//3: -80overall
-  //disp->PlusAX(PDNSolution_heatEqn(pNode, fNode, locBC, 1), -75);
-  PDNSolution * velo = new PDNSolution_heatEqn(pNode, fNode, locBC, 0);
-  PDNSolution * hist = new PDNSolution_heatEqn(pNode, fNode, locBC, 0);
-  //PDNSolution * hist_dot = new PDNSolution_heatEqn(pNode, fNode, locBC, 0);
+  PDNSolution * disp = new PDNSolution_EP(pNode, fNode, locBC, 0);//3: -80overall
+  //disp->PlusAX(PDNSolution_EP(pNode, fNode, locBC, 1), -75);
+  PDNSolution * velo = new PDNSolution_EP(pNode, fNode, locBC, 0);
+  PDNSolution * hist = new PDNSolution_EP(pNode, fNode, locBC, 0);
 
   PDNTimeStep * timeinfo = new PDNTimeStep(initial_index, initial_time, initial_step);
 
@@ -194,13 +193,13 @@ int main(int argc, char *argv[])
 
   SYS_T::commPrint("===> Initialize local assembly routine ... \n");
   IPLocAssem * locAssem_ptr =
-    new PLocAssem_NLHeat_2D_GenAlpha( tm_galpha_ptr, ionicmodel_ptr,
-				      GMIptr->get_nLocBas(), Int_w->get_num() );
+    new PLocAssem_EP_2D( tm_galpha_ptr, ionicmodel_ptr,
+			 GMIptr->get_nLocBas(), Int_w->get_num() );
 
   // FEA.3 Globaly assembly setup
   int vpetsc_type = 0;
-  PGAssem_NLHeat_GenAlpha * gloAssem_ptr
-    = new PGAssem_NLHeat_GenAlpha(locAssem_ptr, GMIptr, pNode, vpetsc_type);
+  PGAssem_EP * gloAssem_ptr
+    = new PGAssem_EP(locAssem_ptr, GMIptr, pNode, vpetsc_type);
 
   // FEA.4 Estimate nonzero structure
   gloAssem_ptr->Assem_nonzero_estimate( locElem, locAssem_ptr, locIEN, pNode, locBC );
@@ -216,7 +215,8 @@ int main(int argc, char *argv[])
 
   // FEA.6 Solve for consistent initial condition
   gloAssem_ptr->Clear_KG();
-  gloAssem_ptr->Assem_mass_residual( disp, hist, timeinfo, ionicmodel_ptr,
+  gloAssem_ptr->Assem_mass_residual( disp,// hist,
+				     timeinfo, //ionicmodel_ptr,
 				     locElem, locAssem_ptr, locIEN, pNode,
 				     fNode, Int_w, elemArray, locBC );
 
@@ -224,16 +224,16 @@ int main(int argc, char *argv[])
   SYS_T::commPrint("\n===> Initial solution's time derivative obtained. \n");
 
   // FEA.7 Nonlinear solver steup
-  PNonlinear_Solver_NLHeat_GenAlpha * nsolver
-    = new PNonlinear_Solver_NLHeat_GenAlpha(nl_rtol, nl_atol,
+  PNonlinear_Solver_EP * nsolver
+    = new PNonlinear_Solver_EP(nl_rtol, nl_atol,
 					    nl_dtol, nl_maxits, nl_refreq);
   SYS_T::commPrint("===> Nonlinear solver setted up:\n");
   nsolver->Info();
 
   // FEA.8 Time solver steup
-  PTime_Solver_NLHeat_GenAlpha * tsolver =
-    new PTime_Solver_NLHeat_GenAlpha( sol_bName, sol_record_freq,
-				      ttan_renew_freq, final_time );
+  PTime_Solver_EP_OperatorSplit * tsolver =
+    new PTime_Solver_EP_OperatorSplit( sol_bName, sol_record_freq,
+				       ttan_renew_freq, final_time );
 
   SYS_T::commPrint("===> Time marching solver setted up:\n");
   tsolver->Info();

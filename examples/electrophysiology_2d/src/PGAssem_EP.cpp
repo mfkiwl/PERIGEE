@@ -1,6 +1,6 @@
-#include "PGAssem_NLHeat_GenAlpha.hpp"
+#include "PGAssem_EP.hpp"
 
-PGAssem_NLHeat_GenAlpha::PGAssem_NLHeat_GenAlpha( const IPLocAssem * const &locassem_ptr,
+PGAssem_EP::PGAssem_EP( const IPLocAssem * const &locassem_ptr,
     const IAGlobal_Mesh_Info * const &agmi_ptr,
     const APart_Node * const &pnode_ptr,
     const int &petsc_version_type )
@@ -51,7 +51,7 @@ PGAssem_NLHeat_GenAlpha::PGAssem_NLHeat_GenAlpha( const IPLocAssem * const &loca
 }
 
 
-PGAssem_NLHeat_GenAlpha::PGAssem_NLHeat_GenAlpha( const IPLocAssem * const &locassem_ptr,
+PGAssem_EP::PGAssem_EP( const IPLocAssem * const &locassem_ptr,
     const IAGlobal_Mesh_Info * const &agmi_ptr,
     const APart_Node * const &pnode_ptr )
 {
@@ -93,7 +93,7 @@ PGAssem_NLHeat_GenAlpha::PGAssem_NLHeat_GenAlpha( const IPLocAssem * const &loca
 }
 
 
-PGAssem_NLHeat_GenAlpha::PGAssem_NLHeat_GenAlpha( const IPLocAssem * const &locassem_ptr,
+PGAssem_EP::PGAssem_EP( const IPLocAssem * const &locassem_ptr,
     const IAGlobal_Mesh_Info * const &agmi_ptr,
     const ALocal_Elem * const &alelem_ptr,
     const ALocal_IEN * const &aien_ptr,
@@ -143,7 +143,7 @@ PGAssem_NLHeat_GenAlpha::PGAssem_NLHeat_GenAlpha( const IPLocAssem * const &loca
 }
 
 
-PGAssem_NLHeat_GenAlpha::~PGAssem_NLHeat_GenAlpha()
+PGAssem_EP::~PGAssem_EP()
 {
   VecDestroy(&G);
   MatDestroy(&K);
@@ -163,7 +163,7 @@ PGAssem_NLHeat_GenAlpha::~PGAssem_NLHeat_GenAlpha()
   delete [] ectrl_z;
 }
 
-void PGAssem_NLHeat_GenAlpha::Init_petsc_32(const int &nonzero_per_row, const int &num_loc_row)
+void PGAssem_EP::Init_petsc_32(const int &nonzero_per_row, const int &num_loc_row)
 {
   MatCreateAIJ(PETSC_COMM_WORLD, num_loc_row, num_loc_row, PETSC_DECIDE,
       PETSC_DECIDE, nonzero_per_row, PETSC_NULL, nonzero_per_row, PETSC_NULL, &K);
@@ -177,7 +177,7 @@ void PGAssem_NLHeat_GenAlpha::Init_petsc_32(const int &nonzero_per_row, const in
 }
 
 
-void PGAssem_NLHeat_GenAlpha::Init_petsc_35(const int &nonzero_per_row, const int &num_loc_row)
+void PGAssem_EP::Init_petsc_35(const int &nonzero_per_row, const int &num_loc_row)
 {
   MatCreateAIJ(PETSC_COMM_WORLD, num_loc_row, num_loc_row, PETSC_DECIDE,
       PETSC_DECIDE, nonzero_per_row, PETSC_NULL, nonzero_per_row, PETSC_NULL, &K);
@@ -191,7 +191,7 @@ void PGAssem_NLHeat_GenAlpha::Init_petsc_35(const int &nonzero_per_row, const in
 }
 
 
-void PGAssem_NLHeat_GenAlpha::Init_petsc_35(const int &dnz, const int &onz, const int &num_loc_row)
+void PGAssem_EP::Init_petsc_35(const int &dnz, const int &onz, const int &num_loc_row)
 {
   MatCreateAIJ(PETSC_COMM_WORLD, num_loc_row, num_loc_row, PETSC_DECIDE,
       PETSC_DECIDE, dnz, PETSC_NULL, onz, PETSC_NULL, &K);
@@ -205,7 +205,7 @@ void PGAssem_NLHeat_GenAlpha::Init_petsc_35(const int &dnz, const int &onz, cons
 }
 
 
-void PGAssem_NLHeat_GenAlpha::Init_petsc_35(const PetscInt * const &dnz,
+void PGAssem_EP::Init_petsc_35(const PetscInt * const &dnz,
     const PetscInt * const &onz, const int &num_loc_row)
 {
   MatCreateAIJ(PETSC_COMM_WORLD, num_loc_row, num_loc_row, PETSC_DECIDE,
@@ -220,7 +220,7 @@ void PGAssem_NLHeat_GenAlpha::Init_petsc_35(const PetscInt * const &dnz,
 }
 
 
-void PGAssem_NLHeat_GenAlpha::EssBC_KG(const IALocal_BC * const &bc_part, const int &field)
+void PGAssem_EP::EssBC_KG(const IALocal_BC * const &bc_part, const int &field)
 {
   // Check if dirichlet nodes exists within this partition
   // NOTE: we use ADD_VALUES here for matrix assembly, where we assumes that
@@ -255,7 +255,7 @@ void PGAssem_NLHeat_GenAlpha::EssBC_KG(const IALocal_BC * const &bc_part, const 
   }
 }
 
-void PGAssem_NLHeat_GenAlpha::EssBC_G(const IALocal_BC * const &bc_part, const int &field)
+void PGAssem_EP::EssBC_G(const IALocal_BC * const &bc_part, const int &field)
 {
   int local_dir = bc_part->get_Num_LD(field);
   int local_sla = bc_part->get_Num_LP(field);
@@ -281,7 +281,7 @@ void PGAssem_NLHeat_GenAlpha::EssBC_G(const IALocal_BC * const &bc_part, const i
 
 
 // // ! GetLocal is moved to hpp to make it inline.
-// void PGAssem_NLHeat_GenAlpha::GetLocal(const double * const &array, const int * const &IEN,
+// void PGAssem_EP::GetLocal(const double * const &array, const int * const &IEN,
 //     double * const &local_array) const
 // {
 //   for(int ii=0; ii<nLocBas; ++ii)
@@ -292,7 +292,7 @@ void PGAssem_NLHeat_GenAlpha::EssBC_G(const IALocal_BC * const &bc_part, const i
 // }
 
 
-void PGAssem_NLHeat_GenAlpha::Assem_nonzero_estimate(
+void PGAssem_EP::Assem_nonzero_estimate(
     const ALocal_Elem * const &alelem_ptr,
     IPLocAssem * const &lassem_ptr, 
     const ALocal_IEN * const &lien_ptr,
@@ -338,7 +338,7 @@ void PGAssem_NLHeat_GenAlpha::Assem_nonzero_estimate(
 
 
 
-void PGAssem_NLHeat_GenAlpha::Get_dnz_onz( const int &nElem,
+void PGAssem_EP::Get_dnz_onz( const int &nElem,
     const ALocal_IEN * const &lien_ptr,
     const APart_Node * const &node_ptr,
     const IALocal_BC * const &bc_part,
@@ -521,15 +521,15 @@ void PGAssem_NLHeat_GenAlpha::Get_dnz_onz( const int &nElem,
 
 
 //assemble when history variables exist
-void PGAssem_NLHeat_GenAlpha::Assem_tangent_residual(
+void PGAssem_EP::Assem_tangent_residual(
     const PDNSolution * const &sol_a, //velo
     const PDNSolution * const &sol_b, //disp
-    const PDNSolution * const &sol_c, //pre_hist
-    PDNSolution * const &sol_d, //new hist
+    //const PDNSolution * const &sol_c, //pre_hist
+    //PDNSolution * const &sol_d, //new hist
     const double &curr_time,
     const double &dt,
-    const double &dt_ion,
-    const IonicModel * const &ionicmodel_ptr,
+    //const double &dt_ion,
+    //const IonicModel * const &ionicmodel_ptr,
     const ALocal_Elem * const &alelem_ptr,
     IPLocAssem * const &lassem_ptr, 
     const ALocal_IEN * const &lien_ptr,
@@ -544,35 +544,35 @@ void PGAssem_NLHeat_GenAlpha::Assem_tangent_residual(
   int loc_index, lrow_index; // lcol_index;
 
   //int node_num = sol_a->get_nlocal();
-  int node_num = node_ptr->get_nlocghonode();
+  //int node_num = node_ptr->get_nlocghonode();
     
   sol_a->GetLocalArray( array_a, node_ptr );//velo
   sol_b->GetLocalArray( array_b, node_ptr );//disp
-  sol_c->GetLocalArray( array_c, node_ptr );//pre_hist
-  sol_d->GetLocalArray( array_d, node_ptr );//new hist
+  //sol_c->GetLocalArray( array_c, node_ptr );//pre_hist
+  //sol_d->GetLocalArray( array_d, node_ptr );//new hist
 
-  int node_locgho =node_ptr->get_nlocghonode();
-  int dof=  lassem_ptr->get_dof();
-  double *array_iion = new double [ dof * node_locgho ];
-  double *array_dphi = new double [ dof * node_locgho ];
+  //int node_locgho =node_ptr->get_nlocghonode();
+  //int dof=  lassem_ptr->get_dof();
+  //double *array_iion = new double [ dof * node_locgho ];
+  //double *array_dphi = new double [ dof * node_locgho ];
   
-  double r_new_tmp, r_old, new_soln, dPhi_Iion_tmp, Iion_tmp;
-  for (int count{ 0 }; count < node_num; ++count)
-    {
-      new_soln = array_b[count];      
-      r_old    = array_c[count];
-      
-      ionicmodel_ptr->
-  	material_routine(r_old, dt_ion,new_soln,
-  			 Iion_tmp, dPhi_Iion_tmp,
-  			 r_new_tmp);
-
-      //use negative below, to be consistent with krishnamoorthi
-      //2013 quadrature paper and goktepe 2009 paper.
-      array_d   [count] = r_new_tmp;
-      array_iion[count] = -Iion_tmp;
-      array_dphi[count] = -dPhi_Iion_tmp;
-    }
+  //double r_new_tmp, r_old, new_soln, dPhi_Iion_tmp, Iion_tmp;
+  //for (int count{ 0 }; count < node_num; ++count)
+  //  {
+  //    new_soln = array_b[count];      
+  //    r_old    = array_c[count];
+  //    
+  //    ionicmodel_ptr->
+  //	material_routine(r_old, dt_ion,new_soln,
+  //			 Iion_tmp, dPhi_Iion_tmp,
+  //			 r_new_tmp);
+  //
+  //    //use negative below, to be consistent with krishnamoorthi
+  //    //2013 quadrature paper and goktepe 2009 paper.
+  //    array_d   [count] = r_new_tmp;
+  //    array_iion[count] = -Iion_tmp;
+  //    array_dphi[count] = -dPhi_Iion_tmp;
+  //  }
 
   for( int ee=0; ee<nElem; ++ee )
   {
@@ -581,19 +581,20 @@ void PGAssem_NLHeat_GenAlpha::Assem_tangent_residual(
       lien_ptr->get_LIEN_e(ee, IEN_e);
       GetLocal(array_a, IEN_e, local_a); //velo
       GetLocal(array_b, IEN_e, local_b); //disp
-      GetLocal(array_c, IEN_e, local_c); //old_hist
-      GetLocal(array_d, IEN_e, local_d); //new hist
+      //GetLocal(array_c, IEN_e, local_c); //old_hist
+      //GetLocal(array_d, IEN_e, local_d); //new hist
 
-      double *local_iion = new double [dof * nLocBas];
-      double *local_dphi = new double [dof * nLocBas];
-      GetLocal(array_iion, IEN_e, local_iion); 
-      GetLocal(array_dphi, IEN_e, local_dphi); 
+      //double *local_iion = new double [dof * nLocBas];
+      //double *local_dphi = new double [dof * nLocBas];
+      //GetLocal(array_iion, IEN_e, local_iion); 
+      //GetLocal(array_dphi, IEN_e, local_dphi); 
   
       fnode_ptr->get_ctrlPts_xyz(nLocBas, IEN_e, ectrl_x, ectrl_y, ectrl_z);
   
-      lassem_ptr->Assem_Tangent_Residual(curr_time, dt, local_a, local_b,
-  					 local_iion, local_dphi, eptr_array[ee],
-  					 ectrl_x, ectrl_y, ectrl_z, wei_ptr);
+      lassem_ptr->
+	Assem_Tangent_Residual(curr_time, dt, local_a, local_b,
+			       eptr_array[ee],//local_iion, local_dphi,
+			       ectrl_x, ectrl_y, ectrl_z, wei_ptr);
   
       for(int i=0; i<nLocBas; ++i)
       {
@@ -614,7 +615,8 @@ void PGAssem_NLHeat_GenAlpha::Assem_tangent_residual(
   
       VecSetValues(G, loc_dof, row_index, lassem_ptr->Residual, ADD_VALUES);
 
-      VecSetValues(sol_d->solution, loc_dof, row_index, local_d, INSERT_VALUES);
+      //VecSetValues(sol_d->solution, loc_dof,
+      //		   row_index, local_d, INSERT_VALUES);
 
       //std::cout << "local assem residual" << std::endl ;
       //PetscScalarView(4, lassem_ptr->Residual ,PETSC_VIEWER_STDOUT_WORLD);
@@ -623,8 +625,8 @@ void PGAssem_NLHeat_GenAlpha::Assem_tangent_residual(
   }
   VecAssemblyBegin(G);
   VecAssemblyEnd(G);
-  VecAssemblyBegin(sol_d->solution);
-  VecAssemblyEnd(sol_d->solution);
+  //VecAssemblyBegin(sol_d->solution);
+  //VecAssemblyEnd(sol_d->solution);
 
   for(int fie = 0; fie<dof; ++fie)
     EssBC_KG( bc_part, fie);
@@ -641,15 +643,15 @@ void PGAssem_NLHeat_GenAlpha::Assem_tangent_residual(
 
 
 //assemble when history variables exist
-void PGAssem_NLHeat_GenAlpha::Assem_residual(
+void PGAssem_EP::Assem_residual(
     const PDNSolution * const &sol_a, //velo
     const PDNSolution * const &sol_b, //disp
-    const PDNSolution * const &sol_c, //pre_hist
-    PDNSolution * const &sol_d, //new hist
+    //const PDNSolution * const &sol_c, //pre_hist
+    //PDNSolution * const &sol_d, //new hist
     const double &curr_time,
     const double &dt,
-    const double &dt_ion,
-    const IonicModel * const &ionicmodel_ptr,
+    //const double &dt_ion,
+    //const IonicModel * const &ionicmodel_ptr,
     const ALocal_Elem * const &alelem_ptr,
     IPLocAssem * const &lassem_ptr, 
     const ALocal_IEN * const &lien_ptr,
@@ -664,35 +666,35 @@ void PGAssem_NLHeat_GenAlpha::Assem_residual(
   int loc_index, lrow_index;
 
   //int node_num = sol_a->get_nlocal();
-  int node_num = node_ptr->get_nlocghonode();
+  //int node_num = node_ptr->get_nlocghonode();
   
   sol_a->GetLocalArray( array_a, node_ptr );//velo
   sol_b->GetLocalArray( array_b, node_ptr );//disp
-  sol_c->GetLocalArray( array_c, node_ptr );//pre_hist
-  sol_d->GetLocalArray( array_d, node_ptr );//new hist
+  //sol_c->GetLocalArray( array_c, node_ptr );//pre_hist
+  //sol_d->GetLocalArray( array_d, node_ptr );//new hist
 
-  int node_locgho =node_ptr->get_nlocghonode();
-  int dof=  lassem_ptr->get_dof();
-  double *array_iion = new double [ dof * node_locgho ];
-  double *array_dphi = new double [ dof * node_locgho ];
-  
-  double r_new_tmp, r_old, new_soln, dPhi_Iion_tmp, Iion_tmp;
-  for (int count{ 0 }; count < node_num; ++count)
-    {
-      new_soln = array_b[count];      
-      r_old    = array_c[count];
-      
-      ionicmodel_ptr->
-  	material_routine(r_old, dt_ion,new_soln,
-  			 Iion_tmp, dPhi_Iion_tmp,
-  			 r_new_tmp);
-  
-      //use negative below, to be consistent with krishnamoorthi
-      //2013 quadrature paper and goktepe 2009 paper.
-      array_d   [count] = r_new_tmp;
-      array_iion[count] = -Iion_tmp;
-      array_dphi[count] = -dPhi_Iion_tmp;
-    }
+  //int node_locgho =node_ptr->get_nlocghonode();
+  //int dof=  lassem_ptr->get_dof();
+  //double *array_iion = new double [ dof * node_locgho ];
+  //double *array_dphi = new double [ dof * node_locgho ];
+  //
+  //double r_new_tmp, r_old, new_soln, dPhi_Iion_tmp, Iion_tmp;
+  //for (int count{ 0 }; count < node_num; ++count)
+  //  {
+  //    new_soln = array_b[count];      
+  //    r_old    = array_c[count];
+  //    
+  //    ionicmodel_ptr->
+  //	material_routine(r_old, dt_ion,new_soln,
+  //			 Iion_tmp, dPhi_Iion_tmp,
+  //			 r_new_tmp);
+  //
+  //    //use negative below, to be consistent with krishnamoorthi
+  //    //2013 quadrature paper and goktepe 2009 paper.
+  //    array_d   [count] = r_new_tmp;
+  //    array_iion[count] = -Iion_tmp;
+  //    array_dphi[count] = -dPhi_Iion_tmp;
+  //  }
 
   for( int ee=0; ee<nElem; ++ee )
   {
@@ -701,18 +703,18 @@ void PGAssem_NLHeat_GenAlpha::Assem_residual(
       lien_ptr->get_LIEN_e(ee, IEN_e);
       GetLocal(array_a, IEN_e, local_a); //velo
       GetLocal(array_b, IEN_e, local_b); //disp
-      GetLocal(array_c, IEN_e, local_c); //old_hist
-      GetLocal(array_d, IEN_e, local_d); //new hist
+      //GetLocal(array_c, IEN_e, local_c); //old_hist
+      //GetLocal(array_d, IEN_e, local_d); //new hist
 
-      double *local_iion = new double [dof * nLocBas];
-      double *local_dphi = new double [dof * nLocBas];
-      GetLocal(array_iion, IEN_e, local_iion); 
-      GetLocal(array_dphi, IEN_e, local_dphi);
+      //double *local_iion = new double [dof * nLocBas];
+      //double *local_dphi = new double [dof * nLocBas];
+      //GetLocal(array_iion, IEN_e, local_iion); 
+      //GetLocal(array_dphi, IEN_e, local_dphi);
       
       fnode_ptr->get_ctrlPts_xyz(nLocBas, IEN_e, ectrl_x, ectrl_y, ectrl_z);
 
       lassem_ptr->Assem_Residual(curr_time, dt, local_a, local_b,
-				 local_iion, local_dphi, eptr_array[ee],
+				 eptr_array[ee], //local_iion, local_dphi,
 				 ectrl_x, ectrl_y, ectrl_z, wei_ptr);
 
       for(int i=0; i<nLocBas; ++i)
@@ -727,15 +729,16 @@ void PGAssem_NLHeat_GenAlpha::Assem_residual(
       }
       //set residual values from element to global
       VecSetValues(G, loc_dof, row_index, lassem_ptr->Residual, ADD_VALUES);
-      //set hist values from element to global
-      VecSetValues(sol_d->solution, loc_dof, row_index, local_d, INSERT_VALUES);
+      ////set hist values from element to global
+      //VecSetValues(sol_d->solution, loc_dof,
+      //              row_index, local_d, INSERT_VALUES);
     }
   }
 
   VecAssemblyBegin(G);
   VecAssemblyEnd(G);
-  VecAssemblyBegin(sol_d->solution);
-  VecAssemblyEnd(sol_d->solution);
+  //VecAssemblyBegin(sol_d->solution);
+  //VecAssemblyEnd(sol_d->solution);
 
   //std::cout<< "hist new at the end of residual calc" << std::endl;
   //Print_G();
@@ -743,11 +746,11 @@ void PGAssem_NLHeat_GenAlpha::Assem_residual(
 
 
 
-void PGAssem_NLHeat_GenAlpha::Assem_mass_residual(
+void PGAssem_EP::Assem_mass_residual(
     const PDNSolution * const &sol_a,
-    const PDNSolution * const &hist,
+    //const PDNSolution * const &hist,
     const PDNTimeStep * const &time_info,
-    const IonicModel * const &ionicmodel_ptr,
+    //const IonicModel * const &ionicmodel_ptr,
     const ALocal_Elem * const &alelem_ptr,
     IPLocAssem * const &lassem_ptr,
     const ALocal_IEN * const &lien_ptr,
@@ -761,36 +764,36 @@ void PGAssem_NLHeat_GenAlpha::Assem_mass_residual(
   const int loc_dof = dof * nLocBas;
   int loc_index, lrow_index;
 
-  //int node_num = sol_a->get_nlocal();
-  int node_num = node_ptr->get_nlocghonode();
+  ////int node_num = sol_a->get_nlocal();
+  //int node_num = node_ptr->get_nlocghonode();
   
   ////FIRST: get local partition's potential and history
   sol_a->GetLocalArray( array_a, node_ptr);
-  hist ->GetLocalArray( array_d, node_ptr);
+  //hist ->GetLocalArray( array_d, node_ptr);
 
-  hist ->GetLocalArray( array_b, node_ptr);//iion  will be assigned
-  hist ->GetLocalArray( array_c, node_ptr);//d_iion will be assigned
-  
-  double r_new_tmp, r_old, dt, new_soln, dPhi_Iion_tmp, Iion_tmp;
-  dt=0.0; //because we dont want to update  the ionic eqns here., 
-  for (int count{ 0 }; count < node_num; ++count)
-    {
-      new_soln = array_a[count];      
-      r_old    = array_d[count];
-
-
-      //NOTE: should we really include  ionic currents at t=dt
-      ionicmodel_ptr->
-  	material_routine(r_old, dt ,new_soln,
-  			 Iion_tmp, dPhi_Iion_tmp,
-  			 r_new_tmp);
-  
-      //loc_hist.at(count)= r_new_tmp;
-      //use negative below, to be consistent with krishnamoorthi
-      //2013 quadrature paper and goktepe 2009 paper. 
-      array_b[count] = -Iion_tmp;
-      array_c[count] = -dPhi_Iion_tmp;
-    }
+  //hist ->GetLocalArray( array_b, node_ptr);//iion  will be assigned
+  //hist ->GetLocalArray( array_c, node_ptr);//d_iion will be assigned
+  //
+  //double r_new_tmp, r_old, dt, new_soln, dPhi_Iion_tmp, Iion_tmp;
+  //dt=0.0; //because we dont want to update  the ionic eqns here., 
+  //for (int count{ 0 }; count < node_num; ++count)
+  //  {
+  //    new_soln = array_a[count];      
+  //    r_old    = array_d[count];
+  //
+  //
+  //    //NOTE: should we really include  ionic currents at t=dt
+  //    ionicmodel_ptr->
+  //	material_routine(r_old, dt ,new_soln,
+  //			 Iion_tmp, dPhi_Iion_tmp,
+  //			 r_new_tmp);
+  //
+  //    //loc_hist.at(count)= r_new_tmp;
+  //    //use negative below, to be consistent with krishnamoorthi
+  //    //2013 quadrature paper and goktepe 2009 paper. 
+  //    array_b[count] = -Iion_tmp;
+  //    array_c[count] = -dPhi_Iion_tmp;
+  //  }
      
   for(int ee=0; ee<nElem; ++ee)
   {
@@ -799,12 +802,12 @@ void PGAssem_NLHeat_GenAlpha::Assem_mass_residual(
 
       lien_ptr->get_LIEN_e(ee, IEN_e);
       GetLocal(array_a, IEN_e, local_a);
-      GetLocal(array_b, IEN_e, local_b);//iion
-      GetLocal(array_c, IEN_e, local_c);//d_iion
+      //GetLocal(array_b, IEN_e, local_b);//iion
+      //GetLocal(array_c, IEN_e, local_c);//d_iion
   
       fnode_ptr->get_ctrlPts_xyz(nLocBas, IEN_e, ectrl_x, ectrl_y, ectrl_z);
   
-      lassem_ptr->Assem_Mass_Residual(local_a, local_b, local_c,
+      lassem_ptr->Assem_Mass_Residual(local_a,// local_b, local_c,
   				      eptr_array[ee], ectrl_x, ectrl_y,
   				      ectrl_z, wei_ptr); 
       
@@ -842,89 +845,12 @@ void PGAssem_NLHeat_GenAlpha::Assem_mass_residual(
 }
 
 
-//void PGAssem_NLHeat_GenAlpha::Assem_mass_residual(
-//    const PDNSolution * const &sol_a,
-//    const ALocal_Elem * const &alelem_ptr,
-//    IPLocAssem * const &lassem_ptr,
-//    const ALocal_IEN * const &lien_ptr,
-//    const APart_Node * const &node_ptr,
-//    const FEANode * const &fnode_ptr,
-//    const AInt_Weight * const &wei_ptr,
-//    const IALocal_meshSize * const &mSize,
-//    const BernsteinBasis_Array * const &bs,
-//    const BernsteinBasis_Array * const &bt,
-//    const BernsteinBasis_Array * const &bu,
-//    const IAExtractor * const &extractor,
-//    const IALocal_BC * const &bc_part )
-//{
-//  const int nElem = alelem_ptr->get_nlocalele();
-//  const int loc_dof = dof * nLocBas;
-//  int loc_index, lrow_index;
-//
-//  double ehx, ehy, ehz; // element mesh size in each direction
-//
-//  std::vector<double> ext_x, ext_y, ext_z; // extraction operator in each direction
-//
-//  double * ectrl_w = new double [nLocBas]; // element's weights
-//
-//  sol_a->GetLocalArray( array_a, node_ptr );
-//
-//  for(int ee=0; ee<nElem; ++ee)
-//  {
-//    if( mSize->get_meshsize(ee) > 0.0 )
-//    {
-//      // obtain the mesh size in element ee
-//      ehx = mSize->get_hx(ee);
-//      ehy = mSize->get_hy(ee);
-//      ehz = mSize->get_hz(ee);
-//
-//      // obtain the extraction operator in element ee
-//      extractor->get_EXT_x(ee, ext_x);
-//      extractor->get_EXT_y(ee, ext_y);
-//      extractor->get_EXT_z(ee, ext_z);
-//
-//      lien_ptr->get_LIEN_e(ee, IEN_e);
-//      GetLocal(array_a, IEN_e, local_a);
-//
-//      // obtain geometrical info
-//      fnode_ptr->get_ctrlPts_xyzw(nLocBas, IEN_e, ectrl_x, ectrl_y, ectrl_z, ectrl_w);
-//
-//      lassem_ptr->Assem_Mass_Residual(local_a, ee, ehx, ehy, ehz, bs, bt, bu, 
-//          ectrl_x, ectrl_y, ectrl_z, ectrl_w, &ext_x[0], &ext_y[0], &ext_z[0], wei_ptr); 
-//
-//      for(int i=0; i<nLocBas; ++i)
-//      {
-//        loc_index = IEN_e[i];
-//
-//        for(int m=0; m<dof; ++m)
-//        {
-//          lrow_index = bc_part->get_LID(m, loc_index);
-//
-//          row_index[dof * i + m] = dof * lrow_index + m;
-//          col_index[dof * i + m] = dof * lrow_index + m;
-//        }
-//      }
-//      MatSetValues(K, loc_dof, row_index, loc_dof, col_index,
-//          lassem_ptr->Tangent, ADD_VALUES);
-//
-//      VecSetValues(G, loc_dof, row_index, lassem_ptr->Residual, ADD_VALUES);
-//    }
-//  }
-//  VecAssemblyBegin(G);
-//  VecAssemblyEnd(G);
-//
-//  for(int fie = 0; fie<dof; ++fie)
-//    EssBC_KG( bc_part, fie);
-//
-//  MatAssemblyBegin(K, MAT_FINAL_ASSEMBLY);
-//  MatAssemblyEnd(K, MAT_FINAL_ASSEMBLY);
-//  VecAssemblyBegin(G);
-//  VecAssemblyEnd(G);
-//
-//  delete [] ectrl_w;
-//}
-
-
+void PGAssem_EP::Update_nodal_values(const IonicModel * const &ionicmodel_ptr
+				     )
+{
+  std::cout << "update nodal values fnc " << std::endl; 
+}
+				     
 
 
 //EOF

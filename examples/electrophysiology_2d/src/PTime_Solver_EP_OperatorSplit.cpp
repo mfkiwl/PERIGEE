@@ -1,6 +1,6 @@
-#include "PTime_Solver_NLHeat_GenAlpha.hpp"
+#include "PTime_Solver_EP_OperatorSplit.hpp"
 
-PTime_Solver_NLHeat_GenAlpha::PTime_Solver_NLHeat_GenAlpha(
+PTime_Solver_EP_OperatorSplit::PTime_Solver_EP_OperatorSplit(
     const std::string &input_name, const int &input_record_freq,
     const int &input_renew_tang_freq, const double &input_final_time )
 : final_time(input_final_time), sol_record_freq(input_record_freq),
@@ -9,11 +9,11 @@ PTime_Solver_NLHeat_GenAlpha::PTime_Solver_NLHeat_GenAlpha(
 }
 
 
-PTime_Solver_NLHeat_GenAlpha::~PTime_Solver_NLHeat_GenAlpha()
+PTime_Solver_EP_OperatorSplit::~PTime_Solver_EP_OperatorSplit()
 {}
 
 
-std::string PTime_Solver_NLHeat_GenAlpha::Name_Generator(const int &counter) const
+std::string PTime_Solver_EP_OperatorSplit::Name_Generator(const int &counter) const
 {
   int aux = 900000000 + counter;
   std::ostringstream temp;
@@ -24,7 +24,7 @@ std::string PTime_Solver_NLHeat_GenAlpha::Name_Generator(const int &counter) con
   return out_name;
 }
 
-void PTime_Solver_NLHeat_GenAlpha::Info() const
+void PTime_Solver_EP_OperatorSplit::Info() const
 {
   PetscPrintf(PETSC_COMM_WORLD, "----------------------------------------------------------- \n");
   PetscPrintf(PETSC_COMM_WORLD, "final time: %e \n", final_time);
@@ -36,10 +36,9 @@ void PTime_Solver_NLHeat_GenAlpha::Info() const
 
 
 //generalized alpha time marching with history variables
-void PTime_Solver_NLHeat_GenAlpha::TM_generalized_alpha(
+void PTime_Solver_EP_OperatorSplit::TM_generalized_alpha(
     const PDNSolution * const &init_velo,
     const PDNSolution * const &init_disp,
-    //const PDNSolution * const &init_hist_dot,
     const PDNSolution * const &init_hist,    
     PDNTimeStep * const &time_info,
     const TimeMethod_GenAlpha * const &tmga_ptr,
@@ -52,9 +51,9 @@ void PTime_Solver_NLHeat_GenAlpha::TM_generalized_alpha(
     const std::vector<FEAElement *> &ele_ptr,
     const IonicModel * const &ionicmodel_ptr,
     IPLocAssem * const &lassem_ptr,
-    PGAssem_NLHeat_GenAlpha * const &gassem_ptr,
+    PGAssem_EP * const &gassem_ptr,
     PLinear_Solver_PETSc * const &lsolver_ptr,
-    PNonlinear_Solver_NLHeat_GenAlpha * const &nsolver_ptr
+    PNonlinear_Solver_EP * const &nsolver_ptr
     ) const
 {
   PDNSolution * pre_disp = new PDNSolution(*init_disp);
@@ -63,8 +62,6 @@ void PTime_Solver_NLHeat_GenAlpha::TM_generalized_alpha(
   PDNSolution * cur_velo = new PDNSolution(*init_velo);
   PDNSolution * pre_hist = new PDNSolution(*init_hist);//history var.
   PDNSolution * cur_hist = new PDNSolution(*init_hist);//history var.
-  //PDNSolution * pre_hist_dot = new PDNSolution(*init_hist_dot);//history var.
-  //PDNSolution * cur_hist_dot = new PDNSolution(*init_hist_dot);//history var.
 
   // save the initial solution
   std::string sol_name = Name_Generator(time_info->get_index());
@@ -81,14 +78,19 @@ void PTime_Solver_NLHeat_GenAlpha::TM_generalized_alpha(
       else
 	renew_flag = false;
 
+      ////gen_alpha_solve  for the diffusion problem 
+      //nsolver_ptr
+      //	->Gen_alpha_solve(renew_flag, time_info->get_time(),
+      //			  time_info->get_step(), pre_velo, pre_disp,
+      //			  tmga_ptr, alelem_ptr, lien_ptr,
+      //			  anode_ptr, feanode_ptr, bc_part,
+      //			  wei_ptr, ele_ptr, 
+      //			  lassem_ptr, gassem_ptr, 
+      //			  lsolver_ptr, cur_velo, cur_disp,
+      //			  conv_flag, nl_counter);
 
-      //gen_alpha_solve that includes history variables too.
-      nsolver_ptr->Gen_alpha_solve(renew_flag, time_info->get_time(),
-				   time_info->get_step(), pre_velo, pre_disp, pre_hist, tmga_ptr,
-				   alelem_ptr, lien_ptr, anode_ptr, feanode_ptr, bc_part,
-				   wei_ptr, ele_ptr, ionicmodel_ptr, lassem_ptr, gassem_ptr, 
-				   lsolver_ptr, cur_velo, cur_disp, cur_hist, conv_flag, nl_counter);
-
+      gassem_ptr->Update_nodal_values(ionicmodel_ptr); 
+      
       time_info->TimeIncrement();
 
       PetscPrintf(PETSC_COMM_WORLD, "Time = %e, dt = %e, index = %d \n",
@@ -106,11 +108,9 @@ void PTime_Solver_NLHeat_GenAlpha::TM_generalized_alpha(
       pre_disp->Copy(*cur_disp);
       pre_velo->Copy(*cur_velo);
       pre_hist->Copy(*cur_hist);//update history
-      //pre_hist_dot->Copy(*cur_hist_dot);//update history
     }
 
   delete pre_disp; delete cur_disp;
   delete pre_velo; delete cur_velo;
   delete pre_hist; delete cur_hist;//clear memory alloc
-  //delete pre_hist_dot; delete cur_hist_dot;//clear memory alloc  
 }

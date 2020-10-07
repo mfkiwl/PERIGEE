@@ -1,10 +1,8 @@
-#ifndef PDNSOLUTION_HEATEQN_HPP
-#define PDNSOLUTION_HEATEQN_HPP
+#ifndef PDNSOLUTION_EP_HPP
+#define PDNSOLUTION_EP_HPP
 // ==================================================================
-// PDNSolution_heatEqn.hpp
-// This is the class that we define initial solution for heat equation
-//
-// Date: Nov. 26 2013
+// PDNSolution_EP.hpp
+// This is the class that we define initial solution for EP
 // ==================================================================
 #include "Sys_Tools.hpp"
 #include "PDNSolution.hpp"
@@ -12,15 +10,15 @@
 #include "IALocal_BC.hpp"
 #include "FEANode.hpp"
 
-class PDNSolution_heatEqn : public PDNSolution
+class PDNSolution_EP : public PDNSolution
 {
   public:
-    PDNSolution_heatEqn( const class APart_Node * const &pNode,
+    PDNSolution_EP( const class APart_Node * const &pNode,
 			 const FEANode * const &fNode,
 			 const class IALocal_BC * const &lbc,
 			 int type );
   
-    virtual ~PDNSolution_heatEqn();
+    virtual ~PDNSolution_EP();
 
     // Initial solution setting
     // case 0: all zero for initial temperature

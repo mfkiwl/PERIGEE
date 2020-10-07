@@ -1,7 +1,7 @@
 // ==================================================================
-// vis_3DNLHeat.cpp
+// vis_3DEP.cpp
 // ------------------------------------------------------------------
-// This is the visualization driver to visualize 3DNLHeat solution
+// This is the visualization driver to visualize 3DEP solution
 // in VTK format.
 //
 // This is a parallel routine. Users have to run Pre_postprocess to 
@@ -29,7 +29,7 @@
 #include "PostVectSolution.hpp"
 #include "Post_error.hpp"
 #include "IVisDataPrep.hpp"
-#include "VisDataPrep_3DNLHeat.hpp"
+#include "VisDataPrep_3DEP.hpp"
 #include "VTK_Writer.hpp"
 
 using namespace std;
@@ -55,7 +55,7 @@ int main( int argc, char * argv[] )
 
   // Solution time
   int time_start = 0;
-  int time_step = 5;
+  int time_step = 1;
   int time_end = 200;
   double dt = 1.0;
 
@@ -159,7 +159,7 @@ int main( int argc, char * argv[] )
   //                --- Start Post-processing ---
   // ----------------------------------------------------------------
   // Data name and size setting
-  IVisDataPrep * visprep = new VisDataPrep_3DNLHeat();
+  IVisDataPrep * visprep = new VisDataPrep_3DEP();
   PetscPrintf(PETSC_COMM_WORLD, "======================================= \n");
   PetscPrintf(PETSC_COMM_WORLD, "Data to be visualized: \n");
   PetscPrintf(PETSC_COMM_WORLD, "-- %d type(s) of data. \n", visprep->get_arrayCompSize());

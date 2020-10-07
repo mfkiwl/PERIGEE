@@ -1,20 +1,21 @@
-#ifndef IMATERIALMODEL_HPP
-#define IMATERIALMODEL_HPP
+#ifndef IONICMODEL_ALIEVPANFILOV_HPP
+#define IONICMODEL_ALIEVPANFILOV_HPP
 // ==================================================================
-// IMaterialModel.hpp
+// IonicModel_AlievPanfilov.hpp
 // 
 // Interface for electroactive material models .
 // Aliev-Panfilov model from Goktepe&Kuhl,2009
 //
 // Date: May 25 2020
-// Author: Oguz Ziya Tikenogullari, Ju Liu
-// Contact: o.z.tikenogullari@gmail.com, liujuy@gmail.com
+// Author: Oguz Ziya Tikenogullari
+// Contact: o.z.tikenogullari@gmail.com
 // ==================================================================
 #include "Sys_Tools.hpp"
 #include "Tensor4_3D.hpp"
 #include "Math_Tools.hpp"
+#include "IonicModel.hpp"
 
-class IonicModel
+class IonicModel_AlievPanfilov : public IonicModel
 {
 public:
   IonicModel();
