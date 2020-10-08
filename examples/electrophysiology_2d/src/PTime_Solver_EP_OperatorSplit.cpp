@@ -58,6 +58,7 @@ void PTime_Solver_EP_OperatorSplit::TM_generalized_alpha(
 {
   PDNSolution * pre_disp = new PDNSolution(*init_disp);
   PDNSolution * cur_disp = new PDNSolution(*init_disp);
+  PDNSolution * tmp_disp = new PDNSolution(*init_disp);
   PDNSolution * pre_velo = new PDNSolution(*init_velo);
   PDNSolution * cur_velo = new PDNSolution(*init_velo);
   PDNSolution * pre_hist = new PDNSolution(*init_hist);//history var.
@@ -78,18 +79,21 @@ void PTime_Solver_EP_OperatorSplit::TM_generalized_alpha(
       else
 	renew_flag = false;
 
-      ////gen_alpha_solve  for the diffusion problem 
-      //nsolver_ptr
-      //	->Gen_alpha_solve(renew_flag, time_info->get_time(),
-      //			  time_info->get_step(), pre_velo, pre_disp,
-      //			  tmga_ptr, alelem_ptr, lien_ptr,
-      //			  anode_ptr, feanode_ptr, bc_part,
-      //			  wei_ptr, ele_ptr, 
-      //			  lassem_ptr, gassem_ptr, 
-      //			  lsolver_ptr, cur_velo, cur_disp,
-      //			  conv_flag, nl_counter);
+      //gen_alpha_solve  for the diffusion problem 
+      nsolver_ptr
+      	->Gen_alpha_solve(renew_flag, time_info->get_time(),
+      			  time_info->get_step(), pre_velo, pre_disp,
+      			  tmga_ptr, alelem_ptr, lien_ptr,
+      			  anode_ptr, feanode_ptr, bc_part,
+      			  wei_ptr, ele_ptr, 
+      			  lassem_ptr, gassem_ptr, 
+      			  lsolver_ptr, cur_velo, tmp_disp,
+      			  conv_flag, nl_counter);
 
-      gassem_ptr->Update_nodal_values(ionicmodel_ptr); 
+      gassem_ptr->Update_nodal_velo(tmp_disp, pre_hist, time_info->get_step(),
+				    ionicmodel_ptr, alelem_ptr, lien_ptr,
+				    anode_ptr, ele_ptr, bc_part,
+				    cur_disp, cur_hist   ); 
       
       time_info->TimeIncrement();
 

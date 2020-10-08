@@ -73,8 +73,8 @@ int main(int argc, char *argv[])
   string part_file("postpart");
 
   // partition parameters
-  int cpu_size = 1;
-  int in_ncommon = 9;
+  int cpu_size = 2;
+  int in_ncommon = 7;
   bool isDualGraph = true;
 
   // flag to check the command line argument

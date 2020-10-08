@@ -222,23 +222,23 @@ class PGAssem_EP
     // !                  quadrature points for volumetric integration
     // ! IAExtractor : Bezier extraction operator
     // ------------------------------------------------------------------------
-    void Update_nodal_values(
-        //const PDNSolution * const &sol_a,
-        //const PDNSolution * const &sol_b,
-	////const PDNSolution * const &sol_c,//pre_hist
-	////PDNSolution * const &sol_d,//new hist
-        //const double &curr_time,
-        //const double &dt,
-	const IonicModel * const &ionicmodel_ptr
-        //const ALocal_Elem * const &alelem_ptr,
-        //IPLocAssem * const &lassem_ptr, 
-        //const ALocal_IEN * const &lien_ptr,
-        //const APart_Node * const &node_ptr,
-        //const FEANode * const &fnode_ptr,
-        //const AInt_Weight * const &wei_ptr,
-        //const std::vector<FEAElement*> &eptr_array,
-        //const IALocal_BC * const &bc_part
-			     );  
+  void Update_nodal_velo(const PDNSolution * const &sol_a, //disp
+			 //const PDNSolution * const &sol_d, //velo
+			 const PDNSolution * const &sol_b, //pre_hist
+			 //const double &curr_time,
+			 const double &dt,
+			 const IonicModel * const &ionicmodel_ptr,
+			 const ALocal_Elem * const &alelem_ptr,
+			 //IPLocAssem * const &lassem_ptr, 
+			 const ALocal_IEN * const &lien_ptr,
+			 const APart_Node * const &node_ptr,
+			 //const FEANode * const &fnode_ptr,
+			 //const AInt_Weight * const &wei_ptr,
+			 const std::vector<FEAElement*> &eptr_array,
+			 const IALocal_BC * const &bc_part,
+			 PDNSolution * const &sol_c, //new hist
+			 PDNSolution * const &sol_d //new hist
+			 );  
 
     // ------------------------------------------------------------------------
     // ! Print_G : print the residual vector G on screen

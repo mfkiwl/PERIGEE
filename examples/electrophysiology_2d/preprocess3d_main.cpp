@@ -62,8 +62,8 @@ int main(int argc, char *argv[])
   std::string part_file("part");
 
   // partition parameters
-  int cpu_size = 1;
-  int in_ncommon =9;
+  int cpu_size = 2;
+  int in_ncommon= 7;
   bool isDualGraph = true;
   bool isWriteCNet = true;
 

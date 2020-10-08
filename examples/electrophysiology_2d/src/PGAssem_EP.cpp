@@ -845,10 +845,89 @@ void PGAssem_EP::Assem_mass_residual(
 }
 
 
-void PGAssem_EP::Update_nodal_values(const IonicModel * const &ionicmodel_ptr
-				     )
+void PGAssem_EP::Update_nodal_velo(const PDNSolution * const &sol_a, //disp
+				   //const PDNSolution * const &sol_d, //velo
+				   const PDNSolution * const &sol_b, //pre_hist
+				   //const double &curr_time,
+				   const double &dt,
+				   const IonicModel * const &ionicmodel_ptr,
+				   const ALocal_Elem * const &alelem_ptr,
+				   //IPLocAssem * const &lassem_ptr, 
+				   const ALocal_IEN * const &lien_ptr,
+				   const APart_Node * const &node_ptr,
+				   //const FEANode * const &fnode_ptr,
+				   //const AInt_Weight * const &wei_ptr,
+				   const std::vector<FEAElement*> &eptr_array,
+				   const IALocal_BC * const &bc_part,
+				   PDNSolution * const &sol_c, //new hist
+				   PDNSolution * const &sol_d //new hist
+				   )
 {
-  std::cout << "update nodal values fnc " << std::endl; 
+//  std::cout << "update nodal values fnc " << std::endl;
+//
+  int nElem = alelem_ptr->get_nlocalele();
+  int loc_dof = dof * nLocBas;
+  int loc_index, lrow_index; // lcol_index;
+//
+//  //int node_num = sol_a->get_nlocal();
+  int node_num = node_ptr->get_nlocghonode();
+//    
+  sol_a->GetLocalArray( array_a, node_ptr );//V_in
+  sol_b->GetLocalArray( array_b, node_ptr );//hist_old
+  sol_c->GetLocalArray( array_c, node_ptr );//V_new
+  sol_d->GetLocalArray( array_d, node_ptr );//hist_new
+//
+//  int node_locgho =node_ptr->get_nlocghonode();
+//  int dof=  lassem_ptr->get_dof();
+//  double *array_iion = new double [ dof * node_locgho ];
+//  double *array_dphi = new double [ dof * node_locgho ];
+//  
+  double r_new, r_old, V_new, V_in;
+  for (int count{ 0 }; count < node_num; ++count)
+    {
+      V_in     = array_a[count];      
+      r_old    = array_b[count];
+      
+      ionicmodel_ptr->	run_model(r_old, dt, V_in, r_new, V_new);
+
+      //use negative below, to be consistent with krishnamoorthi
+      //2013 quadrature paper and goktepe 2009 paper.
+      array_c   [count] = V_new;
+      array_d   [count] = r_new;
+    }
+
+  for( int ee=0; ee<nElem; ++ee )
+  {
+    if( eptr_array[ee]->is_sizeNonzero() )
+    {
+      lien_ptr->get_LIEN_e(ee, IEN_e);
+//      GetLocal(array_a, IEN_e, local_a); //V_in    
+//      GetLocal(array_b, IEN_e, local_b); //hist_old
+      GetLocal(array_c, IEN_e, local_c); //V_new   
+      GetLocal(array_d, IEN_e, local_d); //hist_new
+
+      for(int i=0; i<nLocBas; ++i)
+      {
+        loc_index = IEN_e[i];
+
+        for(int m=0; m<dof; ++m)
+        {
+          lrow_index = bc_part->get_LID(m, loc_index);
+  
+          row_index[dof * i + m] = dof * lrow_index + m;
+	}
+      }
+      
+      VecSetValues(sol_c->solution, loc_dof, row_index, local_c, INSERT_VALUES);
+      VecSetValues(sol_d->solution, loc_dof, row_index, local_d, INSERT_VALUES);
+    }
+  }
+
+  VecAssemblyBegin(sol_c->solution);
+  VecAssemblyEnd(sol_c->solution);
+  VecAssemblyBegin(sol_d->solution);
+  VecAssemblyEnd(sol_d->solution);
+  
 }
 				     
 

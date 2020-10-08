@@ -354,6 +354,7 @@ void PLocAssem_EP_2D::Assem_Mass_Residual(
       {
         index = A * nLocBas + B;
         Tangent[index] += gwts * chi * C_m * R[A] * R[B];
+
       }
     }
   }
