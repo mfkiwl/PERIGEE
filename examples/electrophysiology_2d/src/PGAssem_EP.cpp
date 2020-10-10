@@ -888,7 +888,8 @@ void PGAssem_EP::Update_nodal_velo(const PDNSolution * const &sol_a, //disp
       V_in     = array_a[count];      
       r_old    = array_b[count];
       
-      ionicmodel_ptr->	run_model(r_old, dt, V_in, r_new, V_new);
+      //ionicmodel_ptr-> Forward_Euler(r_old, dt, V_in, r_new, V_new);
+      ionicmodel_ptr-> Runge_Kutta_4(r_old, dt, V_in, r_new, V_new);
 
       //use negative below, to be consistent with krishnamoorthi
       //2013 quadrature paper and goktepe 2009 paper.

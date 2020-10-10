@@ -8,10 +8,10 @@ PLocAssem_EP_2D::PLocAssem_EP_2D(
   alpha_m = tm_gAlpha->get_alpha_m();
   alpha_f = tm_gAlpha->get_alpha_f();
   gamma   = tm_gAlpha->get_gamma();
-  d_iso   =ionicmodel->get_diso();
-  d_ani   =ionicmodel->get_dani();
-  chi     =ionicmodel->get_chi();
-  C_m     =ionicmodel->get_C_m();
+  d_iso   = ionicmodel->get_diso();
+  d_ani   = ionicmodel->get_dani();
+  chi     = ionicmodel->get_chi();
+  C_m     = ionicmodel->get_C_m();
 
   nLocBas = in_locbas;
   

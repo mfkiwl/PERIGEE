@@ -24,22 +24,21 @@ public:
   
   virtual void print_info() const; //const =0 ;
 
-  virtual double get_diso() const;
+  //virtual double get_diso() const;
+  //
+  //virtual double get_dani() const;
+  //
+  //virtual double get_chi() const;
+  //
+  //virtual double get_C_m() const;
 
-  virtual double get_dani() const;
-
-  virtual double get_chi() const;
-
-  virtual double get_C_m() const;
-  
-  virtual void run_model(const double &r_old_in,
-			 const double &dt_in,
-			 const double &Phi_in,
-			 double &r_new,
-			 double &Phi_new       ) const;
+protected:
+  virtual void get_Iion(const double &r_old_in,
+			const double &Phi_in,
+			double &f_r,
+			double &Iion) const;
 private:
-  const double ap_1, ap_2, ap_3, m1, m2, alpha, gamma,
-    b, c, d_iso, d_ani, tol, chi, C_m;
+  const double ap_1, ap_2, ap_3, m1, m2, alpha, gamma, b, c;
 
 };
 
