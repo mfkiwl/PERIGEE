@@ -1,9 +1,9 @@
-#ifndef IONICMODEL_AP_HPP
-#define IONICMODEL_AP_HPP
+#ifndef IONICMODEL_FHN_HPP
+#define IONICMODEL_FHN_HPP
 // ==================================================================
-// IonicModel_AP.hpp
+// IonicModel_FHN.hpp
 // 
-// Aliev-Panfilov model from Goktepe&Kuhl,2009
+// FitzHugh-Nagumo model from Goktepe&Kuhl,2009
 //
 // Date: May 25 2020
 // Author: Oguz Ziya Tikenogullari
@@ -14,12 +14,12 @@
 #include "Math_Tools.hpp"
 #include "IonicModel.hpp"
 
-class IonicModel_AP : public IonicModel
+class IonicModel_FHN : public IonicModel
 {
 public:
-  IonicModel_AP();
+  IonicModel_FHN();
   
-  virtual ~IonicModel_AP();
+  virtual ~IonicModel_FHN();
   
   virtual void print_info() const; //const =0 ;
 
@@ -34,10 +34,11 @@ public:
 protected:
   virtual void get_Iion(const double &r_old_in,
 			const double &Phi_in,
+			const double &I_stim,
 			double &f_r,
 			double &Iion) const;
 private:
-  const double ap_1, ap_2, ap_3, m1, m2, alpha, gamma, b, c;
+  const double fh_1, fh_2, fh_3, alpha, a, b, c;
 
 };
 

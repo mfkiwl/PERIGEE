@@ -848,14 +848,14 @@ void PGAssem_EP::Assem_mass_residual(
 void PGAssem_EP::Update_nodal_velo(const PDNSolution * const &sol_a, //disp
 				   //const PDNSolution * const &sol_d, //velo
 				   const PDNSolution * const &sol_b, //pre_hist
-				   //const double &curr_time,
+				   const double &curr_time,
 				   const double &dt,
 				   const IonicModel * const &ionicmodel_ptr,
 				   const ALocal_Elem * const &alelem_ptr,
 				   //IPLocAssem * const &lassem_ptr, 
 				   const ALocal_IEN * const &lien_ptr,
 				   const APart_Node * const &node_ptr,
-				   //const FEANode * const &fnode_ptr,
+				   const FEANode * const &fnode_ptr,
 				   //const AInt_Weight * const &wei_ptr,
 				   const std::vector<FEAElement*> &eptr_array,
 				   const IALocal_BC * const &bc_part,
@@ -883,13 +883,32 @@ void PGAssem_EP::Update_nodal_velo(const PDNSolution * const &sol_a, //disp
 //  double *array_dphi = new double [ dof * node_locgho ];
 //  
   double r_new, r_old, V_new, V_in;
+  double ctrl_x, ctrl_y, ctrl_z;
+  int global_idx, num{1};
+  std::vector<double> Istim;
+  Istim.resize(3);
+  
   for (int count{ 0 }; count < node_num; ++count)
     {
       V_in     = array_a[count];      
       r_old    = array_b[count];
-      
-      //ionicmodel_ptr-> Forward_Euler(r_old, dt, V_in, r_new, V_new);
-      ionicmodel_ptr-> Runge_Kutta_4(r_old, dt, V_in, r_new, V_new);
+
+      global_idx = node_ptr -> get_local_to_global(count);
+      fnode_ptr->get_ctrlPts_xyz(num, &global_idx,
+				 &ctrl_x, &ctrl_y, &ctrl_z);
+      ionicmodel_ptr-> get_Istim (Istim.at(0), curr_time,
+				  ctrl_x, ctrl_y, ctrl_z);
+      //ionicmodel_ptr-> get_Istim (Istim[1], ctrl_x, ctrl_y, ctrl_z);
+      //ionicmodel_ptr-> get_Istim (Istim[2], ctrl_x, ctrl_y, ctrl_z);
+      //
+      ionicmodel_ptr-> Forward_Euler(r_old, dt, V_in, Istim, r_new, V_new);
+      //
+      //ionicmodel_ptr-> Runge_Kutta_4(r_old, dt, I_stim, V_in, r_new, V_new);
+
+      //		<< "global indx: " << global_idx<< "\n"
+      //		<< "ctrlx : "      << ctrl_x
+      //		<< "ctrly : "      << ctrl_y
+      //		<< "ctrlz : "      << ctrl_z <<std::endl;
 
       //use negative below, to be consistent with krishnamoorthi
       //2013 quadrature paper and goktepe 2009 paper.

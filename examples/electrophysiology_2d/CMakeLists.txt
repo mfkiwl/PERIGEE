@@ -104,6 +104,8 @@ SET( perigee_analysis_lib_src
   ${perigee_SOURCE_DIR}/src/PNonlinear_Solver_EP.cpp
   ${perigee_SOURCE_DIR}/src/PGAssem_EP.cpp
   ${perigee_SOURCE_DIR}/src/IonicModel_AP.cpp
+  ${perigee_SOURCE_DIR}/src/IonicModel_FHN.cpp
+  ${perigee_SOURCE_DIR}/src/IonicModel_Test.cpp
   ${perigee_SOURCE_DIR}/src/IonicModel.cpp
   )
 

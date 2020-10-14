@@ -5,7 +5,8 @@
 // 
 // Base class for electroactive material models .
 // differential eqn : dV/dt = -1/C_m * I_ion
-// implementation   : V_new = V_old - dt/C_m
+// implementation   : V_new = V_old - dt/C_m*Iion
+// Iion includes the stimulus current Istim.
 
 // Date: May 25 2020
 // Author: Oguz Ziya Tikenogullari, Ju Liu
@@ -34,22 +35,34 @@ public:
   double get_chi() const;
 
   double get_C_m() const;
-  
-  void Forward_Euler(const double &r_old_in,
-			      const double &dt_in,
-			      const double &V_in,
-			      double &r_new,
-			      double &V_new) const ;
 
+  //only one I_stim at t_n
+  void Forward_Euler(const double &r_old_in,
+		     const double &dt_in,
+		     const double &V_in,
+		     const std::vector<double> &I_stim,
+		     double &r_new,
+		     double &V_new) const ;
+
+  //for this function we need 3 values of Istim,
+  //at t_n , at  t_{n+1/2} and t_{n+1}
   void Runge_Kutta_4(const double &r_old_in,
 		     const double &dt_in,
 		     const double &V_in,
+		     const std::vector<double> &I_stim,
 		     double &r_new,
 		     double &V_new) const ;
+
+  void get_Istim(double &Istim,
+		 const double &time,
+		 const double &ctrl_x,
+		 const double &ctrl_y,
+		 const double &ctrl_z ) const;
 
 protected:
   virtual void get_Iion(const double &r_old_in,
 			const double &V_in,
+			const double &I_stim,
 			double &f_r,
 			double &Iion ) const;
 

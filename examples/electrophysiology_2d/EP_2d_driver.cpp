@@ -30,6 +30,8 @@
 #include "PLocAssem_EP_2D.hpp"
 #include "PTime_Solver_EP_OperatorSplit.hpp"
 #include "IonicModel_AP.hpp"
+#include "IonicModel_FHN.hpp"
+#include "IonicModel_Test.hpp"
 //#include "IonicModel.hpp"
 
 int main(int argc, char *argv[])
@@ -51,7 +53,7 @@ int main(int argc, char *argv[])
   double initial_time = 0.0;
   double initial_step = 1.0;
   int initial_index = 0;
-  double final_time = 250.0;
+  double final_time = 20.0;
 
   // Time solver parameters
   std::string sol_bName("SOL_");
@@ -176,7 +178,7 @@ int main(int argc, char *argv[])
 
   // ======= Finite Element Analysis =======6
   // FEA.1 Initial solution and history variables (1 per node)
-  PDNSolution * disp = new PDNSolution_EP(pNode, fNode, locBC, 2);
+  PDNSolution * disp = new PDNSolution_EP(pNode, fNode, locBC, 0);
   //disp->PlusAX(PDNSolution_EP(pNode, fNode, locBC, 1), -75);
   PDNSolution * velo = new PDNSolution_EP(pNode, fNode, locBC, 0);
   PDNSolution * hist = new PDNSolution_EP(pNode, fNode, locBC, 0);
@@ -185,7 +187,9 @@ int main(int argc, char *argv[])
 
   // FEA.1.5 Ionic model setup
   SYS_T::commPrint("===> Generate Ionic Model ... \n");
-  IonicModel * ionicmodel_ptr = new IonicModel_AP () ;
+  //IonicModel * ionicmodel_ptr = new IonicModel_AP () ;
+  //IonicModel * ionicmodel_ptr = new IonicModel_FHN () ;
+  IonicModel * ionicmodel_ptr = new IonicModel_Test () ;
   ionicmodel_ptr -> print_info();
 
   // FEA.2 Local assembly setup

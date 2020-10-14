@@ -23,19 +23,30 @@ void IonicModel::print_info () const
 
 
 void IonicModel::get_Iion(const double &r_old_in,
-			      const double &V_in,
-			      double &f_r,
-			      double &Iion) const
+			  const double &V_in,
+			  const double &I_stim,
+			  double &f_r,
+			  double &Iion) const
 {
   SYS_T::commPrint("IonicModel get_Iion. \n");
 }
 
+void IonicModel::get_Istim(double &Istim,
+			   const double &time,
+			   const double &ctrl_x,
+			   const double &ctrl_y,
+			   const double &ctrl_z ) const
+{
+  Istim = 1.0;
+}
+
 
 void IonicModel::Forward_Euler(const double &r_old_in,
-				const double &dt_in,
-				const double &V_in,
-				double &r_new,
-				double &V_new) const
+			       const double &dt_in,
+			       const double &V_in,
+			       const std::vector<double> &I_stim,
+			       double &r_new,
+			       double &V_new) const
 {
   double V_old = V_in;
   double r_old   = r_old_in;
@@ -46,12 +57,12 @@ void IonicModel::Forward_Euler(const double &r_old_in,
   //std::cout << "begin forw euelr" <<std::endl; 
   for(int i=0; i<time_steps; ++i)
     {
-      //std::cout << "i : " << i <<std::endl; 
-      //std::cout << "V_old : " << V_old <<std::endl;
-      //std::cout << "r_old : " << r_old <<std::endl; 
-      //update state variables based on old ones.
-      //update state variables based on old ones.
-      get_Iion( r_old, V_old, f_r, Iion);
+      //I stim is sent to ionic model and included
+      // in Iion and state variable evolution.
+      get_Iion( r_old, V_old, I_stim.at(0), f_r, Iion);
+      
+      std::cout << "Istim[0]: " << I_stim.at(0)  <<std::endl;
+      std::cout << "Iion    : " << Iion        <<std::endl;
 
       V_new   = V_old - dt_i/C_m * Iion;
       r_new   = r_old   + dt_i * f_r;
@@ -68,6 +79,7 @@ void IonicModel::Forward_Euler(const double &r_old_in,
 void IonicModel::Runge_Kutta_4(const double &r_old_in,
 			       const double &dt_in,
 			       const double &V_in,
+			       const std::vector<double> &I_stim,
 			       double &r_new,
 			       double &V_new) const
 {
@@ -76,27 +88,30 @@ void IonicModel::Runge_Kutta_4(const double &r_old_in,
   int time_steps = 10;
   double dt_i    = dt_in / time_steps;
   double Iion, f_r, K1r, K2r, K3r, K4r, K1V, K2V, K3V, K4V;
-
+  
   for(int i=0; i<time_steps; ++i)
     {
       //1st pass
-      get_Iion( r_old, V_old, f_r, Iion);
+      get_Iion( r_old, V_old, I_stim.at(0), f_r, Iion);
       K1V   = - dt_i/C_m * Iion;
       K1r   =   dt_i * f_r;
 
       //2nd pass
-      get_Iion( r_old+0.5*K1r, V_old+0.5*K1V, f_r, Iion);
+      get_Iion( r_old+0.5*K1r, V_old+0.5*K1V,
+		I_stim.at(1), f_r, Iion);
       K2V   = - dt_i/C_m * Iion;
       K2r   =   dt_i * f_r;
 
       //3rd pass
-      get_Iion( r_old+0.5*K2r, V_old+0.5*K2V, f_r, Iion);
+      get_Iion( r_old+0.5*K2r, V_old+0.5*K2V,
+		I_stim.at(1), f_r, Iion);
       K3V   = - dt_i/C_m * Iion;
       K3r   =   dt_i * f_r;
 	
 
       //4th pass
-      get_Iion( r_old+K3r, V_old+K3V, f_r, Iion);
+      get_Iion( r_old+K3r, V_old+K3V,
+		I_stim.at(2),  f_r, Iion);
       K4V   = - dt_i/C_m * Iion;
       K4r   =   dt_i * f_r;
 

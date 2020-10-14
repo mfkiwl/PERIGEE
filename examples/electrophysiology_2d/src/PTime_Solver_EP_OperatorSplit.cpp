@@ -90,9 +90,10 @@ void PTime_Solver_EP_OperatorSplit::TM_generalized_alpha(
       			  lsolver_ptr, cur_velo, tmp_disp,
       			  conv_flag, nl_counter);
 
-      gassem_ptr->Update_nodal_velo(tmp_disp, pre_hist, time_info->get_step(),
+      gassem_ptr->Update_nodal_velo(tmp_disp, pre_hist,time_info->get_time(),
+				    time_info->get_step(),
 				    ionicmodel_ptr, alelem_ptr, lien_ptr,
-				    anode_ptr, ele_ptr, bc_part,
+				    anode_ptr, feanode_ptr, ele_ptr, bc_part,
 				    cur_disp, cur_hist   ); 
       
       time_info->TimeIncrement();
