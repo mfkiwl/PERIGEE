@@ -59,10 +59,14 @@ void PTime_Solver_EP_OperatorSplit::TM_generalized_alpha(
   PDNSolution * pre_disp = new PDNSolution(*init_disp);
   PDNSolution * cur_disp = new PDNSolution(*init_disp);
   PDNSolution * tmp_disp = new PDNSolution(*init_disp);
+  PDNSolution * tmp2_disp = new PDNSolution(*init_disp);
   PDNSolution * pre_velo = new PDNSolution(*init_velo);
   PDNSolution * cur_velo = new PDNSolution(*init_velo);
   PDNSolution * pre_hist = new PDNSolution(*init_hist);//history var.
   PDNSolution * cur_hist = new PDNSolution(*init_hist);//history var.
+  PDNSolution * tmp_hist = new PDNSolution(*init_hist);//history var.
+
+  double time, dt, dt_half, time_half;
 
   // save the initial solution
   std::string sol_name = Name_Generator(time_info->get_index());
@@ -79,23 +83,37 @@ void PTime_Solver_EP_OperatorSplit::TM_generalized_alpha(
       else
 	renew_flag = false;
 
-      //gen_alpha_solve  for the diffusion problem 
+      dt   = time_info->get_step();
+      dt_half= dt/2.0;
+      time = time_info->get_time();
+      time_half =time+dt_half;
+
+      
+      //Step 1 - Update of ionic variables
+      gassem_ptr->Update_nodal_velo(pre_disp, pre_hist,
+				    time, dt_half,
+				    ionicmodel_ptr, alelem_ptr, lien_ptr,
+				    anode_ptr, feanode_ptr, ele_ptr, bc_part,
+				    tmp_disp, tmp_hist   ); 
+      
+      //Step 2 - gen_alpha_solve  for the diffusion problem 
       nsolver_ptr
-      	->Gen_alpha_solve(renew_flag, time_info->get_time(),
-      			  time_info->get_step(), pre_velo, pre_disp,
+      	->Gen_alpha_solve(renew_flag, time, dt, 
+			  pre_velo, tmp_disp,
       			  tmga_ptr, alelem_ptr, lien_ptr,
       			  anode_ptr, feanode_ptr, bc_part,
       			  wei_ptr, ele_ptr, 
       			  lassem_ptr, gassem_ptr, 
-      			  lsolver_ptr, cur_velo, tmp_disp,
+      			  lsolver_ptr, cur_velo, tmp2_disp,
       			  conv_flag, nl_counter);
-
-      gassem_ptr->Update_nodal_velo(tmp_disp, pre_hist,time_info->get_time(),
-				    time_info->get_step(),
+      
+      //Step 3 - Update of ionic variables
+      gassem_ptr->Update_nodal_velo(tmp2_disp, tmp_hist,
+				    time_half, dt_half,
 				    ionicmodel_ptr, alelem_ptr, lien_ptr,
 				    anode_ptr, feanode_ptr, ele_ptr, bc_part,
 				    cur_disp, cur_hist   ); 
-      
+
       time_info->TimeIncrement();
 
       PetscPrintf(PETSC_COMM_WORLD, "Time = %e, dt = %e, index = %d \n",
@@ -115,7 +133,7 @@ void PTime_Solver_EP_OperatorSplit::TM_generalized_alpha(
       pre_hist->Copy(*cur_hist);//update history
     }
 
-  delete pre_disp; delete cur_disp;
-  delete pre_velo; delete cur_velo;
-  delete pre_hist; delete cur_hist;//clear memory alloc
+  delete pre_disp; delete cur_disp; delete tmp_disp; delete tmp2_disp;
+  delete pre_velo; delete cur_velo; 
+  delete pre_hist; delete cur_hist; delete tmp_hist;//clear memory alloc
 }

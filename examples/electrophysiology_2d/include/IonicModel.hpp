@@ -4,7 +4,7 @@
 // IMaterialModel.hpp
 // 
 // Base class for electroactive material models .
-// differential eqn : dV/dt = -1/C_m * I_ion
+// differential eqn : dV/dt = -1/C_m * (I_ion +1/chi*Istim)
 // implementation   : V_new = V_old - dt/C_m*Iion
 // Iion includes the stimulus current Istim.
 
@@ -54,10 +54,10 @@ public:
 		     double &V_new) const ;
 
   void get_Istim(double &Istim,
-		 const double &time,
-		 const double &ctrl_x,
-		 const double &ctrl_y,
-		 const double &ctrl_z ) const;
+		 const double &t,
+		 const double &x,
+		 const double &y,
+		 const double &z ) const;
 
 protected:
   virtual void get_Iion(const double &r_old_in,
@@ -66,7 +66,6 @@ protected:
 			double &f_r,
 			double &Iion ) const;
 
-private:
   const double d_iso, d_ani, chi, C_m;
 
 };

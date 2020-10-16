@@ -526,7 +526,7 @@ void PGAssem_EP::Assem_tangent_residual(
     const PDNSolution * const &sol_b, //disp
     //const PDNSolution * const &sol_c, //pre_hist
     //PDNSolution * const &sol_d, //new hist
-    const double &curr_time,
+    const double &t_n,
     const double &dt,
     //const double &dt_ion,
     //const IonicModel * const &ionicmodel_ptr,
@@ -592,7 +592,7 @@ void PGAssem_EP::Assem_tangent_residual(
       fnode_ptr->get_ctrlPts_xyz(nLocBas, IEN_e, ectrl_x, ectrl_y, ectrl_z);
   
       lassem_ptr->
-	Assem_Tangent_Residual(curr_time, dt, local_a, local_b,
+	Assem_Tangent_Residual(t_n, dt, local_a, local_b,
 			       eptr_array[ee],//local_iion, local_dphi,
 			       ectrl_x, ectrl_y, ectrl_z, wei_ptr);
   
@@ -648,7 +648,7 @@ void PGAssem_EP::Assem_residual(
     const PDNSolution * const &sol_b, //disp
     //const PDNSolution * const &sol_c, //pre_hist
     //PDNSolution * const &sol_d, //new hist
-    const double &curr_time,
+    const double &t_n,
     const double &dt,
     //const double &dt_ion,
     //const IonicModel * const &ionicmodel_ptr,
@@ -713,7 +713,7 @@ void PGAssem_EP::Assem_residual(
       
       fnode_ptr->get_ctrlPts_xyz(nLocBas, IEN_e, ectrl_x, ectrl_y, ectrl_z);
 
-      lassem_ptr->Assem_Residual(curr_time, dt, local_a, local_b,
+      lassem_ptr->Assem_Residual(t_n, dt, local_a, local_b,
 				 eptr_array[ee], //local_iion, local_dphi,
 				 ectrl_x, ectrl_y, ectrl_z, wei_ptr);
 
@@ -848,7 +848,7 @@ void PGAssem_EP::Assem_mass_residual(
 void PGAssem_EP::Update_nodal_velo(const PDNSolution * const &sol_a, //disp
 				   //const PDNSolution * const &sol_d, //velo
 				   const PDNSolution * const &sol_b, //pre_hist
-				   const double &curr_time,
+				   const double &t_n,
 				   const double &dt,
 				   const IonicModel * const &ionicmodel_ptr,
 				   const ALocal_Elem * const &alelem_ptr,
@@ -863,8 +863,7 @@ void PGAssem_EP::Update_nodal_velo(const PDNSolution * const &sol_a, //disp
 				   PDNSolution * const &sol_d //new hist
 				   )
 {
-//  std::cout << "update nodal values fnc " << std::endl;
-//
+  //  std::cout << "curr time: " << t_n << std::endl;
   int nElem = alelem_ptr->get_nlocalele();
   int loc_dof = dof * nLocBas;
   int loc_index, lrow_index; // lcol_index;
@@ -884,7 +883,9 @@ void PGAssem_EP::Update_nodal_velo(const PDNSolution * const &sol_a, //disp
 //  
   double r_new, r_old, V_new, V_in;
   double ctrl_x, ctrl_y, ctrl_z;
-  int global_idx, num{1};
+  double t_n_half {t_n + dt/2.0};
+  double t_n1 {t_n + dt};
+  int num{1};
   std::vector<double> Istim;
   Istim.resize(3);
   
@@ -893,25 +894,20 @@ void PGAssem_EP::Update_nodal_velo(const PDNSolution * const &sol_a, //disp
       V_in     = array_a[count];      
       r_old    = array_b[count];
 
-      global_idx = node_ptr -> get_local_to_global(count);
-      fnode_ptr->get_ctrlPts_xyz(num, &global_idx,
+      //global_idx = node_ptr -> get_local_to_global(count);
+      fnode_ptr->get_ctrlPts_xyz(num, &count,
 				 &ctrl_x, &ctrl_y, &ctrl_z);
-      ionicmodel_ptr-> get_Istim (Istim.at(0), curr_time,
+      ionicmodel_ptr-> get_Istim (Istim.at(0), t_n,
 				  ctrl_x, ctrl_y, ctrl_z);
-      //ionicmodel_ptr-> get_Istim (Istim[1], ctrl_x, ctrl_y, ctrl_z);
-      //ionicmodel_ptr-> get_Istim (Istim[2], ctrl_x, ctrl_y, ctrl_z);
-      //
-      ionicmodel_ptr-> Forward_Euler(r_old, dt, V_in, Istim, r_new, V_new);
-      //
-      //ionicmodel_ptr-> Runge_Kutta_4(r_old, dt, I_stim, V_in, r_new, V_new);
+      ionicmodel_ptr-> get_Istim (Istim.at(1), t_n_half,
+				  ctrl_x, ctrl_y, ctrl_z);
+      ionicmodel_ptr-> get_Istim (Istim.at(2), t_n1,
+				  ctrl_x, ctrl_y, ctrl_z);
 
-      //		<< "global indx: " << global_idx<< "\n"
-      //		<< "ctrlx : "      << ctrl_x
-      //		<< "ctrly : "      << ctrl_y
-      //		<< "ctrlz : "      << ctrl_z <<std::endl;
+      //ionicmodel_ptr-> Forward_Euler(r_old, dt, V_in, Istim, r_new, V_new);
 
-      //use negative below, to be consistent with krishnamoorthi
-      //2013 quadrature paper and goktepe 2009 paper.
+      ionicmodel_ptr-> Runge_Kutta_4(r_old, dt, V_in, Istim, r_new, V_new);
+
       array_c   [count] = V_new;
       array_d   [count] = r_new;
     }

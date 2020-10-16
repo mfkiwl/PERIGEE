@@ -42,7 +42,8 @@ void IonicModel_FHN::get_Iion(const double &r_old_in,
 	     -V_old*alpha - r_old);
 
   //redimensionalize to be multiplied with dt
-  Iion = Iion*fh_1/fh_3 + I_stim;
+  // and add Istim/chi to the ionic current
+  Iion = Iion*fh_1/fh_3 + I_stim/chi;
   f_r  = f_r/fh_3;
 }
 

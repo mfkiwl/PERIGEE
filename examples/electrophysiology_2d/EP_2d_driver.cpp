@@ -15,7 +15,7 @@
 // April 12 2014
 //
 // Author:
-// Ju Liu, Ph.D. candidate, the University of Texas at Austin
+// 
 // ==================================================================
 #include <cmath>
 #include "HDF5_PartReader.hpp"
@@ -51,14 +51,14 @@ int main(int argc, char *argv[])
 
   // Time stepping parameters
   double initial_time = 0.0;
-  double initial_step = 1.0;
+  double initial_step = 0.01;
   int initial_index = 0;
-  double final_time = 20.0;
+  double final_time = 50.0;
 
   // Time solver parameters
   std::string sol_bName("SOL_");
   int ttan_renew_freq = 1;
-  int sol_record_freq = 1;
+  int sol_record_freq = 50;
 
   // ======= PETSc Initialization =======
   PetscMPIInt rank, size;
@@ -178,8 +178,7 @@ int main(int argc, char *argv[])
 
   // ======= Finite Element Analysis =======6
   // FEA.1 Initial solution and history variables (1 per node)
-  PDNSolution * disp = new PDNSolution_EP(pNode, fNode, locBC, 0);
-  //disp->PlusAX(PDNSolution_EP(pNode, fNode, locBC, 1), -75);
+  PDNSolution * disp = new PDNSolution_EP(pNode, fNode, locBC, 3);
   PDNSolution * velo = new PDNSolution_EP(pNode, fNode, locBC, 0);
   PDNSolution * hist = new PDNSolution_EP(pNode, fNode, locBC, 0);
 
@@ -190,6 +189,7 @@ int main(int argc, char *argv[])
   //IonicModel * ionicmodel_ptr = new IonicModel_AP () ;
   //IonicModel * ionicmodel_ptr = new IonicModel_FHN () ;
   IonicModel * ionicmodel_ptr = new IonicModel_Test () ;
+  
   ionicmodel_ptr -> print_info();
 
   // FEA.2 Local assembly setup
@@ -220,8 +220,7 @@ int main(int argc, char *argv[])
 
   // FEA.6 Solve for consistent initial condition
   gloAssem_ptr->Clear_KG();
-  gloAssem_ptr->Assem_mass_residual( disp,// hist,
-				     timeinfo, //ionicmodel_ptr,
+  gloAssem_ptr->Assem_mass_residual( disp, timeinfo,
 				     locElem, locAssem_ptr, locIEN, pNode,
 				     fNode, Int_w, elemArray, locBC );
 
@@ -231,7 +230,7 @@ int main(int argc, char *argv[])
   // FEA.7 Nonlinear solver steup
   PNonlinear_Solver_EP * nsolver
     = new PNonlinear_Solver_EP(nl_rtol, nl_atol,
-					    nl_dtol, nl_maxits, nl_refreq);
+			       nl_dtol, nl_maxits, nl_refreq);
   SYS_T::commPrint("===> Nonlinear solver setted up:\n");
   nsolver->Info();
 

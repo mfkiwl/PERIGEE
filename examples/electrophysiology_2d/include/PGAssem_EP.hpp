@@ -142,7 +142,7 @@ class PGAssem_EP
         const PDNSolution * const &sol_b,
 	//const PDNSolution * const &sol_c,//pre_hist
 	//PDNSolution * const &sol_d,//new hist
-        const double &curr_time,
+        const double &t_n,
         const double &dt,
         //const double &dt_ion,
 	//const IonicModel * const &ionicmodel_ptr,
@@ -179,7 +179,7 @@ class PGAssem_EP
     const PDNSolution * const &sol_b, //disp
     //const PDNSolution * const &sol_c, //pre_hist
     //PDNSolution * const &sol_d, //new hist
-    const double &curr_time,
+    const double &t_n,
     const double &dt,
     //const double &dt_ion,
     //const IonicModel * const &ionicmodel_ptr,
@@ -225,7 +225,7 @@ class PGAssem_EP
   void Update_nodal_velo(const PDNSolution * const &sol_a, //disp
 			 //const PDNSolution * const &sol_d, //velo
 			 const PDNSolution * const &sol_b, //pre_hist
-			 const double &curr_time,
+			 const double &t_n,
 			 const double &dt,
 			 const IonicModel * const &ionicmodel_ptr,
 			 const ALocal_Elem * const &alelem_ptr,

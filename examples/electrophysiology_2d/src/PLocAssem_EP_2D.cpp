@@ -66,7 +66,7 @@ void PLocAssem_EP_2D::Assem_Estimate()
 }
 
 void PLocAssem_EP_2D::Assem_Residual(
-    double time, double dt,
+    double t_n, double dt,
     const double * const &velo,
     const double * const &disp,
     //const double * const &Iion,
@@ -86,7 +86,7 @@ void PLocAssem_EP_2D::Assem_Residual(
   //std::vector<double> dIm(nLocBas);
   //std::vector<double> dIstim(nLocBas);
   //std::vector<double> E_dIm(nLocBas);  
-  double curr = time + alpha_f * dt;
+  //double curr = t_n + alpha_f * dt;
 
   int ii; // iterator
 
@@ -123,16 +123,6 @@ void PLocAssem_EP_2D::Assem_Residual(
     
     gwts = element->get_detJac(qua) * weight->get_weight(qua);
 
-    ////get stimulus for the volume (not the boundary)
-    //Istim = get_f(coor_x, coor_y, curr);
-    ////dIstim= 0; already
-    
-    //Im = Im + Istim;
-    //for(ii=0; ii<nLocBas; ++ii)
-    //  {      
-    //	dIm[ii] = dIm[ii] +  dIstim[ii] ;
-    //  }
-
     get_k(d, coor_x, coor_y, k11, k12, k21, k22);
     
     for(ii=0; ii<nLocBas; ++ii)
@@ -145,7 +135,7 @@ void PLocAssem_EP_2D::Assem_Residual(
 }
 
 void PLocAssem_EP_2D::Assem_Tangent_Residual(
-    double time, double dt,
+    double t_n, double dt,
     const double * const &velo,
     const double * const &disp,
     //const double * const &Iion,
@@ -166,7 +156,7 @@ void PLocAssem_EP_2D::Assem_Tangent_Residual(
   //std::vector<double> dIm(nLocBas);
   //std::vector<double> dIstim(nLocBas);  
   //std::vector<double> E_dIm(nLocBas);  
-  double curr = time + alpha_f * dt;
+  //  double curr = t_n + alpha_f * dt;
 
   ////calculate Im and dIm from Iion&Istim and dIion&dIstim
   //// at nodes! for the local element
@@ -295,8 +285,6 @@ void PLocAssem_EP_2D::Assem_Mass_Residual(
   //std::vector<double> dIstim(nLocBas);  
   //std::vector<double> E_dIm(nLocBas);  
 
-  double curr = 0.0;
-  
   ////calculate Im and dIm from Iion&Istim and dIion&dIstim
   //// at nodes! for the local element
   //for (ii=0; ii<nLocBas; ++ii)

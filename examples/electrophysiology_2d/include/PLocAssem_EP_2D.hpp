@@ -34,7 +34,7 @@ class PLocAssem_EP_2D : public IPLocAssem
     virtual void Assem_Estimate();
     
     virtual void Assem_Residual(
-        double time, double dt,
+        double t_n, double dt,
         const double * const &vec_a,
         const double * const &vec_b,
 	//const double * const &vec_c,
@@ -47,7 +47,7 @@ class PLocAssem_EP_2D : public IPLocAssem
 
 
     virtual void Assem_Tangent_Residual(
-        double time, double dt,
+        double t_n, double dt,
         const double * const &vec_a,
         const double * const &vec_b,
 	//const double * const &vec_c,
