@@ -8,6 +8,8 @@
 // first to get the mesh partition for postprocessor.
 //
 // Date: April 18 2014
+// Author: Ju Liu
+// Modified: Oguz Ziya Tikenogullari
 // ==================================================================
 #include <cmath>
 #include <vector>
@@ -44,10 +46,10 @@ int main( int argc, char * argv[] )
   int nqpx = 3; int nqpy = 3;
 
   // solution name
-  string sol_name("SOL_900005000");
+  string sol_name("SOL_900000025");
 
   // solution time
-  double sol_time = 50.0;
+  double sol_time = 100.0;
 
   // partition file base name
   string part_file("postpart");

@@ -13,6 +13,8 @@
 // manufactured solution.
 //
 // Date: Dec 12 2013
+// Author: Ju Liu, liujuy@gmail.com
+// Modified: Oguz Ziya Tikenogullari, o.z.tikenogullari@gmail.com
 // ==================================================================
 #include "FEAElement.hpp"
 #include "AInt_Weight.hpp"

@@ -6,6 +6,8 @@
 // two dimension, using generalized alpha method as time marching
 // scheme. See J.A. Cottrell, et. al Isogeometric Analysis, pp 198
 // for details.
+// Author: Ju Liu, liujuy@gmail.com
+// Modified: Oguz Ziya Tikenogullari, o.z.tikenogullari@gmail.com
 //
 // ==================================================================
 #include "Sys_Tools.hpp"

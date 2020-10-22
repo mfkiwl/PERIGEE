@@ -17,8 +17,8 @@
 // Date:
 // Oct. 15 2013
 //
-// Author:
-// Ju Liu, Ph.D. candidate, the University of Texas at Austin
+// Author: Ju Liu
+// Modified: Oguz Ziya Tikenogullari
 // ==================================================================
 #include <cmath>
 #include <iomanip>

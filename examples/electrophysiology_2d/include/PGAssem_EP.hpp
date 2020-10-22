@@ -8,7 +8,9 @@
 // residual vector, with essential boundary conditions (including 
 // dirichlet bc, strongly enforced periodic bc).
 // 
-// Date: 
+// Date:
+// Author: Ju Liu, liujuy@gmail.com
+// Modified: Oguz Ziya Tikenogullari, o.z.tikenogullari@gmail.com
 // ==================================================================
 #include "Sys_Tools.hpp"
 #include "Vec_Tools.hpp"

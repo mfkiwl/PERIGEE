@@ -8,6 +8,8 @@
 // partition in advance by running the Pre_postprocess code.
 //
 // Date: April 20 2014
+// Author: Ju Liu
+// Modified: Oguz Ziya Tikenogullari
 // ==================================================================
 #include <cmath>
 #include "QuadPts_vis.hpp"
@@ -44,8 +46,8 @@ int main( int argc, char * argv[] )
 
   // Solution time info
   int time_start = 0;
-  int time_step = 50;
-  int time_end = 500;
+  int time_step = 1;
+  int time_end = 11;
   double dt = 0.1;
 
   // vtk format specification

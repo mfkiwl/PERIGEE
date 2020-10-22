@@ -5,6 +5,8 @@
 // This is the data preparation for 2D Nonlinear Ep problem.
 //
 // Date: oct 5 2020
+// Author: Ju Liu, liujuy@gmail.com
+// Modified: Oguz Ziya Tikenogullari, o.z.tikenogullari@gmail.com
 // ==================================================================
 
 #include "IVisDataPrep.hpp"

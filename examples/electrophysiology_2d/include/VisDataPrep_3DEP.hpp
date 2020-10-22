@@ -4,7 +4,9 @@
 // VisDataPrep_3DEP.hpp
 // This is the data preparation for 3D Nonlinear Heat problem.
 //
-// Dec. 17 2013  
+// Dec. 17 2013
+// Author: Ju Liu, liujuy@gmail.com
+// Modified: Oguz Ziya Tikenogullari, o.z.tikenogullari@gmail.com
 // ==================================================================
 
 #include "IVisDataPrep.hpp"

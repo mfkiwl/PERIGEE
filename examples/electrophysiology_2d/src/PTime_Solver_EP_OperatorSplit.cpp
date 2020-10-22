@@ -83,23 +83,30 @@ void PTime_Solver_EP_OperatorSplit::TM_generalized_alpha(
       else
 	renew_flag = false;
 
-      dt   = time_info->get_step();
-      dt_half= dt/2.0;
-      time = time_info->get_time();
+      dt        = time_info->get_step();
+      dt_half   = dt/2.0;
+      time      = time_info->get_time();
       time_half =time+dt_half;
 
-      
+      ////Manuf soln no diffusion
+      ////Step 1 - Update of ionic variables
+      //gassem_ptr->Update_nodal_velo(pre_disp, pre_hist,
+      //			    time, dt,
+      //			    ionicmodel_ptr, alelem_ptr, lien_ptr,
+      //			    anode_ptr, feanode_ptr, ele_ptr, bc_part,
+      //			    cur_disp, cur_hist); 
+            
       //Step 1 - Update of ionic variables
       gassem_ptr->Update_nodal_velo(pre_disp, pre_hist,
-				    time, dt_half,
-				    ionicmodel_ptr, alelem_ptr, lien_ptr,
-				    anode_ptr, feanode_ptr, ele_ptr, bc_part,
-				    tmp_disp, tmp_hist   ); 
+      			    time, dt_half,
+      			    ionicmodel_ptr, alelem_ptr, lien_ptr,
+      			    anode_ptr, feanode_ptr, ele_ptr, bc_part,
+      			    tmp_disp, tmp_hist   ); 
       
       //Step 2 - gen_alpha_solve  for the diffusion problem 
       nsolver_ptr
       	->Gen_alpha_solve(renew_flag, time, dt, 
-			  pre_velo, tmp_disp,
+      			  pre_velo, tmp_disp,
       			  tmga_ptr, alelem_ptr, lien_ptr,
       			  anode_ptr, feanode_ptr, bc_part,
       			  wei_ptr, ele_ptr, 
@@ -109,10 +116,10 @@ void PTime_Solver_EP_OperatorSplit::TM_generalized_alpha(
       
       //Step 3 - Update of ionic variables
       gassem_ptr->Update_nodal_velo(tmp2_disp, tmp_hist,
-				    time_half, dt_half,
-				    ionicmodel_ptr, alelem_ptr, lien_ptr,
-				    anode_ptr, feanode_ptr, ele_ptr, bc_part,
-				    cur_disp, cur_hist   ); 
+      	         	    time_half, dt_half,
+      			    ionicmodel_ptr, alelem_ptr, lien_ptr,
+      			    anode_ptr, feanode_ptr, ele_ptr, bc_part,
+      			    cur_disp, cur_hist   ); 
 
       time_info->TimeIncrement();
 

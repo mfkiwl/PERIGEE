@@ -18,6 +18,8 @@
 //
 // -----------------------------------------------------------------
 // Date: Dec 30 2013
+// Author: Ju Liu
+// Modified: Oguz Ziya Tikenogullari
 // ==================================================================
 #include "NURBS_FileIO.hpp"
 #include "kRefinement.hpp"
@@ -48,7 +50,7 @@ int main(int argc, char * argv[])
   int addSDegree = 0, addTDegree = 0;
 
   // Number of knots to be inserted in spatial discretizations
-  int num_inserted_x = 30, num_inserted_y = 30;
+  int num_inserted_x = 149, num_inserted_y = 149;
 
   // Geometry file
   char * char_home_dir = getenv("HOME");

@@ -3,6 +3,8 @@
 // ==================================================================
 // PDNSolution_EP.hpp
 // This is the class that we define initial solution for EP
+// Author: Ju Liu, liujuy@gmail.com
+// Modified: Oguz Ziya Tikenogullari, o.z.tikenogullari@gmail.com
 // ==================================================================
 #include "Sys_Tools.hpp"
 #include "PDNSolution.hpp"

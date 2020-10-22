@@ -11,6 +11,8 @@
 // Qu, Garfinkel 1999 and Sundnes et al 2005  papers 
 //
 // Date: Oct 4 2020
+// Author: Ju Liu, liujuy@gmail.com
+// Modified: Oguz Ziya Tikenogullari, o.z.tikenogullari@gmail.com
 // ==================================================================
 #include "PDNTimeStep.hpp"
 #include "PNonlinear_Solver_EP.hpp"

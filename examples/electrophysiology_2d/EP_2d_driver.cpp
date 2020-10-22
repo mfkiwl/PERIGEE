@@ -14,7 +14,8 @@
 // Date:
 // April 12 2014
 //
-// Author:
+// Author: Ju Liu
+// Modified: Oguz Ziya Tikenogullari
 // 
 // ==================================================================
 #include <cmath>
@@ -51,14 +52,14 @@ int main(int argc, char *argv[])
 
   // Time stepping parameters
   double initial_time = 0.0;
-  double initial_step = 0.01;
+  double initial_step = 4.0;
   int initial_index = 0;
-  double final_time = 50.0;
+  double final_time = 100.0;
 
   // Time solver parameters
   std::string sol_bName("SOL_");
   int ttan_renew_freq = 1;
-  int sol_record_freq = 50;
+  int sol_record_freq = 5;
 
   // ======= PETSc Initialization =======
   PetscMPIInt rank, size;
@@ -187,8 +188,8 @@ int main(int argc, char *argv[])
   // FEA.1.5 Ionic model setup
   SYS_T::commPrint("===> Generate Ionic Model ... \n");
   //IonicModel * ionicmodel_ptr = new IonicModel_AP () ;
-  //IonicModel * ionicmodel_ptr = new IonicModel_FHN () ;
-  IonicModel * ionicmodel_ptr = new IonicModel_Test () ;
+  IonicModel * ionicmodel_ptr = new IonicModel_FHN () ;
+  //IonicModel * ionicmodel_ptr = new IonicModel_Test () ;
   
   ionicmodel_ptr -> print_info();
 

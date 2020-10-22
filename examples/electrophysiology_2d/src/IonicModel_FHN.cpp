@@ -20,6 +20,10 @@ void IonicModel_FHN::print_info () const
   PetscPrintf(PETSC_COMM_WORLD, "\t  fhn_1 = %e \n", fh_1);
   PetscPrintf(PETSC_COMM_WORLD, "\t  fhn_2 = %e \n", fh_2);
   PetscPrintf(PETSC_COMM_WORLD, "\t  fhn_3 = %e \n", fh_3);
+  PetscPrintf(PETSC_COMM_WORLD, "\t  alpha = %e \n", alpha);
+  PetscPrintf(PETSC_COMM_WORLD, "\t  a     = %e \n", a);
+  PetscPrintf(PETSC_COMM_WORLD, "\t  b     = %e \n", b);
+  PetscPrintf(PETSC_COMM_WORLD, "\t  c     = %e \n", c);
 };
 
 //implicit solving for FHN model is very cheap 

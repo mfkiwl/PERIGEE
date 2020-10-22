@@ -9,8 +9,7 @@
 // Iion includes the stimulus current Istim.
 
 // Date: May 25 2020
-// Author: Oguz Ziya Tikenogullari, Ju Liu
-// Contact: o.z.tikenogullari@gmail.com, liujuy@gmail.com
+// Author: Oguz Ziya Tikenogullari, o.z.tikenogullari@gmail.com
 // ==================================================================
 #include "Sys_Tools.hpp"
 #include "Tensor4_3D.hpp"

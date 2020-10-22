@@ -38,29 +38,41 @@ void IonicModel::get_Istim(double &Istim,
 			   const double &z ) const
 {
   const double pi = MATH_T::PI;
-  
-  //MANUFACTURED SOLUTION, constant ionic output:
-  Istim =140.0*(cos(2.0*pi*x)/4.0 - 1.0/4.0)*(cos(2.0*pi*y) - 1.0)
-    + (2.0*t*std::pow(pi,2.0)*cos(2.0*pi*y)*(cos(2.0*pi*x)/4.0 - 1.0/4.0))/5.0
-    + (t*std::pow(pi,2.0)*cos(2.0*pi*x)*(cos(2.0*pi*y) - 1.0))/10.0 - 1400.0;
-  Istim= -Istim;
-  
-  ////MANUFACTURED SOLUTION
-  ////FitzHugh Nagumo Model with c=10 instead of 50:      
-  //Istim=  (8750.0*cos(2.0*pi*x))/9.0 - (35.0*t)/12.0 + (8750.0*cos(2.0*pi*y))/9.0
-  //  - (35.0*exp((3.0*t)/1000.0)*(250.0*cos(2.0*pi*x) + 250.0*cos(2.0*pi*y)
-  //				 - 250.0*cos(2.0*pi*x)*cos(2.0*pi*y) - 115.0))/9.0
-  //  + (35.0*t*cos(2.0*pi*x))/12.0 + (35.0*t*cos(2.0*pi*y))/12.0
-  //  - (8750.0*cos(2.0*pi*x)*cos(2.0*pi*y))/9.0 + 140.0*(cos(2.0*pi*x)/4.0 - 1.0/4.0)
-  //  *(cos(2.0*pi*y) - 1.0) + 455.0*((t*(cos(2.0*pi*x)/4.0 - 1.0/4.0)
-  //				     *(cos(2.0*pi*y) - 1.0))/65.0 - 9.0/13.0)
-  //  *((t*(cos(2.0*pi*x)/4.0 - 1.0/4.0)*(cos(2.0*pi*y) - 1.0))/65.0 - 5.0/26.0)
-  //  *((t*(cos(2.0*pi*x)/4.0 - 1.0/4.0)*(cos(2.0*pi*y) - 1.0))/65.0 - 22.0/13.0)
-  //  - (35.0*t*cos(2.0*pi*x)*cos(2.0*pi*y))/12.0
-  //  + (2.0*t*pi*pi*cos(2.0*pi*y)*(cos(2.0*pi*x)/4.0 - 1.0/4.0))/5.0
-  //  + (t*pi*pi*cos(2.0*pi*x)*(cos(2.0*pi*y) - 1.0))/10.0 - 4025.0/9.0;
-  //
+
+  ////MANUFACTURED SOLUTION, const Iion=10, no diffusion
+  //Istim = 140.0*(cos(2.0*pi*x)/4.0 - 1.0/4.0)*(cos(2.0*pi*y) - 1.0) - 1400.0;
+  //Istim = -Istim; 
+
+  ////MANUFACTURED SOLUTION, Iion= FHN with c=10, no diffusion
+  //Istim = (8750.0*cos(2.0*pi*x))/9.0 - (35.0*t)/12.0 + (8750.0*cos(2.0*pi*y))/9.0 - (35.0*exp((3.0*t)/1000.0)*(250.0*cos(2.0*pi*x) + 250.0*cos(2.0*pi*y) - 250.0*cos(2.0*pi*x)*cos(2.0*pi*y) - 115.0))/9.0 + (35.0*t*cos(2.0*pi*x))/12.0 + (35.0*t*cos(2.0*pi*y))/12.0 - (8750.0*cos(2.0*pi*x)*cos(2.0*pi*y))/9.0 + 140.0*(cos(2.0*pi*x)/4.0 - 1.0/4.0)*(cos(2.0*pi*y) - 1.0) + 455.0*((t*(cos(2.0*pi*x)/4.0 - 1.0/4.0)*(cos(2.0*pi*y) - 1.0))/65.0 - 9.0/13.0)*((t*(cos(2.0*pi*x)/4.0 - 1.0/4.0)*(cos(2.0*pi*y) - 1.0))/65.0 - 5.0/26.0)*((t*(cos(2.0*pi*x)/4.0 - 1.0/4.0)*(cos(2.0*pi*y) - 1.0))/65.0 - 22.0/13.0) - (35.0*t*cos(2.0*pi*x)*cos(2.0*pi*y))/12.0 - 4025.0/9.0 ;
   //Istim = -Istim;
+
+  //////MANUFACTURED SOLUTION, Iion= FHN with c=50, no diffusion
+  //Istim = (43750.0*cos(2.0*pi*x))/9.0 - (175.0*t)/12.0 + (43750.0*cos(2.0*pi*y))/9.0 - (175.0*exp((3.0*t)/1000.0)*(250.0*cos(2.0*pi*x) + 250.0*cos(2.0*pi*y) - 250.0*cos(2.0*pi*x)*cos(2.0*pi*y) - 115.0))/9.0 + (175.0*t*cos(2.0*pi*x))/12.0 + (175.0*t*cos(2.0*pi*y))/12.0 - (43750.0*cos(2.0*pi*x)*cos(2.0*pi*y))/9.0 + 140.0*(cos(2.0*pi*x)/4.0 - 1.0/4.0)*(cos(2.0*pi*y) - 1.0) + 2275.0*((t*(cos(2.0*pi*x)/4.0 - 1.0/4.0)*(cos(2.0*pi*y) - 1.0))/65.0 - 9.0/13.0)*((t*(cos(2.0*pi*x)/4.0 - 1.0/4.0)*(cos(2.0*pi*y) - 1.0))/65.0 - 5.0/26.0)*((t*(cos(2.0*pi*x)/4.0 - 1.0/4.0)*(cos(2.0*pi*y) - 1.0))/65.0 - 22.0/13.0) - (175.0*t*cos(2.0*pi*x)*cos(2.0*pi*y))/12.0 - 20125.0/9.0;
+  //  Istim = -Istim ;
+
+  ////MANUFACTURED SOLUTION, constant Iion=10
+  //Istim =140.0*(cos(2.0*pi*x)/4.0 - 1.0/4.0)*(cos(2.0*pi*y) - 1.0)
+  //  + (2.0*t*std::pow(pi,2.0)*cos(2.0*pi*y)*(cos(2.0*pi*x)/4.0 - 1.0/4.0))/5.0
+  //  + (t*std::pow(pi,2.0)*cos(2.0*pi*x)*(cos(2.0*pi*y) - 1.0))/10.0 - 1400.0;
+  //Istim= -Istim;
+  
+  //MANUFACTURED SOLUTION
+  //FitzHugh Nagumo Model with c=10:      
+  Istim=  (8750.0*cos(2.0*pi*x))/9.0 - (35.0*t)/12.0 + (8750.0*cos(2.0*pi*y))/9.0
+    - (35.0*exp((3.0*t)/1000.0)*(250.0*cos(2.0*pi*x) + 250.0*cos(2.0*pi*y)
+  				 - 250.0*cos(2.0*pi*x)*cos(2.0*pi*y) - 115.0))/9.0
+    + (35.0*t*cos(2.0*pi*x))/12.0 + (35.0*t*cos(2.0*pi*y))/12.0
+    - (8750.0*cos(2.0*pi*x)*cos(2.0*pi*y))/9.0 + 140.0*(cos(2.0*pi*x)/4.0 - 1.0/4.0)
+    *(cos(2.0*pi*y) - 1.0) + 455.0*((t*(cos(2.0*pi*x)/4.0 - 1.0/4.0)
+  				     *(cos(2.0*pi*y) - 1.0))/65.0 - 9.0/13.0)
+    *((t*(cos(2.0*pi*x)/4.0 - 1.0/4.0)*(cos(2.0*pi*y) - 1.0))/65.0 - 5.0/26.0)
+    *((t*(cos(2.0*pi*x)/4.0 - 1.0/4.0)*(cos(2.0*pi*y) - 1.0))/65.0 - 22.0/13.0)
+    - (35.0*t*cos(2.0*pi*x)*cos(2.0*pi*y))/12.0
+    + (2.0*t*pi*pi*cos(2.0*pi*y)*(cos(2.0*pi*x)/4.0 - 1.0/4.0))/5.0
+    + (t*pi*pi*cos(2.0*pi*x)*(cos(2.0*pi*y) - 1.0))/10.0 - 4025.0/9.0;
+  
+  Istim = -Istim;
 
   ////excite rectyangular area:
   //if((x<= 0.2) && (y<=0.2) && (t<1.0)){

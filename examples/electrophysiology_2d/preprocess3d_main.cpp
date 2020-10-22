@@ -16,6 +16,8 @@
 //    /trunk/preprocess3d_main.cpp
 //
 // Date: Jan 05 2014
+// Author: Ju Liu
+// Modified: Oguz Ziya Tikenogullari
 // =======================================================================
 #include "Sys_Tools.hpp"
 #include "NURBS_Bezier.hpp"

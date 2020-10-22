@@ -34,6 +34,8 @@
 //    the postprocessors.
 //
 // Date: April 18 2014
+// Author: Ju Liu
+// Modified: Oguz Ziya Tikenogullari
 // ==================================================================
 #include "Sys_Tools.hpp"
 #include "kRefinement.hpp"
@@ -63,7 +65,7 @@ int main(int argc, char * argv[])
   // refinement
   int addSDegree = 0, addTDegree = 0;
 
-  int num_inserted_x = 30, num_inserted_y = 30;
+  int num_inserted_x = 149, num_inserted_y = 149;
 
   // geometry file
   char * char_home_dir = getenv("HOME");

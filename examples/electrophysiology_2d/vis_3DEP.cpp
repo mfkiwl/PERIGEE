@@ -8,6 +8,8 @@
 // obtain a parallel mesh partition.
 //
 // Date: Dec. 12 2013
+// Author: Ju Liu
+// Modified: Oguz Ziya Tikenogullari
 // ==================================================================
 #include <cmath>
 #include <sstream>
