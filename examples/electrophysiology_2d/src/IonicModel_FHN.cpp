@@ -4,7 +4,7 @@ IonicModel_FHN::IonicModel_FHN()
   //           d_iso, d_ani, chi,  C_m
   : IonicModel(0.1, 0.0, 140.0, 1.0),
     fh_1{65.0}, fh_2{35.0}, fh_3{200.0}, 
-    alpha{-0.5}, a{0.0}, b{-0.6}, c{10.0}
+    alpha{-0.5}, a{0.0}, b{-0.6}, c{50.0}
 {
   //SYS_T::commPrint("FHN constructor. \n");
 };

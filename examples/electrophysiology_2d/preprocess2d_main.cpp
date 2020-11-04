@@ -50,7 +50,7 @@ int main(int argc, char * argv[])
   int addSDegree = 0, addTDegree = 0;
 
   // Number of knots to be inserted in spatial discretizations
-  int num_inserted_x = 149, num_inserted_y = 149;
+  int num_inserted_x = 399, num_inserted_y = 399;
 
   // Geometry file
   char * char_home_dir = getenv("HOME");
@@ -62,7 +62,7 @@ int main(int argc, char * argv[])
   string part_file("part");
 
   // partition parameters
-  int cpu_size = 4;
+  int cpu_size = 1;
   int in_ncommon = 2;
   bool isDualGraph = true;
   bool isWriteCNet = true;

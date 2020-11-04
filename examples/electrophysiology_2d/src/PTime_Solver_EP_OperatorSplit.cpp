@@ -88,14 +88,13 @@ void PTime_Solver_EP_OperatorSplit::TM_generalized_alpha(
       time      = time_info->get_time();
       time_half =time+dt_half;
 
-      ////Manuf soln no diffusion
-      ////Step 1 - Update of ionic variables
-      //gassem_ptr->Update_nodal_velo(pre_disp, pre_hist,
-      //			    time, dt,
-      //			    ionicmodel_ptr, alelem_ptr, lien_ptr,
-      //			    anode_ptr, feanode_ptr, ele_ptr, bc_part,
-      //			    cur_disp, cur_hist); 
-            
+     // //Manuf soln no diffusion
+     // gassem_ptr->Update_nodal_velo(pre_disp, pre_hist,
+     // 			    time, dt,
+     // 			    ionicmodel_ptr, alelem_ptr, lien_ptr,
+     // 			    anode_ptr, feanode_ptr, ele_ptr, bc_part,
+     //             	    cur_disp, cur_hist);
+
       //Step 1 - Update of ionic variables
       gassem_ptr->Update_nodal_velo(pre_disp, pre_hist,
       			    time, dt_half,

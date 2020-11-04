@@ -904,8 +904,8 @@ void PGAssem_EP::Update_nodal_velo(const PDNSolution * const &sol_a, //disp
       ionicmodel_ptr-> get_Istim (Istim.at(2), t_n1,
 				  ctrl_x, ctrl_y, ctrl_z);
 
-      ionicmodel_ptr-> Forward_Euler(r_old, dt, V_in, Istim, r_new, V_new);
-      //ionicmodel_ptr-> Runge_Kutta_4(r_old, dt, V_in, Istim, r_new, V_new);
+      //ionicmodel_ptr-> Forward_Euler(r_old, dt, V_in, Istim, r_new, V_new);
+      ionicmodel_ptr-> Runge_Kutta_4(r_old, dt, V_in, Istim, r_new, V_new);
 
       array_c   [count] = V_new;
       array_d   [count] = r_new;

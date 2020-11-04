@@ -24,7 +24,7 @@ void IonicModel_Test::get_Iion(const double &r_old_in,
 			      double &Iion) const
 {
 
-  Iion = -10.0 + I_stim/chi;
+  Iion = 0.0 + I_stim/chi;
   f_r  = 0.0;
 }
 

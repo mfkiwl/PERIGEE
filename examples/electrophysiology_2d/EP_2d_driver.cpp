@@ -52,14 +52,14 @@ int main(int argc, char *argv[])
 
   // Time stepping parameters
   double initial_time = 0.0;
-  double initial_step = 4.0;
+  double initial_step = 0.1;
   int initial_index = 0;
-  double final_time = 100.0;
+  double final_time = 10.0;
 
   // Time solver parameters
   std::string sol_bName("SOL_");
   int ttan_renew_freq = 1;
-  int sol_record_freq = 5;
+  int sol_record_freq = 1;
 
   // ======= PETSc Initialization =======
   PetscMPIInt rank, size;
@@ -188,14 +188,15 @@ int main(int argc, char *argv[])
   // FEA.1.5 Ionic model setup
   SYS_T::commPrint("===> Generate Ionic Model ... \n");
   //IonicModel * ionicmodel_ptr = new IonicModel_AP () ;
-  IonicModel * ionicmodel_ptr = new IonicModel_FHN () ;
-  //IonicModel * ionicmodel_ptr = new IonicModel_Test () ;
+  //IonicModel * ionicmodel_ptr = new IonicModel_FHN () ;
+  IonicModel * ionicmodel_ptr = new IonicModel_Test () ;
   
   ionicmodel_ptr -> print_info();
 
   // FEA.2 Local assembly setup
   SYS_T::commPrint("===> Genereate the Generalized-alpha time scheme ... \n");
-  TimeMethod_GenAlpha * tm_galpha_ptr = new TimeMethod_GenAlpha(1.0, 1.0, 1.0);
+  TimeMethod_GenAlpha * tm_galpha_ptr = new TimeMethod_GenAlpha(0.5);
+  //(1.0, 1.0, 1.0); => backward euler
 
   SYS_T::commPrint("===> Initialize local assembly routine ... \n");
   IPLocAssem * locAssem_ptr =

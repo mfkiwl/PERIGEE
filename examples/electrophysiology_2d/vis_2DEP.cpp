@@ -47,7 +47,7 @@ int main( int argc, char * argv[] )
   // Solution time info
   int time_start = 0;
   int time_step = 1;
-  int time_end = 11;
+  int time_end = 100;
   double dt = 0.1;
 
   // vtk format specification
