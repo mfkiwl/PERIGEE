@@ -19,6 +19,11 @@ IonicModel::~IonicModel()
 void IonicModel::print_info () const
 {
   SYS_T::commPrint("IonicModel print info. \n");
+  PetscPrintf(PETSC_COMM_WORLD, "\t  Conduction parameters (check units): \n");
+  PetscPrintf(PETSC_COMM_WORLD, "\t  istropic conduction = %e \n", d_iso);
+  PetscPrintf(PETSC_COMM_WORLD, "\t  aniistropic conduction = %e \n", d_ani);
+  PetscPrintf(PETSC_COMM_WORLD, "\t  membrane capacitance = %e \n", chi);
+  PetscPrintf(PETSC_COMM_WORLD, "\t  surface to volume ratio = %e \n", C_m);
 }
 
 

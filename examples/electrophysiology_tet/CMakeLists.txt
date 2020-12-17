@@ -117,7 +117,6 @@ SET( perigee_postprocess_lib_src
   ##
   #${perigee_source}/Postproc_Tool/PostVectSolution.cpp
   #${perigee_source}/Postproc_Tool/VTK_Writer.cpp
-  #${perigee_SOURCE_DIR}/src/VisDataPrep_2DEP.cpp
   ${perigee_SOURCE_DIR}/src/VisDataPrep_3DEP.cpp
   #${perigee_SOURCE_DIR}/src/Post_error.cpp
   ${perigee_source}/Postproc_Tool/Interpolater.cpp
@@ -155,17 +154,12 @@ TARGET_LINK_LIBRARIES( perigee_postprocess ${EXTRA_LINK_LIBS} perigee_analysis )
 # 1. Make executable
 # 1.1 Preprocess
 ADD_EXECUTABLE( gmshIO3d gmsh_process_3d.cpp)
-#ADD_EXECUTABLE( preprocess2d preprocess2d_main.cpp)
 ADD_EXECUTABLE( preprocess3d preprocess3d_main.cpp)
 
 # 1.2 Analysis and tests
-#ADD_EXECUTABLE( analysis_2d_EP EP_2d_driver.cpp)
 ADD_EXECUTABLE( analysis_3d_EP EP_3d_driver.cpp)
 
 ## 1.3 Post-process
-#ADD_EXECUTABLE( prepostproc2d Pre_postprocess2d.cpp)
-#ADD_EXECUTABLE( post_compare_manu_2d post_compare_manu_2d.cpp)
-#ADD_EXECUTABLE( vis_2d_EP vis_2DEP.cpp)
 #
 ADD_EXECUTABLE( prepostproc3d Pre_postprocess3d.cpp)
 #ADD_EXECUTABLE( post_compare_manu_3d post_compare_manu_3d.cpp)
@@ -175,26 +169,16 @@ ADD_EXECUTABLE( vis_3d_EP vis_3DEP.cpp)
 # 2. Link libraries
 # 2.1 Preprocess
 TARGET_LINK_LIBRARIES( gmshIO3d perigee_preprocess )
-#TARGET_LINK_LIBRARIES( preprocess2d ${EXTRA_LINK_LIBS} perigee_preprocess )
 TARGET_LINK_LIBRARIES( preprocess3d ${EXTRA_LINK_LIBS} perigee_preprocess )
 
 ## 2.2 Analysis and tests
-#TARGET_LINK_LIBRARIES( analysis_2d_EP ${EXTRA_LINK_LIBS} perigee_analysis )
 TARGET_LINK_LIBRARIES( analysis_3d_EP ${EXTRA_LINK_LIBS} perigee_analysis )
 #
 ## 2.3 Postprocess
-#TARGET_LINK_LIBRARIES( prepostproc2d ${EXTRA_LINK_LIBS} perigee_preprocess
-#  perigee_analysis )
 TARGET_LINK_LIBRARIES( prepostproc3d ${EXTRA_LINK_LIBS} perigee_preprocess
   perigee_analysis )
 #
-#TARGET_LINK_LIBRARIES( post_compare_manu_2d ${EXTRA_LINK_LIBS} 
-#  perigee_preprocess perigee_analysis perigee_postprocess )
-#
 #TARGET_LINK_LIBRARIES( post_compare_manu_3d ${EXTRA_LINK_LIBS} 
-#  perigee_preprocess perigee_analysis perigee_postprocess )
-#
-#TARGET_LINK_LIBRARIES( vis_2d_EP ${EXTRA_LINK_LIBS}
 #  perigee_preprocess perigee_analysis perigee_postprocess )
 #
 TARGET_LINK_LIBRARIES( vis_3d_EP ${EXTRA_LINK_LIBS}

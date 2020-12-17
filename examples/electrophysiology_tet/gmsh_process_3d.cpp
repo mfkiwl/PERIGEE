@@ -13,8 +13,10 @@ int main( int argc, char * argv[] )
 {
   char * char_home_dir = getenv("HOME");
   std::string gmshFile (char_home_dir);
-  gmshFile.append("/PERIGEE/examples/electrophysiology_tet/mesh/cube.msh");
-  //gmshFile.append("/PERIGEE/examples/electrophysiology_tet/single_tet.msh");  
+  //gmshFile.append("/PERIGEE/examples/electrophysiology_tet/mesh/beam.msh");
+  gmshFile.append("/PERIGEE/examples/electrophysiology_tet/mesh/HLHS_myo.msh");
+  //gmshFile.append("/PERIGEE/examples/electrophysiology_tet/mesh/cube.msh");
+  //gmshFile.append("/PERIGEE/examples/electrophysiology_tet/mesh/single_tet.msh");  
 
   PetscInitialize(&argc, &argv, (char *)0, PETSC_NULL);
   SYS_T::GetOptionString("-gmsh_file", gmshFile);
@@ -24,13 +26,21 @@ int main( int argc, char * argv[] )
 
   GIO -> print_info();
 
-  GIO -> write_vtp(0,0);//top
-  GIO -> write_vtp(1,0);//bot
-  GIO -> write_vtp(2,0);//lef
-  GIO -> write_vtp(3,0);//rig
-  GIO -> write_vtp(4,0);//fro
-  GIO -> write_vtp(5,0);//bac
+  //faces for HLHS myocardium mesh
+  GIO -> write_vtp(0,0);//RV
+  GIO -> write_vtp(1,0);//Base
+  GIO -> write_vtp(2,0);//Epi
+  GIO -> write_vtp(3,0);//LV
 
+  //faces for Beam or cube mesh
+  //GIO -> write_vtp(0,0);//top
+  //GIO -> write_vtp(1,0);//bot
+  //GIO -> write_vtp(2,0);//lef
+  //GIO -> write_vtp(3,0);//rig
+  //GIO -> write_vtp(4,0);//fro
+  //GIO -> write_vtp(5,0);//bac
+
+  //faces for single tet mesh 
   //GIO -> write_vtp(0,0);//back
   //GIO -> write_vtp(1,0);//left
   //GIO -> write_vtp(2,0);//diagface

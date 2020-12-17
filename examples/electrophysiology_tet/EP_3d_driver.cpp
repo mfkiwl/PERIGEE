@@ -76,7 +76,7 @@ int main(int argc, char *argv[])
   double initial_time = 0.0;
   double initial_step = 1.0;
   int initial_index = 0;
-  double final_time = 500.0;
+  double final_time = 1000.0;
 
   // Time solver parameters
   std::string sol_bName("SOL_");
@@ -254,7 +254,7 @@ int main(int argc, char *argv[])
   // ---------------------------------------
 
   // ======= Solution Initialization =======
-  PDNSolution * disp = new PDNSolution_EP(pNode, fNode, locbc, 0); // make it 2
+  PDNSolution * disp = new PDNSolution_EP(pNode, fNode, locbc, 2); // make it 2
   PDNSolution * velo = new PDNSolution_EP(pNode, fNode, locbc, 0);
   PDNSolution * hist = new PDNSolution_EP(pNode, fNode, locbc, 0);
 

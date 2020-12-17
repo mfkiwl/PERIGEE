@@ -45,14 +45,22 @@ int main( int argc, char * argv[] )
   // WARNING: check this element type
 
   // Input files
+  // volume
   std::string geo_file("./whole_vol.vtu");
+
+  // faces for cube/beam mesh  
+  std::string sur_file_Base("./Base_Vol.vtp");
+  std::string sur_file_Epi ("./Epi_Vol.vtp");
+  std::string sur_file_RV  ("./RV_Vol.vtp");
+  std::string sur_file_LV  ("./LV_Vol.vtp");
   
-  std::string sur_file_top("./top_vol.vtp");
-  std::string sur_file_bot("./bot_vol.vtp");
-  std::string sur_file_lef("./lef_vol.vtp");
-  std::string sur_file_rig("./rig_vol.vtp");
-  std::string sur_file_fro("./fro_vol.vtp");
-  std::string sur_file_bac("./bac_vol.vtp");
+  // faces for cube/beam mesh  
+  //std::string sur_file_top("./top_vol.vtp");
+  //std::string sur_file_bot("./bot_vol.vtp");
+  //std::string sur_file_lef("./lef_vol.vtp");
+  //std::string sur_file_rig("./rig_vol.vtp");
+  //std::string sur_file_fro("./fro_vol.vtp");
+  //std::string sur_file_bac("./bac_vol.vtp");
 
   const std::string part_file("part");
 
@@ -76,21 +84,18 @@ int main( int argc, char * argv[] )
   SYS_T::GetOptionInt("-cpu_size", cpu_size);
   SYS_T::GetOptionInt("-in_ncommon", in_ncommon);
   SYS_T::GetOptionString("-geo_file", geo_file);
-  SYS_T::GetOptionString("-sur_file_top", sur_file_top);
-  SYS_T::GetOptionString("-sur_file_bot", sur_file_bot);
-  SYS_T::GetOptionString("-sur_file_lef", sur_file_lef);
-  SYS_T::GetOptionString("-sur_file_rig", sur_file_rig);
-  SYS_T::GetOptionString("-sur_file_fro", sur_file_fro);
-  SYS_T::GetOptionString("-sur_file_bac", sur_file_bac);
+  SYS_T::GetOptionString("-sur_file_Base", sur_file_Base);
+  SYS_T::GetOptionString("-sur_file_Epi ", sur_file_Epi );
+  SYS_T::GetOptionString("-sur_file_RV  ", sur_file_RV  );
+  SYS_T::GetOptionString("-sur_file_LV  ", sur_file_LV  );
 
   std::cout<<"==== /Command Line Arguments ===="<<std::endl;
   std::cout<<" -geo_file: "<<geo_file<<std::endl;
-  std::cout<<" -sur_file_top" <<sur_file_top<<std::endl;
-  std::cout<<" -sur_file_bot" <<sur_file_bot<<std::endl;
-  std::cout<<" -sur_file_lef" <<sur_file_lef<<std::endl;
-  std::cout<<" -sur_file_rig" <<sur_file_rig<<std::endl;
-  std::cout<<" -sur_file_fro" <<sur_file_fro<<std::endl;
-  std::cout<<" -sur_file_bac" <<sur_file_bac<<std::endl;
+  std::cout<<" -sur_file_Base" <<sur_file_Base<<std::endl;
+  std::cout<<" -sur_file_Epi " <<sur_file_Epi <<std::endl;
+  std::cout<<" -sur_file_RV  " <<sur_file_RV  <<std::endl;
+  std::cout<<" -sur_file_LV  " <<sur_file_LV  <<std::endl;
+
   std::cout<<" -part_file: "<<part_file<<std::endl;
   std::cout<<" -cpu_size: "<<cpu_size<<std::endl;
   std::cout<<" -in_ncommon: "<<in_ncommon<<std::endl;
@@ -103,12 +108,10 @@ int main( int argc, char * argv[] )
 
   // Check if the geometrical file exist on disk
   SYS_T::file_check(geo_file); std::cout<<geo_file<<" found. \n";
-  SYS_T::file_check(sur_file_top); std::cout<<sur_file_top<<" found. \n";
-  SYS_T::file_check(sur_file_bot); std::cout<<sur_file_bot<<" found. \n";
-  SYS_T::file_check(sur_file_lef); std::cout<<sur_file_lef<<" found. \n";
-  SYS_T::file_check(sur_file_rig); std::cout<<sur_file_rig<<" found. \n";
-  SYS_T::file_check(sur_file_fro); std::cout<<sur_file_fro<<" found. \n";
-  SYS_T::file_check(sur_file_bac); std::cout<<sur_file_bac<<" found. \n";
+  SYS_T::file_check(sur_file_Base); std::cout<<sur_file_Base<<" found. \n";
+  SYS_T::file_check(sur_file_Epi ); std::cout<<sur_file_Epi <<" found. \n";
+  SYS_T::file_check(sur_file_RV  ); std::cout<<sur_file_RV  <<" found. \n";
+  SYS_T::file_check(sur_file_LV  ); std::cout<<sur_file_LV  <<" found. \n";
 
 //  sur_f_file_out.resize( num_outlet );
 //  sur_s_file_out.resize( num_outlet );
@@ -152,12 +155,10 @@ int main( int argc, char * argv[] )
   cmdh5w->write_intScalar("dofMat", dofMat);
   cmdh5w->write_intScalar("elemType", elemType);
   cmdh5w->write_string("geo_file", geo_file);
-  cmdh5w->write_string("sur_file_top", sur_file_top);
-  cmdh5w->write_string("sur_file_bot", sur_file_bot);
-  cmdh5w->write_string("sur_file_lef", sur_file_lef);
-  cmdh5w->write_string("sur_file_rig", sur_file_rig);
-  cmdh5w->write_string("sur_file_fro", sur_file_fro);
-  cmdh5w->write_string("sur_file_bac", sur_file_bac);
+  cmdh5w->write_string("sur_file_Base", sur_file_Base);
+  cmdh5w->write_string("sur_file_Epi ", sur_file_Epi );
+  cmdh5w->write_string("sur_file_RV  ", sur_file_RV  );
+  cmdh5w->write_string("sur_file_LV  ", sur_file_LV  );
   
   cmdh5w->write_string("part_file", part_file);
 
