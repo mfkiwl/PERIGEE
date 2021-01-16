@@ -191,6 +191,53 @@ void TET_T::read_vtu_grid( const std::string &filename,
   reader->Delete();
 }
 
+void TET_T::read_purkinje_lines( const std::string &filename,
+    int &numpts, int &numcels,
+    std::vector<double> &pt, std::vector<int> &ien_array,
+    std::vector<int> &phy_tag )
+{
+  vtkXMLUnstructuredGridReader * reader = vtkXMLUnstructuredGridReader::New();
+  reader -> SetFileName( filename.c_str() );
+  reader -> Update();
+  vtkUnstructuredGrid * vtkugrid = reader -> GetOutput();
+
+  numpts  = static_cast<int>( vtkugrid -> GetNumberOfPoints() );
+  numcels = static_cast<int>( vtkugrid -> GetNumberOfCells() );
+
+  vtkCellData * celldata = vtkugrid->GetCellData();
+  vtkDataArray * cd = celldata->GetScalars("Physics_tag");
+
+  double pt_xyz[3];
+  pt.clear();
+  for(int ii=0; ii<numpts; ++ii)
+  {
+    vtkugrid -> GetPoint(ii, pt_xyz);
+    pt.push_back(pt_xyz[0]);
+    pt.push_back(pt_xyz[1]);
+    pt.push_back(pt_xyz[2]);
+  }
+
+  ien_array.clear();
+  phy_tag.clear();
+  for(int ii=0; ii<numcels; ++ii)
+  {
+    vtkCell * cell = vtkugrid -> GetCell(ii);
+
+    if( cell->GetCellType() == 3 )
+    {
+      ien_array.push_back( static_cast<int>( cell->GetPointId(0) ) );
+      ien_array.push_back( static_cast<int>( cell->GetPointId(1) ) );
+      //ien_array.push_back( static_cast<int>( cell->GetPointId(2) ) );
+      //ien_array.push_back( static_cast<int>( cell->GetPointId(3) ) );
+
+      phy_tag.push_back( static_cast<int>( cd->GetComponent(ii, 0) ) );
+    }
+    // later implementation: 32 is for cubic line
+    else SYS_T::print_fatal("Error: read_purkinje_lines read a mesh with non-line elements. \n"); 
+  }
+
+  reader->Delete();
+}
 
 void TET_T::read_vtp_grid( const std::string &filename,
     int &numpts, int &numcels,
@@ -287,6 +334,59 @@ void TET_T::read_vtp_grid( const std::string &filename,
   reader->Delete();
 }
 
+void TET_T::read_purkinje_nodes( const std::string &filename,
+    int &numpts, int &numcels,
+    std::vector<double> &pt, std::vector<int> &ien_array,
+    std::vector<int> &global_node_index,
+    std::vector<int> &global_ele_index )
+{
+  vtkXMLPolyDataReader * reader = vtkXMLPolyDataReader::New();
+  reader -> SetFileName( filename.c_str() );
+  reader -> Update();
+
+  vtkPolyData * polydata = reader -> GetOutput();
+  numpts = static_cast<int>( polydata -> GetNumberOfPoints() );
+  numcels = static_cast<int>( polydata -> GetNumberOfPolys() );
+
+  // read the cell data
+  vtkCellData * celldata = polydata->GetCellData();
+  vtkDataArray * cd = celldata->GetScalars("GlobalElementID");
+
+  // read the point nodal data
+  vtkPointData * pointdata = polydata->GetPointData();
+  vtkDataArray * pd = pointdata->GetScalars("GlobalNodeID");
+
+  pt.clear();
+  global_node_index.clear();
+  double pt_xyz[3];
+  for(int ii=0; ii<numpts; ++ii)
+  {
+    polydata -> GetPoint(ii, pt_xyz);
+    pt.push_back(pt_xyz[0]);
+    pt.push_back(pt_xyz[1]);
+    pt.push_back(pt_xyz[2]);
+
+    global_node_index.push_back( static_cast<int>(pd->GetComponent(ii,0)) );
+  }
+
+  ien_array.clear();
+  global_ele_index.clear();
+  for(int ii=0; ii<numcels; ++ii)
+  {
+    vtkCell * cell = polydata -> GetCell(ii);
+
+    if( cell->GetCellType() == 1 )
+    {
+      ien_array.push_back( static_cast<int>( cell->GetPointId(0) ) );
+      //ien_array.push_back( static_cast<int>( cell->GetPointId(1) ) );
+      //ien_array.push_back( static_cast<int>( cell->GetPointId(2) ) );
+
+      global_ele_index.push_back( static_cast<int>( cd->GetComponent(ii, 0)));
+    }
+    else SYS_T::print_fatal("Error: read_purkinje_nodes read a mesh with non triangle elements. \n");
+  }
+  reader->Delete();
+}
 
 void TET_T::write_tet_grid( const std::string &filename,
     const int &numpts, const int &numcels,
@@ -831,6 +931,130 @@ void TET_T::write_tet_grid( const std::string &filename,
   grid_w->Delete();
 }
 
+void TET_T::write_purkinje_lines( const std::string &filename,
+    const int &numpts, const int &numcels,
+    const std::vector<double> &pt, const std::vector<int> &ien_array,
+    const std::vector<int> &phytag, const bool &isXML,
+    const int &start_cell_index )
+{
+  // Check the compatibility
+  if(int(pt.size()) != 3*numpts) SYS_T::print_fatal("test: TET_T::write_purkinje_lines: point vector size does not match the number of points. \n");
+
+  // Detect teh element type
+  int nlocbas = -1;
+  if( int(ien_array.size()) == 2*numcels ) nlocbas = 2;
+  //else if( int(ien_array.size()) == 10*numcels ) nlocbas = 10;
+  else SYS_T::print_fatal("Error: TET_T::write_purkinje_lines ien array size does not match the number of cells. \n");
+
+  if(int(phytag.size()) != numcels) SYS_T::print_fatal("Error: TET_T::write_purkinje_lines: phytag length does not match the number of cells. \n");
+
+  std::vector<int> temp = ien_array;
+  VEC_T::sort_unique_resize(temp);
+  if( int(temp.size()) != numpts ) SYS_T::print_fatal("Error: TET_T::write_purkinje_lines numpts is more than the point needed for the cells. Please re-organize the input. \n");
+
+  if( temp.back()+1 != numpts ) SYS_T::print_fatal("Error: TET_T::write_purkinje_lines IEN array is not ranged from zero to numpts. \n");
+  VEC_T::clean(temp); 
+
+  vtkUnstructuredGrid * grid_w = vtkUnstructuredGrid::New();
+
+  // 1. nodal points
+  vtkPoints * ppt = vtkPoints::New();
+  ppt->SetDataTypeToDouble();
+  double coor[3];
+  for(int ii=0; ii<numpts; ++ii)
+  {
+    coor[0] = pt[3*ii];
+    coor[1] = pt[3*ii+1];
+    coor[2] = pt[3*ii+2];
+    ppt -> InsertPoint(ii, coor);
+  }
+  grid_w -> SetPoints(ppt);
+  ppt -> Delete();
+
+  vtkIntArray * ptindex = vtkIntArray::New();
+  ptindex -> SetNumberOfComponents(1);
+  ptindex -> SetName("GlobalNodeID");
+  for(int ii=0; ii<numpts; ++ii)
+    ptindex -> InsertComponent(ii, 0, ii);
+
+  grid_w -> GetPointData() -> AddArray( ptindex );
+  ptindex->Delete();
+  //
+  //  // 2. Cell
+  //  vtkDoubleArray * edge_aspect_ratio = vtkDoubleArray::New();
+  //  edge_aspect_ratio -> SetName("Aspect_ratio");
+  //  edge_aspect_ratio -> SetNumberOfComponents(1);
+  //
+  vtkIntArray * phy_tag = vtkIntArray::New();
+  phy_tag -> SetName("Physics_tag");
+  phy_tag -> SetNumberOfComponents(1);
+
+  vtkIntArray * cellindex = vtkIntArray::New();
+  cellindex -> SetName("GlobalElementID");
+  cellindex -> SetNumberOfComponents(1);
+
+  if( nlocbas == 2 )
+  {
+    vtkCell * cl = vtkLine::New();
+    for(int ii=0; ii<numcels; ++ii)
+    {
+      // cell geometry
+      cl->GetPointIds()->SetId( 0, ien_array[2*ii] );
+      cl->GetPointIds()->SetId( 1, ien_array[2*ii+1] );
+      grid_w->InsertNextCell( cl->GetCellType(), cl->GetPointIds() );
+
+      //      // Obtain the cell node coordinates and calculate teh aspect ratio
+      //      std::vector<double> cell_node; cell_node.clear();
+      //      for(int lnode=0; lnode<4; ++lnode)
+      //      {
+      //        int node_offset = 3 * ien_array[4*ii + lnode];
+      //	 cell_node.push_back(pt[node_offset]);
+      //        cell_node.push_back(pt[node_offset+1]);
+      //        cell_node.push_back(pt[node_offset+2]);
+      //      }
+      //      edge_aspect_ratio -> InsertNextValue( TET_T::get_aspect_ratio(cell_node) );
+      //
+      cellindex -> InsertNextValue( ii + start_cell_index );
+
+      phy_tag -> InsertNextValue( phytag[ii] );
+    }
+    cl -> Delete();
+  }
+  else SYS_T::print_fatal("Error: TET_T::write_tet_grid unknown local basis number.\n");
+//
+//  grid_w -> GetCellData() -> AddArray( edge_aspect_ratio );
+  grid_w -> GetCellData() -> AddArray( cellindex );
+  grid_w -> GetCellData() -> AddArray( phy_tag );
+
+//  edge_aspect_ratio -> Delete();
+  cellindex -> Delete();
+  phy_tag -> Delete();
+
+  if( isXML )
+  {
+    vtkXMLUnstructuredGridWriter * writer = vtkXMLUnstructuredGridWriter::New();
+    std::string name_to_write(filename);
+    name_to_write.append(".vtu");
+    writer -> SetFileName( name_to_write.c_str() );
+
+    writer->SetInputData(grid_w);
+    writer->Write();
+    writer->Delete();
+  }
+  else
+  {
+    vtkUnstructuredGridWriter * writer = vtkUnstructuredGridWriter::New();
+    std::string name_to_write(filename);
+    name_to_write.append(".vtk");
+    writer -> SetFileName( name_to_write.c_str() );
+
+    writer->SetInputData(grid_w);
+    writer->Write();
+    writer->Delete();
+  }
+  grid_w->Delete();
+}
+
 
 void TET_T::write_tet_grid( const std::string &filename,
     const bool &isXML, const int &numpts, const int &numcels,
@@ -1069,6 +1293,89 @@ void TET_T::write_triangle_grid( const std::string &filename,
   grid_w -> GetCellData() -> AddArray( clindex );
   clindex -> Delete();
 
+  // write vtk
+  vtkXMLPolyDataWriter * writer = vtkXMLPolyDataWriter::New();
+  std::string name_to_write(filename);
+  name_to_write.append(".vtp");
+  writer -> SetFileName( name_to_write.c_str() );
+  writer->SetInputData(grid_w);
+  writer->Write();
+  writer->Delete();
+
+  grid_w->Delete();
+}
+
+void TET_T::write_purkinje_nodes( const std::string &filename,
+    const int &numpts, const int &numcels,
+    const std::vector<double> &pt,
+    const std::vector<int> &ien_array,
+    const std::vector<int> &node_index,
+    const std::vector<int> &ele_index )
+{
+  // check the input data compatibility
+  if(int(pt.size()) != 3*numpts) SYS_T::print_fatal("Error: TET_T::write_purkinjenodes_grid point vector size does not match the number of points. \n");
+
+  if( int(ien_array.size()) != 1*numcels ) SYS_T::print_fatal("Error: TET_T::write_purkinjenodes_grid ien array size does not match the number of cells. \n");
+
+  if(int(node_index.size()) != numpts) SYS_T::print_fatal("Error: TET_T::write_purkinjenodes_grid node_index size does not match the number of points. \n"); 
+
+  if(int(ele_index.size()) != numcels) SYS_T::print_fatal("Error: TET_T::write_purkinjenodes_grid ele_index size does not match the number of cells. \n");
+
+  // Setup the VTK objects
+  vtkPolyData * grid_w = vtkPolyData::New();
+
+  // 1. nodal points
+  vtkPoints * ppt = vtkPoints::New(); 
+  ppt->SetDataTypeToDouble();
+  double coor[3];
+  for(int ii=0; ii<numpts; ++ii)
+  {
+    coor[0] = pt[3*ii];
+    coor[1] = pt[3*ii+1];
+    coor[2] = pt[3*ii+2];
+    ppt -> InsertPoint(ii, coor);
+  }
+
+  grid_w -> SetPoints(ppt);
+  ppt -> Delete();
+
+  // 2. Cell
+
+  //  
+  vtkCellArray * cl = vtkCellArray::New();
+  for(int ii=0; ii<numcels; ++ii)
+  {
+    vtkTriangle * tr = vtkTriangle::New();
+
+    tr->GetPointIds()->SetId( 0, ien_array[ii] );
+    //tr->GetPointIds()->SetId( 1, ien_array[3*ii+1] );
+    //tr->GetPointIds()->SetId( 2, ien_array[3*ii+2] );
+    cl -> InsertNextCell(tr);
+    tr -> Delete();
+  }
+  grid_w->SetVerts(cl);
+  cl->Delete();
+
+  // 3. nodal indices
+  vtkIntArray * ptindex = vtkIntArray::New();
+  ptindex -> SetNumberOfComponents(1);
+  ptindex -> SetName("GlobalNodeID");
+  for(int ii=0; ii<numpts; ++ii)
+    ptindex -> InsertComponent(ii, 0, node_index[ii]);
+  
+  grid_w -> GetPointData() -> AddArray( ptindex );
+  ptindex->Delete();
+  
+  // 4. cell indices
+  vtkIntArray * clindex = vtkIntArray::New();
+  clindex -> SetName("GlobalElementID");
+  clindex -> SetNumberOfComponents(1);
+  for(int ii=0; ii<numcels; ++ii) {
+    clindex -> InsertNextValue( ele_index[ii] );
+    }
+  grid_w -> GetCellData() -> AddArray( clindex );
+  clindex -> Delete();
+  
   // write vtk
   vtkXMLPolyDataWriter * writer = vtkXMLPolyDataWriter::New();
   std::string name_to_write(filename);

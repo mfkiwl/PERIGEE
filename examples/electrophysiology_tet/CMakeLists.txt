@@ -42,20 +42,25 @@ SET( perigee_preprocess_lib_src
   ${perigee_source}/System/HDF5_Reader.cpp
   ${perigee_source}/System/Math_Tools.cpp
   ${perigee_source}/System/Matrix_double_3by3_Array.cpp
+  ${perigee_source}/Mesh/IEN_Line_P1.cpp
   ${perigee_source}/Mesh/IEN_Tetra_P1.cpp
+  ${perigee_source}/Mesh/Mesh_Line_3D.cpp
   ${perigee_source}/Mesh/Mesh_Tet4.cpp
-  ${perigee_source}/Mesh/Mesh_Tet10.cpp
   ${perigee_source}/Mesh/ElemBC_3D_tet4.cpp
+  ${perigee_source}/Mesh/ElemBC_3D_Line.cpp
   ${perigee_source}/Mesh/NBC_Partition_3D.cpp
   ${perigee_source}/Mesh/NBC_Partition_3D_inflow.cpp
   ${perigee_source}/Mesh/EBC_Partition_vtp.cpp
   ${perigee_source}/Mesh/NodalBC_3D_vtp.cpp
+  ${perigee_source}/Mesh/NodalBC_Line_3D_vtp.cpp
   ${perigee_source}/Mesh/NodalBC_3D_inflow.cpp
+  ${perigee_source}/Mesh/NodalBC_Line_3D_stimulus.cpp
   ${perigee_source}/Mesh/INodalBC.cpp
   ${perigee_source}/Mesh/Map_Node_Index.cpp
   ${perigee_source}/Mesh/Global_Part_METIS.cpp
   ${perigee_source}/Mesh/Global_Part_Serial.cpp
   ${perigee_source}/Mesh/Part_Tet.cpp
+  ${perigee_source}/Mesh/Part_Line.cpp
   ${perigee_source}/Mesh/IPart.cpp
   ${perigee_source}/Mesh/QuadPts_Gauss_Triangle.cpp
   ${perigee_source}/Element/FEAElement_Triangle3_3D_der0.cpp
@@ -139,13 +144,13 @@ MESSAGE( STATUS "CMAKE_BUILD_TYPE: " ${CMAKE_BUILD_TYPE} )
 ADD_LIBRARY( perigee_preprocess ${perigee_preprocess_lib_src} )
 TARGET_LINK_LIBRARIES( perigee_preprocess ${EXTRA_LINK_LIBS} )
 
-# 2. Analysis libs
-ADD_LIBRARY( perigee_analysis ${perigee_analysis_lib_src} )
-TARGET_LINK_LIBRARIES( perigee_analysis ${EXTRA_LINK_LIBS} )
-#
-## 3. Postprocess lib
-ADD_LIBRARY( perigee_postprocess ${perigee_postprocess_lib_src} )
-TARGET_LINK_LIBRARIES( perigee_postprocess ${EXTRA_LINK_LIBS} perigee_analysis )
+## 2. Analysis libs
+#ADD_LIBRARY( perigee_analysis ${perigee_analysis_lib_src} )
+#TARGET_LINK_LIBRARIES( perigee_analysis ${EXTRA_LINK_LIBS} )
+##
+### 3. Postprocess lib
+#ADD_LIBRARY( perigee_postprocess ${perigee_postprocess_lib_src} )
+#TARGET_LINK_LIBRARIES( perigee_postprocess ${EXTRA_LINK_LIBS} perigee_analysis )
 # -------------------------------------------------------------------
 
 # ===================================================================
@@ -156,14 +161,14 @@ TARGET_LINK_LIBRARIES( perigee_postprocess ${EXTRA_LINK_LIBS} perigee_analysis )
 ADD_EXECUTABLE( gmshIO3d gmsh_process_3d.cpp)
 ADD_EXECUTABLE( preprocess3d preprocess3d_main.cpp)
 
-# 1.2 Analysis and tests
-ADD_EXECUTABLE( analysis_3d_EP EP_3d_driver.cpp)
-
-## 1.3 Post-process
+## 1.2 Analysis and tests
+#ADD_EXECUTABLE( analysis_3d_EP EP_3d_driver.cpp)
 #
-ADD_EXECUTABLE( prepostproc3d Pre_postprocess3d.cpp)
-#ADD_EXECUTABLE( post_compare_manu_3d post_compare_manu_3d.cpp)
-ADD_EXECUTABLE( vis_3d_EP vis_3DEP.cpp)
+### 1.3 Post-process
+##
+#ADD_EXECUTABLE( prepostproc3d Pre_postprocess3d.cpp)
+##ADD_EXECUTABLE( post_compare_manu_3d post_compare_manu_3d.cpp)
+#ADD_EXECUTABLE( vis_3d_EP vis_3DEP.cpp)
 
 # -------------------------------------------------------------------
 # 2. Link libraries
@@ -171,18 +176,18 @@ ADD_EXECUTABLE( vis_3d_EP vis_3DEP.cpp)
 TARGET_LINK_LIBRARIES( gmshIO3d perigee_preprocess )
 TARGET_LINK_LIBRARIES( preprocess3d ${EXTRA_LINK_LIBS} perigee_preprocess )
 
-## 2.2 Analysis and tests
-TARGET_LINK_LIBRARIES( analysis_3d_EP ${EXTRA_LINK_LIBS} perigee_analysis )
-#
-## 2.3 Postprocess
-TARGET_LINK_LIBRARIES( prepostproc3d ${EXTRA_LINK_LIBS} perigee_preprocess
-  perigee_analysis )
+### 2.2 Analysis and tests
+#TARGET_LINK_LIBRARIES( analysis_3d_EP ${EXTRA_LINK_LIBS} perigee_analysis )
+##
+### 2.3 Postprocess
+#TARGET_LINK_LIBRARIES( prepostproc3d ${EXTRA_LINK_LIBS} perigee_preprocess
+#  perigee_analysis )
 #
 #TARGET_LINK_LIBRARIES( post_compare_manu_3d ${EXTRA_LINK_LIBS} 
 #  perigee_preprocess perigee_analysis perigee_postprocess )
 #
-TARGET_LINK_LIBRARIES( vis_3d_EP ${EXTRA_LINK_LIBS}
-  perigee_preprocess perigee_analysis perigee_postprocess )
+#TARGET_LINK_LIBRARIES( vis_3d_EP ${EXTRA_LINK_LIBS}
+#  perigee_preprocess perigee_analysis perigee_postprocess )
 
 
 #EOF

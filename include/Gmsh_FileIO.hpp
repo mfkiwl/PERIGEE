@@ -7,6 +7,7 @@
 //
 // Date Created: July 1 2017
 // Author: Ju Liu
+// Modified: Oguz Ziya Tikenogullari
 // ==================================================================
 #include "Tet_Tools.hpp"
 
@@ -24,6 +25,8 @@ class Gmsh_FileIO
     int get_num_phy_domain_2d() const {return num_phy_domain_2d;}
 
     int get_num_phy_domain_1d() const {return num_phy_domain_1d;}
+
+    int get_num_phy_domain_0d() const {return num_phy_domain_0d;}
     
     // --------------------------------------------------------------
     // In FSI problems, we require that the 3d physical domain index
@@ -79,6 +82,29 @@ class Gmsh_FileIO
        const int &index_vol1, const int &index_vol2 ) const;
 
     // --------------------------------------------------------------
+    // write a vtp file for terminal nodes associated with a fiber mesh
+    // with name tip#_fiber#.vtp
+    // \para index_sur : the index for the tip in phy_1d_index array
+    // \para index_vol : the index for the associated fiber
+    //                   in phy_1d_index array
+    // The function will check the surface's triangle's associated
+    // volume mesh index and write as its element index.
+    // This function is similar to TET_T::tetgenio2vtp.
+    // The face2elem writes the global element number that the faces
+    // belong to, this means for many sub-volumetric domains, the
+    // phy_3d_start_index is used to give the global whole domain element
+    // index.
+    // If isf2e is set to false, the face2elem will not be calcualted to
+    // save time. In practice, we only need this for surfaces that has
+    // boundary integral calculations.
+    // In principle, we suggest that the surface belong to only one
+    // volumetric physical domain. In case that a surface spans over
+    // many physical volumetric domain, the face2elem mapping is -1.
+    // --------------------------------------------------------------
+    void write_vtp_purkinje(const int &index_sur, const int &index_vol,
+        const bool &isf2e = false) const;
+
+    // --------------------------------------------------------------
     // write a vtp file for a surface associated with a volume mesh
     // with name surfacename_volumename.vtp
     // \para index_sur : the index for the surface in phy_2d_index array
@@ -117,6 +143,12 @@ class Gmsh_FileIO
     // domain.
     // --------------------------------------------------------------
     void write_vtu( const std::string &in_fname, const bool &isXML ) const;
+
+    // --------------------------------------------------------------
+    // Write a vtu file for all curve physical domain together.
+    // This is suitable for writing fiber elements such as purkinje 
+    // --------------------------------------------------------------
+    void write_vtu_purkinje( const std::string &in_fname, const bool &isXML ) const;
 
     // --------------------------------------------------------------
     // write a separate vtu file for each physical volumetric domain.
@@ -175,18 +207,24 @@ class Gmsh_FileIO
     // the number of 3d, 2d, and 1d domains.
     // num_phy_domain = num_phy_domain_3d + num_phy_domain_2d
     //                 + num_phy_domain_1d
-    int num_phy_domain_3d, num_phy_domain_2d, num_phy_domain_1d;
+    // oguz note: add 0d domains here. 
+    int num_phy_domain_3d, num_phy_domain_2d,
+      num_phy_domain_1d,  num_phy_domain_0d;
 
     // the indices (physical tag) of the 1d/2d/3d domains respectively
-    // {phy_index} = {phy_3d_index} + {phy_2d_index} + {phy_1d_index} 
-    std::vector<int> phy_3d_index, phy_2d_index, phy_1d_index;
+    // {phy_index} = {phy_3d_index} + {phy_2d_index} + {phy_1d_index}
+    //  and 0d domains
+    std::vector<int> phy_3d_index, phy_2d_index,
+      phy_1d_index, phy_0d_index;
 
     // the physicla subdomain names of the corresponding phy_xd_index.
-    std::vector<std::string> phy_3d_name, phy_2d_name, phy_1d_name;
+    std::vector<std::string> phy_3d_name, phy_2d_name,
+      phy_1d_name, phy_0d_name;
 
     // stores the number of 3d/2d/1d element respectively
     // vector lengths are num_phy_domain_3d/2d/1d respectively
-    std::vector<int> phy_3d_nElem, phy_2d_nElem, phy_1d_nElem;
+    std::vector<int> phy_3d_nElem, phy_2d_nElem,
+      phy_1d_nElem, phy_0d_nElem;
 
     // Stores the starting index for the 3d/2d volume mesh, with length
     // num_phy_domain_3d/num_phy_domain_2d.
@@ -197,6 +235,7 @@ class Gmsh_FileIO
     // we need to manage our own element id ourselves. 
     std::vector<int> phy_3d_start_index;
     std::vector<int> phy_2d_start_index;
+    std::vector<int> phy_1d_start_index;
 
     // --------------------------------------------------------------
     // Geometry info    

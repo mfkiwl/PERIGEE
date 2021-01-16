@@ -15,15 +15,15 @@
 // Date: November 2019
 // ==================================================================
 #include "Math_Tools.hpp"
-#include "Mesh_Line_3D.hpp"
-#include "IEN_Line_P1.hpp"
+#include "Mesh_Tet4.hpp"
+#include "IEN_Tetra_P1.hpp"
 #include "Global_Part_METIS.hpp"
 #include "Global_Part_Serial.hpp"
-#include "Part_Line.hpp"
-#include "NodalBC_Line_3D_vtp.hpp"
+#include "Part_Tet.hpp"
+#include "NodalBC_3D_vtp.hpp"
 #include "NodalBC_3D_vtu.hpp"
-#include "NodalBC_Line_3D_stimulus.hpp"
-#include "ElemBC_3D_Line.hpp"
+#include "NodalBC_3D_inflow.hpp"
+#include "ElemBC_3D_tet4_outflow.hpp"
 #include "NBC_Partition_3D.hpp"
 #include "NBC_Partition_3D_inflow.hpp"
 #include "EBC_Partition_vtp_outflow.hpp"
@@ -41,37 +41,31 @@ int main( int argc, char * argv[] )
   // Define basic settings
   const int dofNum = 1; // degree-of-freedom for the physical problem
   const int dofMat = 1; // degree-of-freedom in the matrix problem
-  const int elemType = 512; //2-node line element in 3d. check if this
-  //element type number coincides with another element type number.
-  //because I gave this number to this element.
-
+  const int elemType = 501; // first order simplicial element
+  // WARNING: check this element type
 
   // Input files
   // volume
-  std::string geo_file("./fibers.vtu");
+  std::string geo_file("./whole_vol.vtu");
 
-//  // faces purkinje mesh  
-  std::string sur_file_tip0("./tip0_curve.vtp");
-  std::string sur_file_tip1("./tip1_curve.vtp");
+  // faces for cube/beam mesh  
+  std::string sur_file_Base("./Base_Vol.vtp");
+  std::string sur_file_Epi ("./Epi_Vol.vtp");
+  std::string sur_file_RV  ("./RV_Vol.vtp");
+  std::string sur_file_LV  ("./LV_Vol.vtp");
   
-//  // faces for HLHS mesh  
-//  std::string sur_file_Base("./Base_Vol.vtp");
-//  std::string sur_file_Epi ("./Epi_Vol.vtp");
-//  std::string sur_file_RV  ("./RV_Vol.vtp");
-//  std::string sur_file_LV  ("./LV_Vol.vtp");
-//  
-//  // faces for cube/beam mesh  
-//  //std::string sur_file_top("./top_vol.vtp");
-//  //std::string sur_file_bot("./bot_vol.vtp");
-//  //std::string sur_file_lef("./lef_vol.vtp");
-//  //std::string sur_file_rig("./rig_vol.vtp");
-//  //std::string sur_file_fro("./fro_vol.vtp");
-//  //std::string sur_file_bac("./bac_vol.vtp");
-//
+  // faces for cube/beam mesh  
+  //std::string sur_file_top("./top_vol.vtp");
+  //std::string sur_file_bot("./bot_vol.vtp");
+  //std::string sur_file_lef("./lef_vol.vtp");
+  //std::string sur_file_rig("./rig_vol.vtp");
+  //std::string sur_file_fro("./fro_vol.vtp");
+  //std::string sur_file_bac("./bac_vol.vtp");
+
   const std::string part_file("part");
 
-  int cpu_size = 2;
-  int in_ncommon = 1;
+  int cpu_size = 1;
+  int in_ncommon = 2;
   const bool isDualGraph = true;
 
   PetscMPIInt size, rank;
@@ -90,15 +84,17 @@ int main( int argc, char * argv[] )
   SYS_T::GetOptionInt("-cpu_size", cpu_size);
   SYS_T::GetOptionInt("-in_ncommon", in_ncommon);
   SYS_T::GetOptionString("-geo_file", geo_file);
-  SYS_T::GetOptionString("-sur_file_tip0", sur_file_tip0);
-  SYS_T::GetOptionString("-sur_file_tip1", sur_file_tip1 );
-
+  SYS_T::GetOptionString("-sur_file_Base", sur_file_Base);
+  SYS_T::GetOptionString("-sur_file_Epi ", sur_file_Epi );
+  SYS_T::GetOptionString("-sur_file_RV  ", sur_file_RV  );
+  SYS_T::GetOptionString("-sur_file_LV  ", sur_file_LV  );
 
   std::cout<<"==== /Command Line Arguments ===="<<std::endl;
   std::cout<<" -geo_file: "<<geo_file<<std::endl;
-  std::cout<<" -sur_file_tip0" <<sur_file_tip0<<std::endl;
-  std::cout<<" -sur_file_tip1" <<sur_file_tip1<<std::endl;
-
+  std::cout<<" -sur_file_Base" <<sur_file_Base<<std::endl;
+  std::cout<<" -sur_file_Epi " <<sur_file_Epi <<std::endl;
+  std::cout<<" -sur_file_RV  " <<sur_file_RV  <<std::endl;
+  std::cout<<" -sur_file_LV  " <<sur_file_LV  <<std::endl;
 
   std::cout<<" -part_file: "<<part_file<<std::endl;
   std::cout<<" -cpu_size: "<<cpu_size<<std::endl;
@@ -112,9 +108,41 @@ int main( int argc, char * argv[] )
 
   // Check if the geometrical file exist on disk
   SYS_T::file_check(geo_file); std::cout<<geo_file<<" found. \n";
-  SYS_T::file_check(sur_file_tip0); std::cout<<sur_file_tip0<<" found. \n";
-  SYS_T::file_check(sur_file_tip1); std::cout<<sur_file_tip1<<" found. \n";
+  SYS_T::file_check(sur_file_Base); std::cout<<sur_file_Base<<" found. \n";
+  SYS_T::file_check(sur_file_Epi ); std::cout<<sur_file_Epi <<" found. \n";
+  SYS_T::file_check(sur_file_RV  ); std::cout<<sur_file_RV  <<" found. \n";
+  SYS_T::file_check(sur_file_LV  ); std::cout<<sur_file_LV  <<" found. \n";
 
+//  sur_f_file_out.resize( num_outlet );
+//  sur_s_file_out.resize( num_outlet );
+//
+//  for(int ii=0; ii<num_outlet; ++ii)
+//  {
+//    std::ostringstream sf, ss;
+//    sf<<sur_f_file_out_base;
+//    ss<<sur_s_file_out_base;
+//    if( ii/10 == 0 )
+//    {
+//      sf << "00";
+//      ss << "00";
+//    }
+//    else if( ii/100 == 0 )
+//    {
+//      sf << "0";
+//      ss << "0";
+//    }
+//
+//    sf<<ii<<".vtp";
+//    ss<<ii<<".vtp";
+//
+//    sur_f_file_out[ii] = sf.str();
+//    sur_s_file_out[ii] = ss.str();
+//
+//    SYS_T::file_check( sur_f_file_out[ii] );
+//    std::cout<<sur_f_file_out[ii]<<" found. \n";
+//    SYS_T::file_check( sur_s_file_out[ii] );
+//    std::cout<<sur_s_file_out[ii]<<" found. \n";
+//  } 
 
 // ----- Write the input argument into a HDF5 file
   hid_t cmd_file_id = H5Fcreate("preprocessor_cmd.h5",
@@ -127,9 +155,10 @@ int main( int argc, char * argv[] )
   cmdh5w->write_intScalar("dofMat", dofMat);
   cmdh5w->write_intScalar("elemType", elemType);
   cmdh5w->write_string("geo_file", geo_file);
-  cmdh5w->write_string("sur_file_tip0", sur_file_tip0);
-  cmdh5w->write_string("sur_file_tip1", sur_file_tip1);
-
+  cmdh5w->write_string("sur_file_Base", sur_file_Base);
+  cmdh5w->write_string("sur_file_Epi ", sur_file_Epi );
+  cmdh5w->write_string("sur_file_RV  ", sur_file_RV  );
+  cmdh5w->write_string("sur_file_LV  ", sur_file_LV  );
   
   cmdh5w->write_string("part_file", part_file);
 
@@ -139,23 +168,22 @@ int main( int argc, char * argv[] )
   // Read the geometry file for the whole FSI domain
   int nFunc, nElem;
   std::vector<int> vecIEN;
-  std::vector<int> phy_tag;
+  //std::vector<int> phy_tag;
   std::vector<double> ctrlPts;
 
-  TET_T::read_purkinje_lines(geo_file.c_str(), nFunc, nElem, ctrlPts, vecIEN, phy_tag);
+  TET_T::read_vtu_grid(geo_file.c_str(), nFunc, nElem, ctrlPts, vecIEN);
 
-  //for(unsigned int ii=0; ii<phy_tag.size(); ++ii)
-  //{
-  //  if(phy_tag[ii] != 0 && phy_tag[ii] != 1) SYS_T::print_fatal("Error: FSI problem, the physical tag for element should be 0 (fluid domain) or 1 (solid domain).\n");
-  //}
-
+  //  for(unsigned int ii=0; ii<phy_tag.size(); ++ii)
+//  {
+//    if(phy_tag[ii] != 0 && phy_tag[ii] != 1) SYS_T::print_fatal("Error: FSI problem, the physical tag for element should be 0 (fluid domain) or 1 (solid domain).\n");
+//  }
+//
   // Generate IEN
-  IIEN * IEN = new IEN_Line_P1(nElem, vecIEN);
-  //IEN->print_IEN();
-
-  if(elemType == 512)
+  IIEN * IEN = new IEN_Tetra_P1(nElem, vecIEN);
+  
+  if(elemType == 501)
   {
-    SYS_T::print_fatal_if(vecIEN.size() / nElem != 2, "Error: the mesh connectivity array size does not match with the element type 512. \n");
+    SYS_T::print_fatal_if(vecIEN.size() / nElem != 4, "Error: the mesh connectivity array size does not match with the element type 501. \n");
   }
   else
   {
@@ -185,13 +213,11 @@ int main( int argc, char * argv[] )
   //  std::cout<<"Solid domain number of nodes: "<<node_s.size()<<'\n';
   //
   
-  // Check the mesh: I don't check line elements like tet elements
-  // because aspect ratios are not critical 
-  //TET_T::tetmesh_check(ctrlPts, IEN, nElem, 3.5);
-
-
+  // Check the mesh
+  TET_T::tetmesh_check(ctrlPts, IEN, nElem, 3.5);
+  
   // Generate the mesh
-  IMesh * mesh = new Mesh_Line_3D(nFunc, nElem);
+  IMesh * mesh = new Mesh_Tet4(nFunc, nElem);
   mesh -> print_mesh_info();
 
   // Partition
@@ -222,8 +248,7 @@ int main( int argc, char * argv[] )
   //std::vector<std::string> dir_list;
   //dir_list.push_back(sur_file_top);
   
-  NBC_list[0] = new NodalBC_Line_3D_vtp( nFunc );
-  NBC_list[0]->print_info();
+  NBC_list[0] = new NodalBC_3D_vtp( nFunc );
   //NBC_list[1] = new NodalBC_3D_vtp( dir_list, nFunc );
   //NBC_list[2] = new NodalBC_3D_vtp( dir_list, nFunc );
   //NBC_list[3] = new NodalBC_3D_vtp( dir_list, nFunc );
@@ -232,12 +257,16 @@ int main( int argc, char * argv[] )
   //inflow_outward_normal.push_back(0.0);
   //inflow_outward_normal.push_back(0.0);
   //inflow_outward_normal.push_back(1.0);
-  INodalBC * InFBC = new NodalBC_Line_3D_stimulus(  nFunc );
+  INodalBC * InFBC = new NodalBC_3D_inflow(  nFunc );
 
   std::vector<std::string> ebclist;
   ebclist.clear();
-  ElemBC * ebc = new ElemBC_3D_Line( ebclist );
-  ebc->print_info();
+  ElemBC * ebc = new ElemBC_3D_tet4( ebclist );
+
+  // Correct the triangle's IEN so that we can get the outward normal 
+  // direction easily. See the document for this reset function
+  ebc -> resetTriIEN_outwardnormal( IEN );
+  // ----------------------------------------------------------------
 
   const bool isPrintPartInfo = true;
   const int proc_size = cpu_size;
@@ -252,16 +281,10 @@ int main( int argc, char * argv[] )
   {
     mytimer->Reset();
     mytimer->Start();
-    IPart * part = new Part_Line( mesh, global_part, mnindex, IEN,
+    IPart * part = new Part_Tet( mesh, global_part, mnindex, IEN,
         ctrlPts, proc_rank, proc_size, dofNum, dofMat, elemType,
         isPrintPartInfo );
     mytimer->Stop();
-    //part->print_part_ele() ;
-    //part->print_part_node();
-    //part->print_part_ghost_node() ;
-    //part->print_part_local_to_global() ;
-    //part->print_part_LIEN() ;
-    //part->print_part_loadbalance_edgecut() ;
     cout<<"-- proc "<<proc_rank<<" Time taken: "<<mytimer->get_sec()<<" sec. \n";
 
     part -> write( part_file.c_str() );
@@ -273,8 +296,7 @@ int main( int argc, char * argv[] )
     nbcpart -> write_hdf5(part_file.c_str());
 
     // Partition Inflow BC
-    INBC_Partition * infpart
-      = new NBC_Partition_3D_inflow(part, mnindex, InFBC);
+    INBC_Partition * infpart = new NBC_Partition_3D_inflow(part, mnindex, InFBC);
     infpart->write_hdf5( part_file.c_str() );
 
     // Partition Elem BC

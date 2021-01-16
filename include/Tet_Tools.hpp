@@ -21,6 +21,8 @@
 #include "vtkTriangle.h"
 #include "vtkQuadraticTriangle.h"
 #include "vtkTetra.h"
+#include "vtkLine.h"
+#include "vtkVertex.h"
 #include "vtkQuadraticTetra.h"
 #include "vtkUnstructuredGrid.h"
 #include "vtkUnstructuredGridWriter.h"
@@ -102,6 +104,22 @@ namespace TET_T
       std::vector<int> &global_node_index,
       std::vector<int> &global_elem_index );
 
+  // ----------------------------------------------------------------
+  // ! read_purkinje lines: read the mesh info of purkinje line elements
+  //                        and their phy_tag information
+  //   Input:  \para filename : the filename ending with .vtu
+  //   Output: \para numpts: the number of grid points
+  //           \para numcels: the number of cells
+  //           \para pt: xyz coordinate of the grids, length is 3 numpts
+  //           \para ien_array: the connectivity array, 
+  //                            length is 2 x numcels
+  //           \para phy_tag: the tag of the elements, length is numcels
+  //   This function is specifically designed for purkinje fiber mesh 
+  // ----------------------------------------------------------------
+  void read_purkinje_lines( const std::string &filename,
+      int &numpts, int &numcels,
+      std::vector<double> &pt, std::vector<int> &ien_array,
+      std::vector<int> &phy_tag );
 
   // ----------------------------------------------------------------
   // ! read_vtp_grid: read the surface mesh from a .vtp file. The mesh
@@ -143,6 +161,31 @@ namespace TET_T
   //                                   cell index
   // ----------------------------------------------------------------
   void read_vtp_grid( const std::string &filename,
+      int &numpts, int &numcels,
+      std::vector<double> &pt, std::vector<int> &ien_array,
+      std::vector<int> &global_node_index,
+      std::vector<int> &global_ele_index );
+
+  // ----------------------------------------------------------------
+  // ! read_purkinje_nodes:
+  //              read the purk. nodes (vertex) generated from other software
+  //              in .vtp files. The mesh file is assumed to be a VTK
+  //              grid (vtkVertex is type 5 in VTK cell type); 
+  //              otherwise, an error message will be thrown.
+  //   Input:  \para filename : the file name ending with .vtp
+  //   Output: \para numpts: the number of grid points
+  //           \para numcels: the number of vertices (same as numpts)
+  //           \para pt: xyz coordinate of the triangles, 
+  //                     length is 3 x numpts.
+  //           \para ien_array: the connectivity array, 
+  //                            length is 1 x numcels.
+  //           \para global_node_index: the mapping from local nodal
+  //                                    index to global nodal index
+  //           \para global_ele_index: the mapping from the triangle
+  //                                   cell to its corresponding tet
+  //                                   cell index
+  // ----------------------------------------------------------------
+  void read_purkinje_nodes( const std::string &filename,
       int &numpts, int &numcels,
       std::vector<double> &pt, std::vector<int> &ien_array,
       std::vector<int> &global_node_index,
@@ -201,6 +244,12 @@ namespace TET_T
       const std::vector<double> &pt, const std::vector<int> &ien_array,
       const std::vector<int> &phy_tag, const bool &isXML,
       const int &start_cell_index = 0 );
+
+  void write_purkinje_lines( const std::string &filename,
+		       const int &numpts, const int &numcels,
+		       const std::vector<double> &pt, const std::vector<int> &ien_array,
+		       const std::vector<int> &phy_tag, const bool &isXML,
+		       const int &start_cell_index = 0 );
 
 
   void write_tet_grid( const std::string &filename,
@@ -265,6 +314,22 @@ namespace TET_T
       const std::vector<int> &global_ele_index_1, 
       const std::vector<int> &global_ele_index_2 );
 
+  // ----------------------------------------------------------------
+  // ! write_purkinje_nodes: write the tip points of purkinje network.
+  //   Input: \para filename : the filename.vtp is the file to be written.
+  //          \para numpts : the number of tip points
+  //          \para numcels : the number of nodes
+  //          \para pt: xyz coordinates of the nodes, length 3 numpts
+  //          \para ien_array : connectivity array, 1 x numcels
+  //          \para nodal_index : the point data to be written
+  //          \para elem_index : the element index to be written
+  // ----------------------------------------------------------------
+  void write_purkinje_nodes( const std::string &filename,
+      const int &numpts, const int &numcels,
+      const std::vector<double> &pt, 
+      const std::vector<int> &ien_array,
+      const std::vector<int> &global_node_index,
+      const std::vector<int> &global_ele_index );
 
   // ----------------------------------------------------------------
   // ! write_quadratic_triangle_grid: write the surface mesh described 

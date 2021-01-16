@@ -48,6 +48,7 @@ Gmsh_FileIO::Gmsh_FileIO( const std::string &in_file_name )
   // in the gmsh file, the index ranges from [1, num_phy_domain].
   // read the domain's dimension, should be 2 or 3;
   // read the domain's name, and remove the " " at the names.
+  // Oguz note: I add 0d domains
   std::vector<std::string> phy_name;
   std::vector<int> phy_index, phy_dim;
   phy_index.clear(); phy_dim.clear(); phy_name.clear();
@@ -190,12 +191,24 @@ Gmsh_FileIO::Gmsh_FileIO( const std::string &in_file_name )
       "Error: .msh format line should be $EndElements. \n");
 
   // Generate the details of the 1d, 2d and 3d info
-  num_phy_domain_3d = 0; num_phy_domain_2d = 0; num_phy_domain_1d = 0;
-  phy_3d_index.clear(); phy_2d_index.clear(); phy_1d_index.clear();
-  phy_3d_name.clear(); phy_2d_name.clear(); phy_1d_name.clear();
+  num_phy_domain_3d = 0; num_phy_domain_2d = 0;
+  num_phy_domain_1d = 0; num_phy_domain_0d = 0;
+
+  phy_3d_index.clear(); phy_2d_index.clear();
+  phy_1d_index.clear(); phy_0d_index.clear();
+
+  phy_3d_name.clear(); phy_2d_name.clear();
+  phy_1d_name.clear(); phy_0d_name.clear();
+  
   for(int ii=0; ii<num_phy_domain; ++ii)
   {
-    if(phy_dim[ii] == 1)
+    if(phy_dim[ii] == 0)
+    {
+      num_phy_domain_0d += 1;
+      phy_0d_index.push_back( phy_index[ii] );
+      phy_0d_name.push_back( phy_name[ii] );
+    }
+    else if(phy_dim[ii] == 1)
     {
       num_phy_domain_1d += 1;
       phy_1d_index.push_back( phy_index[ii] );
@@ -215,10 +228,15 @@ Gmsh_FileIO::Gmsh_FileIO( const std::string &in_file_name )
     }
   }
 
-  phy_3d_nElem.clear(); phy_2d_nElem.clear(); phy_1d_nElem.clear();
+  phy_3d_nElem.clear(); phy_2d_nElem.clear();
+  phy_1d_nElem.clear(); phy_0d_nElem.clear();
   phy_3d_nElem.resize(num_phy_domain_3d);
   phy_2d_nElem.resize(num_phy_domain_2d);
   phy_1d_nElem.resize(num_phy_domain_1d);
+  phy_0d_nElem.resize(num_phy_domain_0d);
+
+  for(int ii=0; ii<num_phy_domain_0d; ++ii)
+    phy_0d_nElem[ ii ] = phy_domain_nElem[ phy_0d_index[ii] ];
 
   for(int ii=0; ii<num_phy_domain_1d; ++ii)
     phy_1d_nElem[ ii ] = phy_domain_nElem[ phy_1d_index[ii] ];
@@ -246,6 +264,15 @@ Gmsh_FileIO::Gmsh_FileIO( const std::string &in_file_name )
     for(int ii=1; ii<num_phy_domain_2d; ++ii)
       phy_2d_start_index[ii] = phy_2d_start_index[ii-1] + phy_domain_nElem[ phy_2d_index[ii-1] ];
   }
+
+  phy_1d_start_index.clear();
+  if(num_phy_domain_1d > 0)
+  {
+    phy_1d_start_index.resize(num_phy_domain_1d);
+    phy_1d_start_index[0] = 0;
+    for(int ii=1; ii<num_phy_domain_1d; ++ii)
+      phy_1d_start_index[ii] = phy_1d_start_index[ii-1] + phy_domain_nElem[ phy_1d_index[ii-1] ];
+  }
 }
 
 
@@ -257,6 +284,22 @@ void Gmsh_FileIO::print_info() const
 {
   std::cout<<"File name : "<<filename<<std::endl;
   std::cout<<"=== Physical domain number: "<<num_phy_domain<<std::endl;
+  std::cout<<"    Physical 0d domain number: "<<num_phy_domain_0d<<std::endl;
+  std::cout<<"    physical tag: ";
+  VEC_T::print(phy_0d_index);
+  std::cout<<"    names: ";
+  VEC_T::print(phy_0d_name);
+  std::cout<<"    nElem: ";
+  VEC_T::print(phy_0d_nElem);
+  std::cout<<"    etype: ";
+  for(int ii=0; ii<num_phy_domain_0d; ++ii)
+    std::cout<<ele_type[ phy_0d_index[ii] ]<<'\t';
+  std::cout<<std::endl;
+  std::cout<<"    nLocBas: ";
+  for(int ii=0; ii<num_phy_domain_0d; ++ii)
+    std::cout<<ele_nlocbas[ phy_0d_index[ii] ]<<'\t';
+  std::cout<<std::endl<<std::endl;
+
   std::cout<<"    Physical 1d domain number: "<<num_phy_domain_1d<<std::endl;
   std::cout<<"    physical tag: ";
   VEC_T::print(phy_1d_index);
@@ -659,6 +702,160 @@ void Gmsh_FileIO::write_vtp(const int &index_sur,
 }
 
 
+void Gmsh_FileIO::write_vtp_purkinje(const int &index_sur, 
+    const int &index_vol, const bool &isf2e ) const
+{
+  SYS_T::print_fatal_if( index_sur >= num_phy_domain_0d || index_sur < 0,
+    "Error: Gmsh_FileIO::write_vtp_purkinje, surface index is wrong. \n");
+
+  SYS_T::print_fatal_if( index_vol >= num_phy_domain_1d || index_vol < 0,
+      "Error: Gmsh_FileIO::write_vtp_purkinje, volume index is wrong. \n");
+
+  const int phy_index_sur = phy_0d_index[index_sur];
+  const int phy_index_vol = phy_1d_index[index_vol];
+  const int bcnumcl = phy_0d_nElem[index_sur];
+  const int numcel = phy_1d_nElem[index_vol];
+
+  std::cout<<"=== Gmsh_FileIO::write_vtp_purkinje for "
+    <<phy_0d_name[index_sur]
+    <<" associated with "<<phy_1d_name[index_vol];
+
+  if( isf2e )
+    std::cout<<" with face-to-volume element index. \n";
+  else
+    std::cout<<" without face-to-volume element index. \n";
+
+  SYS_T::Timer * mytimer = new SYS_T::Timer();
+
+  std::string vtp_file_name(phy_0d_name[index_sur]);
+  vtp_file_name += "_";
+  vtp_file_name += phy_1d_name[index_vol];
+  std::cout<<"-----> write "<<vtp_file_name<<".vtp \n";
+  mytimer->Reset();
+  mytimer->Start();
+
+  // Copy the IEN from the whole domain, the nodal indices is from the
+  // global domain indices.
+  std::vector<int> trien_global( eIEN[phy_index_sur] );
+
+  // bcpt stores the global node index
+  std::vector<int> bcpt( trien_global );
+
+  SYS_T::print_fatal_if( int(trien_global.size() ) != 1 * bcnumcl,
+      "Error: Gmsh_FileIO::write_vtp_purkinje, sur IEN size wrong. \n" );
+
+  // obtain the volumetric mesh IEN array
+  std::vector<int> vol_IEN( eIEN[phy_index_vol] );
+
+  SYS_T::print_fatal_if( int( vol_IEN.size() ) != 2 * numcel,
+      "Error: Gmsh_FileIO::write_vtp_purkinje, vol IEN size wrong. \n");
+
+  VEC_T::sort_unique_resize( bcpt ); // unique ascending order nodes
+
+  const int bcnumpt = static_cast<int>( bcpt.size() );
+
+  std::cout<<"      num of bc pt = "<<bcnumpt<<'\n';
+
+  // tript stores the coordinates of the boundary points
+  std::vector<double> tript; tript.clear(); tript.resize(3*bcnumpt);
+  for( int ii=0; ii<bcnumpt; ++ii )
+  {
+    tript[ii*3]   = node[bcpt[ii]*3] ;
+    tript[ii*3+1] = node[bcpt[ii]*3+1] ;
+    tript[ii*3+2] = node[bcpt[ii]*3+2] ;
+  }
+  
+
+  // generate a mapper that maps the bc node to 1, other node to 0
+  bool * bcmap = new bool [num_node];
+  for(int ii=0; ii<num_node; ++ii) bcmap[ii] = 0;
+  for(int ii=0; ii<bcnumpt; ++ii) bcmap[bcpt[ii]] = 1;
+
+  std::vector<int> gelem; gelem.clear();
+  for( int ee=0; ee<numcel; ++ee )
+  {
+    int total = 0;
+    total += bcmap[ vol_IEN[2*ee] ];   //check this, it was 4*ee+1 etc 
+    total += bcmap[ vol_IEN[2*ee+1] ]; //check this, it was 4*ee+1 etc
+    if(total >= 1) gelem.push_back(ee);//check this, it was 4*ee+1 etc
+  }
+  delete [] bcmap; bcmap = nullptr;
+  std::cout<<"      "<<gelem.size()<<" line(s) have connection to the tip. \n";
+
+  // generate the local nodes IEN array
+  std::vector<int> trien; trien.clear();
+  int node0 ; // node1, node2;
+  std::vector<int>::iterator it;
+  for(int ee=0; ee<bcnumcl; ++ee)
+  {
+    node0 = trien_global[ee];
+    //node1 = trien_global[3*ee+1];
+    //node2 = trien_global[3*ee+2];
+    
+    it = find(bcpt.begin(), bcpt.end(), node0);
+    trien.push_back( it - bcpt.begin() );
+    //
+    //it = find(bcpt.begin(), bcpt.end(), node1);
+    //trien.push_back( it - bcpt.begin() );
+    //
+    //it = find(bcpt.begin(), bcpt.end(), node2);
+    //trien.push_back( it - bcpt.begin() );
+  }
+  std::cout<<"      nodes IEN generated. \n";
+
+  // determine the face-to-element mapping, if we demand it (
+  // meaning this face needs boundary integral); otherwise, set
+  // the face2elem as -1, since we will only need the nodal indices
+  // for Dirichlet type face.
+  std::vector<int> face2elem; face2elem.resize( bcnumcl, -1 );
+  if( isf2e )
+  {
+    int vol_elem;
+    int vnode[2];
+    bool got0, gotit;
+    for(int ff=0; ff<bcnumcl; ++ff)
+    {
+      node0 = trien_global[ff];
+      //      node1 = trien_global[3*ff+1];
+      //      node2 = trien_global[3*ff+2];
+      gotit = false;
+      int ee = -1;
+      while( !gotit && ee < int(gelem.size()) - 1 )
+	{
+	  ee += 1;
+	  vol_elem = gelem[ee];
+	  vnode[0] = vol_IEN[2*vol_elem];
+	  vnode[1] = vol_IEN[2*vol_elem+1];
+	  //        vnode[2] = vol_IEN[4*vol_elem+2];
+	  //        vnode[3] = vol_IEN[4*vol_elem+3];
+	  std::sort(vnode, vnode+2);
+	  //
+	  got0 = ( std::find(vnode, vnode+2, node0) != vnode+2 );
+	  //        got1 = ( std::find(vnode, vnode+4, node1) != vnode+4 );
+	  //        got2 = ( std::find(vnode, vnode+4, node2) != vnode+4 );
+        gotit = got0 ;
+      }
+
+      // If the boundary surface element is not found, 
+      // we write -1 as the mapping value
+      if(gotit)
+        face2elem[ff] = gelem[ee] + phy_1d_start_index[index_vol];
+      else
+        face2elem[ff] = -1;
+    }
+    std::cout<<"      face2elem mapping generated. \n";
+  }
+
+  // Write the mesh file in vtp format
+  TET_T::write_purkinje_nodes( vtp_file_name, bcnumpt, bcnumcl,
+			       tript, trien, bcpt, face2elem );
+
+  mytimer->Stop();
+  std::cout<<"      Time taken "<<mytimer->get_sec()<<" sec. \n";
+  delete mytimer;
+}
+
+
 void Gmsh_FileIO::write_each_vtu() const
 {
   std::cout<<"=== Gmsh_FileIO::wirte_each_vtu.\n";
@@ -773,6 +970,52 @@ void Gmsh_FileIO::write_vtu( const std::string &in_fname,
 
   // write whole domain  
   TET_T::write_tet_grid( in_fname, wnNode, wnElem, node,
+      wIEN, wtag, isXML ); 
+
+  mytimer->Stop();
+  std::cout<<"    Time taken "<<mytimer->get_sec()<<" sec. \n";
+  delete mytimer;
+}
+
+void Gmsh_FileIO::write_vtu_purkinje( const std::string &in_fname, 
+    const bool &isXML ) const
+{
+  std::cout<<"=== Gmsh_FileIO::write_vtu_purkinje. \n";
+  std::cout<<"    There are "<<num_phy_domain_1d
+	   <<" 1D physical domains, with indices: \n";
+
+  SYS_T::Timer * mytimer = new SYS_T::Timer();
+  mytimer->Reset();
+  mytimer->Start();
+
+  // Prepare for the whole mesh's IEN, and physical tag
+  std::vector<int> wIEN; // whole mesh IEN
+  wIEN.clear();
+  std::vector<int> wtag; // whole vol mehs phys tag
+  wtag.clear();
+  int wnElem = 0; // whole mesh number of elements
+
+  // whole mesh num of node is assumed to be num_node 
+  const int wnNode = num_node;
+
+  // The 3d volumetric elements are list in the order of phy_3d_index.
+  // That means, phy_3d_index[0]'s elements come first, then phy_3d_index[1],
+  // etc. 
+  for(int ii=0; ii<num_phy_domain_1d; ++ii)
+  {
+    const int domain_index = phy_1d_index[ii];
+    std::cout<<"    "<<domain_index<<'\t';
+    wnElem += phy_1d_nElem[ ii ];
+    VEC_T::insert_end( wIEN, eIEN[domain_index] );
+
+    for(int jj=0; jj<phy_1d_nElem[ii]; ++jj)
+      wtag.push_back(ii);
+  }
+
+  std::cout<<"\n    "<<wnElem<<" total elems and "<<wnNode<<" total nodes. \n";
+
+  // write whole domain  
+  TET_T::write_purkinje_lines( in_fname, wnNode, wnElem, node,
       wIEN, wtag, isXML ); 
 
   mytimer->Stop();
