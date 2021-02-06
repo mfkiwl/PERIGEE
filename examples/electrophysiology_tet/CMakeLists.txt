@@ -77,8 +77,9 @@ SET( perigee_analysis_lib_src
   ${perigee_source}/System/HDF5_PartReader.cpp
   ${perigee_source}/System/HDF5_Writer.cpp
   ${perigee_source}/System/HDF5_Reader.cpp
-  ${perigee_source}/Mesh/QuadPts_Gauss_Triangle.cpp
-  ${perigee_source}/Mesh/QuadPts_Gauss_Tet.cpp
+  #${perigee_source}/Mesh/QuadPts_Gauss_Triangle.cpp
+  #${perigee_source}/Mesh/QuadPts_Gauss_Tet.cpp
+  ${perigee_source}/Mesh/QuadPts_Gauss.cpp
   ${perigee_source}/Analysis_Tool/AGlobal_Mesh_Info_FEM_3D.cpp  
   ${perigee_source}/Analysis_Tool/APart_Basic_Info.cpp
   ${perigee_source}/Analysis_Tool/ALocal_Elem.cpp
@@ -144,11 +145,11 @@ MESSAGE( STATUS "CMAKE_BUILD_TYPE: " ${CMAKE_BUILD_TYPE} )
 ADD_LIBRARY( perigee_preprocess ${perigee_preprocess_lib_src} )
 TARGET_LINK_LIBRARIES( perigee_preprocess ${EXTRA_LINK_LIBS} )
 
-## 2. Analysis libs
-#ADD_LIBRARY( perigee_analysis ${perigee_analysis_lib_src} )
-#TARGET_LINK_LIBRARIES( perigee_analysis ${EXTRA_LINK_LIBS} )
-##
-### 3. Postprocess lib
+# 2. Analysis libs
+ADD_LIBRARY( perigee_analysis ${perigee_analysis_lib_src} )
+TARGET_LINK_LIBRARIES( perigee_analysis ${EXTRA_LINK_LIBS} )
+
+## 3. Postprocess lib
 #ADD_LIBRARY( perigee_postprocess ${perigee_postprocess_lib_src} )
 #TARGET_LINK_LIBRARIES( perigee_postprocess ${EXTRA_LINK_LIBS} perigee_analysis )
 # -------------------------------------------------------------------
@@ -161,11 +162,11 @@ TARGET_LINK_LIBRARIES( perigee_preprocess ${EXTRA_LINK_LIBS} )
 ADD_EXECUTABLE( gmshIO3d gmsh_process_3d.cpp)
 ADD_EXECUTABLE( preprocess3d preprocess3d_main.cpp)
 
-## 1.2 Analysis and tests
-#ADD_EXECUTABLE( analysis_3d_EP EP_3d_driver.cpp)
+# 1.2 Analysis and tests
+ADD_EXECUTABLE( analysis_3d_EP EP_3d_driver.cpp)
+
+## 1.3 Post-process
 #
-### 1.3 Post-process
-##
 #ADD_EXECUTABLE( prepostproc3d Pre_postprocess3d.cpp)
 ##ADD_EXECUTABLE( post_compare_manu_3d post_compare_manu_3d.cpp)
 #ADD_EXECUTABLE( vis_3d_EP vis_3DEP.cpp)
@@ -176,10 +177,10 @@ ADD_EXECUTABLE( preprocess3d preprocess3d_main.cpp)
 TARGET_LINK_LIBRARIES( gmshIO3d perigee_preprocess )
 TARGET_LINK_LIBRARIES( preprocess3d ${EXTRA_LINK_LIBS} perigee_preprocess )
 
-### 2.2 Analysis and tests
-#TARGET_LINK_LIBRARIES( analysis_3d_EP ${EXTRA_LINK_LIBS} perigee_analysis )
-##
-### 2.3 Postprocess
+# 2.2 Analysis and tests
+TARGET_LINK_LIBRARIES( analysis_3d_EP ${EXTRA_LINK_LIBS} perigee_analysis )
+
+## 2.3 Postprocess
 #TARGET_LINK_LIBRARIES( prepostproc3d ${EXTRA_LINK_LIBS} perigee_preprocess
 #  perigee_analysis )
 #

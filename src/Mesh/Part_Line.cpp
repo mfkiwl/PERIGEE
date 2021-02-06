@@ -11,7 +11,7 @@ Part_Line::Part_Line(
     const bool isPrintInfo )
 : nElem( mesh->get_nElem() ), nFunc( mesh->get_nFunc() ),
   sDegree( mesh->get_s_degree() ),
-  //tDegree( mesh->get_t_degree() ), uDegree( mesh->get_u_degree() ),
+  tDegree( mesh->get_t_degree() ), uDegree( mesh->get_u_degree() ),
   nLocBas( mesh->get_nLocBas() ),
   probDim(3), dofNum( in_dofNum ), dofMat(in_dofNum), 
   elemType(in_elemType)
@@ -44,7 +44,7 @@ Part_Line::Part_Line(
     const int &in_elemType, const bool isPrintInfo )
 : nElem( mesh->get_nElem() ), nFunc( mesh->get_nFunc() ),
   sDegree( mesh->get_s_degree() ),
-  //tDegree( mesh->get_t_degree() ),  uDegree( mesh->get_u_degree() ),
+  tDegree( mesh->get_t_degree() ),  uDegree( mesh->get_u_degree() ),
   nLocBas( mesh->get_nLocBas() ),
   probDim(3), dofNum( in_dofNum ), dofMat( in_dofMat ), 
   elemType(in_elemType)
@@ -311,7 +311,7 @@ void Part_Line::write( const char * inputFileName ) const
   h5w->write_intScalar( group_id_3, "nFunc", nFunc );
   
   std::vector<int> vdeg; vdeg.clear();
-  vdeg.push_back(sDegree);// vdeg.push_back(tDegree); vdeg.push_back(uDegree);
+  vdeg.push_back(sDegree); vdeg.push_back(tDegree); vdeg.push_back(uDegree);
   
   h5w->write_intVector( group_id_3, "degree", vdeg );
 

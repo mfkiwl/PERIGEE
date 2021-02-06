@@ -20,8 +20,8 @@ class Mesh_Line_3D : public IMesh
     virtual void print_mesh_info() const;
 
     virtual int get_s_degree() const {return 1;}
-    virtual int get_t_degree() const {SYS_T::print_exit("Error: line element has no shape functions in t-direction. \n"); return 0;}
-    virtual int get_u_degree() const {SYS_T::print_exit("Error: line element has no shape functions in u-direction. \n"); return 0;}
+    virtual int get_t_degree() const {return 0;}
+    virtual int get_u_degree() const {return 0;}
 
     virtual int get_nFunc() const {return nFunc;}
 

@@ -15,9 +15,9 @@ FEANode::FEANode( const std::string &fileBaseName, const int &cpu_rank )
   // Detect if the weights is in the h5 file, and read if yes
   if( H5Lexists(file_id, "/ctrlPts_loc/ctrlPts_w_loc", H5P_DEFAULT) )
     h5r -> read_doubleVector("ctrlPts_loc", "ctrlPts_w_loc", ctrlPts_w);
-  else
+  else 
     VEC_T::clean( ctrlPts_w );
-
+  
   delete h5r; H5Fclose( file_id );
 }
 

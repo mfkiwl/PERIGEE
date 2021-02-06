@@ -87,8 +87,8 @@ class Part_Line : public IPart
     virtual int get_nElem() const {return nElem;}
     virtual int get_nFunc() const {return nFunc;}
     virtual int get_sDegree() const {return sDegree;}
-    //virtual int get_tDegree() const {return tDegree;} // line element does not have 
-    //virtual int get_uDegree() const {return uDegree;} // t and u degrees
+    virtual int get_tDegree() const {return tDegree;} // line element t and u 
+    virtual int get_uDegree() const {return uDegree;} // degrees are zero
     virtual int get_nLocBas() const {return nLocBas;}
     virtual int get_LIEN(int ee, int ii) const {return LIEN[ee][ii];}
 
@@ -119,7 +119,7 @@ class Part_Line : public IPart
     int dual_edge_ncommon;
 
     // 4. global mesh info
-    const int nElem, nFunc, sDegree, nLocBas; //, tDegree, uDegree
+    const int nElem, nFunc, sDegree, nLocBas, tDegree, uDegree;
     const int probDim, dofNum, dofMat, elemType;
 
     // 5. LIEN
