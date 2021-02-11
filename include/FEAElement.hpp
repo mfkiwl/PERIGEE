@@ -259,6 +259,11 @@ class FEAElement
         double * const &basis_x, double * const &basis_y, double * const &basis_z ) 
       const {SYS_T::commPrint("Warning: get_R_gradR is not implemented. \n");}
 
+  // 1D case:
+    virtual void get_R_gradR( const int &quaindex, double * const &basis, 
+        double * const &basis_x )
+      const {SYS_T::commPrint("Warning: get_R_gradR is not implemented. \n");} 
+
     // ------------------------------------------------------------------------    
     // R, gradR, and Laplacian R
     // ------------------------------------------------------------------------    

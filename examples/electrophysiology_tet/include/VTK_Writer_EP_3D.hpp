@@ -20,8 +20,8 @@
 class VTK_Writer_EP_3D
 {
   public:
-    VTK_Writer_EP_3D( const int &in_nelem,
-        const std::string &epart_file );
+    VTK_Writer_EP_3D( const IAGlobal_Mesh_Info * const &GMIptr,
+		      const std::string &epart_file);
 
     ~VTK_Writer_EP_3D();
 

@@ -1,8 +1,9 @@
 #include "VTK_Writer_EP_3D.hpp"
 
-VTK_Writer_EP_3D::VTK_Writer_EP_3D( const int &in_nelem,
-    const std::string &epart_file )
-: nLocBas(4), nElem(in_nelem), intep(4, true)
+VTK_Writer_EP_3D::VTK_Writer_EP_3D( const IAGlobal_Mesh_Info * const &GMIptr,
+				    const std::string &epart_file)
+    : nLocBas(GMIptr->get_nLocBas()), nElem(GMIptr->get_nElem()),
+        intep(GMIptr->get_nLocBas(), true)
 {
   VIS_T::read_epart( epart_file, nElem, epart_map );
 }
@@ -145,12 +146,18 @@ void VTK_Writer_EP_3D::writeOutput_compact(
     const std::string &outputName,
     const bool &isXML )
 {
-  // Make sure nqp == nLocBas == 4
-  SYS_T::print_fatal_if(quad->get_num_quadPts() != 4, "Error: VTK_Writer_Tet4 requires 4 quadrature points.\n");
+  // Make sure to call element-type specific functions based on the elemType
+  int nqpts = quad->get_num_quadPts();
+  int elemType= elemptr->get_Type();
 
   vtkUnstructuredGrid * gridData = vtkUnstructuredGrid::New();
   vtkPoints * points = vtkPoints::New();
   const int numDArrays = vdata_ptr->get_arrayCompSize();
+  //std::cout << "numDArrays" << numDArrays << std::endl;
+  //std::cout << "nLocBas" << nLocBas << std::endl;
+  //std::cout << "nElem" << nElem << std::endl;
+  //std::cout << "Elem type" << elemType << std::endl;
+  
   if(numDArrays != 1) SYS_T::print_fatal("Error: vdata size numDArrays != 1.\n");
 
   vtkDoubleArray ** dataVecs = new vtkDoubleArray * [numDArrays];
@@ -190,7 +197,7 @@ void VTK_Writer_EP_3D::writeOutput_compact(
 
       intep.interpolateVTKPts(IEN_e, ectrl_x, ectrl_y, ectrl_z, elemptr, points );
 
-      // Interpolate the pressure scalar
+      // Interpolate the transmembrane voltafe scalar
       std::vector<double> inputInfo; inputInfo.clear();
       int asize = vdata_ptr->get_arraySizes( 0 ); // 1
       for(int jj=0; jj<nLocBas; ++jj)
@@ -250,13 +257,22 @@ void VTK_Writer_EP_3D::writeOutput_compact(
       //    }
       //
       // Set mesh connectivity
-      VIS_T::setTetraelem( IEN_e[0], IEN_e[1], IEN_e[2], IEN_e[3], gridData );
+
+      if (elemType == 512) { //line element
+	VIS_T::setLineelem( IEN_e[0], IEN_e[1], gridData );
+      }
+      else if(elemType == 501) {//tet4 element
+	VIS_T::setTetraelem( IEN_e[0], IEN_e[1], IEN_e[2], IEN_e[3], gridData );
+      }
+      else {
+	SYS_T::print_fatal("Error: vdata size numDArrays != 1.\n");
+      }	
     
       // Analysis mesh partition 
       const int e_global = lelem_ptr->get_elem_loc(ee);
       anaprocId->InsertNextValue( epart_map[e_global] );
     }
-  //
+
   gridData -> SetPoints( points );
   points -> Delete();
 

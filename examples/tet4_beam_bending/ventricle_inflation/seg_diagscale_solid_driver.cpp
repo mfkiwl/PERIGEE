@@ -64,7 +64,7 @@ int main(int argc, char *argv[])
   double initial_time = 0.0;
   double initial_step = 0.1;
   int initial_index = 0;
-  double final_time = 1.0;
+  double final_time = 0.1;
   std::string sol_bName("SOL_");
   int ttan_renew_freq = 1;
   int sol_record_freq = 1;
@@ -157,9 +157,10 @@ int main(int argc, char *argv[])
   ALocal_Elem * locElem = new ALocal_Elem(part_file, rank);
   
   ALocal_NodalBC * locnbc = new ALocal_NodalBC(part_file ,rank); 
+  locnbc->print_info();
   
   ALocal_EBC * locebc = new ALocal_EBC_wIntPts(part_file, rank);
-//  
+  
 //  APart_Node * pNode = new APart_Node(part_file, rank);
 //  SYS_T::commPrint("Done! \n");
 // 
@@ -182,11 +183,11 @@ int main(int argc, char *argv[])
 //    elementv = new FEAElement_Tet4( quadv-> get_num_quadPts() );
 //    elements = new FEAElement_Triangle3_3D_der0( quads-> get_num_quadPts() );
 //  }
-////  else if( GMIptr->get_elemType() == 532 )
-////  {
-////    elementv = new FEAElement_Tet10( quadv-> get_num_quadPts() );
-////    elements = new FEAElement_Triangle6_3D_der0( quads-> get_num_quadPts() );
-////  }
+//  else if( GMIptr->get_elemType() == 532 )
+//  {
+//    elementv = new FEAElement_Tet10( quadv-> get_num_quadPts() );
+//    elements = new FEAElement_Triangle6_3D_der0( quads-> get_num_quadPts() );
+//  }
 //  else
 //    SYS_T::print_fatal("Error: The element type is not implemented. \n");
 //
@@ -307,10 +308,10 @@ int main(int argc, char *argv[])
 //  gloAssem_ptr->Assem_mass_residual( sol, locElem, locAssem_ptr, elementv,
 //				     elements, quadv, quads, locIEN, pNode,
 //				     fNode, locnbc, locebc );
-//
 
-  // ====================================================================
-//
+
+// ====================================================================
+
 //  PDNSolution * dot_pres_velo = new PDNSolution_P_V_Mixed_Hyperelastic_3D( pNode,
 //      locAssem_ptr, fNode, 0 );
 //

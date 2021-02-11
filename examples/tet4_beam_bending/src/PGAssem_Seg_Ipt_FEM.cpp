@@ -340,9 +340,9 @@ void PGAssem_Seg_Ipt_FEM::Assem_mass_residual(
   
   // array_b will be used in NatBC_G function call
   sol_a->GetLocalArray( array_b, node_ptr );
-//  std::cout<<"array_b : " << std::endl;
-//  sol_a->PrintWithGhost();
-  
+  //std::cout<<"array_b : " << std::endl;
+  sol_a->PrintWithGhost();
+
   for(int ee=0; ee<nElem; ++ee)
   {
     lien_ptr->get_LIEN_e(ee, IEN_e);
@@ -352,35 +352,35 @@ void PGAssem_Seg_Ipt_FEM::Assem_mass_residual(
     lassem_ptr->Assem_Mass_Residual( local_a, elementv,
         ectrl_x, ectrl_y, ectrl_z, quad_v );
 
-    for(int ii=0; ii<nLocBas; ++ii)
-    {
-      loc_index = IEN_e[ii];
-      offset1 = dof_mat * ii;
-
-      for(int mm=0; mm<dof_mat; ++mm)
-      {
-        lrow_index = nbc_part -> get_LID(mm, loc_index);
-        row_index[offset1+mm] = dof_mat * lrow_index + mm;
-      }
-    }
-    MatSetValues(K, loc_dof, row_index, loc_dof, row_index,
-        lassem_ptr->Tangent, ADD_VALUES);
-
-    VecSetValues(G, loc_dof, row_index, lassem_ptr->Residual, ADD_VALUES);
+//    for(int ii=0; ii<nLocBas; ++ii)
+//    {
+//      loc_index = IEN_e[ii];
+//      offset1 = dof_mat * ii;
+//
+//      for(int mm=0; mm<dof_mat; ++mm)
+//      {
+//        lrow_index = nbc_part -> get_LID(mm, loc_index);
+//        row_index[offset1+mm] = dof_mat * lrow_index + mm;
+//      }
+//    }
+//    MatSetValues(K, loc_dof, row_index, loc_dof, row_index,
+//        lassem_ptr->Tangent, ADD_VALUES);
+//
+//    VecSetValues(G, loc_dof, row_index, lassem_ptr->Residual, ADD_VALUES);
   }
 
   NatBC_G(0.0, 0.0, lassem_ptr, elements, dof_mat*snLocBas, quad_s, lien_ptr,
       nbc_part, ebc_part);
 
-  VecAssemblyBegin(G);
-  VecAssemblyEnd(G);
-
-  for(int fie = 0; fie<dof_mat; ++fie) EssBC_KG( nbc_part, fie );
-
-  MatAssemblyBegin(K, MAT_FINAL_ASSEMBLY);
-  MatAssemblyEnd(K, MAT_FINAL_ASSEMBLY);
-  VecAssemblyBegin(G);
-  VecAssemblyEnd(G);
+//  VecAssemblyBegin(G);
+//  VecAssemblyEnd(G);
+//
+//  for(int fie = 0; fie<dof_mat; ++fie) EssBC_KG( nbc_part, fie );
+//
+//  MatAssemblyBegin(K, MAT_FINAL_ASSEMBLY);
+//  MatAssemblyEnd(K, MAT_FINAL_ASSEMBLY);
+//  VecAssemblyBegin(G);
+//  VecAssemblyEnd(G);
 }
 
 

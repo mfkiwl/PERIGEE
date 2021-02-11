@@ -27,6 +27,8 @@
 #include "vtkUnstructuredGridWriter.h"
 #include "vtkXMLUnstructuredGridWriter.h"
 
+#include "vtkLine.h"
+
 namespace VIS_T
 {
   // ================================================================
@@ -156,6 +158,13 @@ namespace VIS_T
       const int &ptid5, const int &ptid6, const int &ptid7,
       const int &ptid8, const int &ptid9,
       vtkUnstructuredGrid * gridData );
+
+  // ----------------------------------------------------------------
+  // ! setLineelem: build Line element connectivity using the specified
+  //                 point index.
+  // ----------------------------------------------------------------
+  void setLineelem( const int &ptid0, const int &ptid1,
+		     vtkUnstructuredGrid * gridData );
 
   // ================================================================
   // The 3rd set of tools contain

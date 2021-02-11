@@ -382,6 +382,17 @@ void VIS_T::setQuadelem( const int &segs, const int &segt,
   }
 }
 
+void VIS_T::setLineelem( const int &ptid0, const int &ptid1,
+			 vtkUnstructuredGrid * gridData )
+{
+  vtkCell * cell = vtkLine::New();
+
+  cell->GetPointIds()->SetId( 0, ptid0 );
+  cell->GetPointIds()->SetId( 1, ptid1 );
+
+  gridData->InsertNextCell( cell->GetCellType(), cell->GetPointIds() );
+  cell->Delete();
+}
 
 void VIS_T::read_epart( const std::string &epart_file, const int &esize,
     std::vector<int> &elem_part )

@@ -1,5 +1,5 @@
 // ==================================================================
-// Pre_postprocess.cpp for purkinje model with line elements
+// Pre_postprocess.cpp for HLHS model  with tet elemetns
 // ------------------------------------------------------------------
 // Objective:
 // This routine provides a mesh partition for all postprocessers. This
@@ -14,14 +14,11 @@
 // ==================================================================
 #include "HDF5_Reader.hpp"
 #include "Tet_Tools.hpp"
-//#include "Mesh_Tet4.hpp"
-#include "Mesh_Line_3D.hpp"
-//#include "IEN_Tetra_P1.hpp"
-#include "IEN_Line_P1.hpp"
+#include "Mesh_Tet4.hpp"
+#include "IEN_Tetra_P1.hpp"
 #include "Global_Part_METIS.hpp"
 #include "Global_Part_Serial.hpp"
-//#include "Part_Tet.hpp"
-#include "Part_Line.hpp"
+#include "Part_Tet.hpp"
 
 //#include "NURBS_Tools.hpp"
 //#include "kRefinement.hpp"
@@ -83,7 +80,7 @@ int main(int argc, char *argv[])
   else cout<<" -isread_part: false \n";
   cout<<"----------------------------------\n";
   cout<<"geo_file: "<<geo_file<<endl;
-  //cout<<"probDim: "<<probDim<<endl;
+  cout<<"probDim: "<<probDim<<endl;
   cout<<"dofNum: "<<dofNum<<endl;
   cout<<"elemType: "<<elemType<<endl;
   cout<<"==== Command Line Arguments ===="<<endl;
@@ -92,33 +89,24 @@ int main(int argc, char *argv[])
   int nFunc, nElem;
   std::vector<int> vecIEN;
   std::vector<double> ctrlPts;
-  std::vector<int> phy_tag;
 
   // Check if the given geo file exist
   SYS_T::file_exist_check( geo_file.c_str() );
 
-  TET_T::read_purkinje_lines(geo_file.c_str(), nFunc, nElem, ctrlPts, vecIEN, phy_tag);
+  TET_T::read_vtu_grid(geo_file.c_str(), nFunc, nElem, ctrlPts, vecIEN);
 
-    if(elemType == 512)
-  {
-    SYS_T::print_fatal_if(vecIEN.size() / nElem != 2, "Error: the IEN from geo_file does not match the given number of element. \n");
-  }
-  else
-  {
-    SYS_T::print_fatal_if(1, "Error: this script doesn't support this element type. \n");
-  }
+  if(int(vecIEN.size()) != nElem * 4) SYS_T::print_fatal("Error: the IEN from geo_file does not match the given number of element. \n");
 
   if(int(ctrlPts.size()) != nFunc * 3) SYS_T::print_fatal("Error: the ctrlPts from geo_file does not match the given number of nodes. \n");
 
   std::cout<<"nElem: "<<nElem<<std::endl;
   std::cout<<"nFunc: "<<nFunc<<std::endl;
 
-  IIEN * IEN = new IEN_Line_P1(nElem, vecIEN);
-  IEN->print_IEN();
-  
+  IIEN * IEN = new IEN_Tetra_P1(nElem, vecIEN);
+
   VEC_T::clean(vecIEN);
 
-  IMesh * mesh = new Mesh_Line_3D(nFunc, nElem);
+  IMesh * mesh = new Mesh_Tet4(nFunc, nElem);
   mesh -> print_mesh_info();
 
   IGlobal_Part * global_part;
@@ -144,7 +132,7 @@ int main(int argc, char *argv[])
   for(int proc_rank = 0; proc_rank < proc_size; ++proc_rank)
   {
     mytimer->Reset(); mytimer->Start();
-    IPart * part = new Part_Line( mesh, global_part, mnindex, IEN,
+    IPart * part = new Part_Tet( mesh, global_part, mnindex, IEN,
         ctrlPts, proc_rank, proc_size, dofNum, elemType,
         isPrintPartInfo );
     part->write(part_file.c_str());

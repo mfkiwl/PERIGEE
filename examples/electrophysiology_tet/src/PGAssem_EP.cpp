@@ -20,9 +20,16 @@ PGAssem_EP::PGAssem_EP( const IPLocAssem * const &locassem_ptr,
 	    << "sdegree" << sdegree <<"\n"
 	    << "tdegree" << tdegree <<"\n"
 	    << "udegree" << udegree <<"\n"
-	    << "nlocalnode" << nlocalnode << std::endl;
-  
-  int nz_prow = dof * (2*sdegree+1) * (2*tdegree+1) * (2*udegree+1);
+	    << std::endl;
+
+  int nz_prow;
+  if((tdegree==0)&&(udegree==0)) {
+    nz_prow = 2 * dof * (2*sdegree+1);
+  }else if (sdegree==0) {
+    SYS_T::commPrint("element degrees in space are all zero");
+  }else{
+    nz_prow = dof * (2*sdegree+1) * (2*tdegree+1) * (2*udegree+1);
+  }
   int nlocrow = dof * nlocalnode;
 
   switch(petsc_version_type)
@@ -317,11 +324,9 @@ void PGAssem_EP::Assem_nonzero_estimate(
     for(int i=0; i<nLocBas; ++i)
     {
       loc_index  = lien_ptr->get_LIEN(e, i);
-      
       for(int m=0; m<dof; ++m)
       {
         lrow_index = bc_part->get_LID( m, loc_index );
-
         row_index[dof * i + m] = dof * lrow_index + m;
         col_index[dof * i + m] = dof * lrow_index + m;
       }

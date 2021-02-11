@@ -91,10 +91,11 @@ SET( perigee_analysis_lib_src
   ${perigee_source}/Analysis_Tool/ALocal_Inflow_NodalBC.cpp
   ${perigee_source}/Analysis_Tool/ALocal_EBC.cpp
   ${perigee_source}/Element/FEANode.cpp
-  ${perigee_source}/Element/FEAElement_Triangle3_3D_der0.cpp
-  ${perigee_source}/Element/FEAElement_Triangle6_3D_der0.cpp
-  ${perigee_source}/Element/FEAElement_Tet4.cpp
-  ${perigee_source}/Element/FEAElement_Tet10_v2.cpp
+  #${perigee_source}/Element/FEAElement_Triangle3_3D_der0.cpp
+  #${perigee_source}/Element/FEAElement_Triangle6_3D_der0.cpp
+  #${perigee_source}/Element/FEAElement_Tet4.cpp
+  #${perigee_source}/Element/FEAElement_Tet10_v2.cpp
+  ${perigee_source}/Element/FEAElement_Line2_3D_der1.cpp
   ${perigee_source}/Solver/PDNSolution.cpp
   ${perigee_source}/Solver/PDNTimeStep.cpp
   ${perigee_source}/Solver/TimeMethod_GenAlpha.cpp
@@ -119,7 +120,9 @@ SET( perigee_postprocess_lib_src
   ${perigee_SOURCE_DIR}/src/VTK_Writer_EP_3D.cpp
   #${perigee_SOURCE_DIR}/src/Post_error_tet4_ns.cpp
   #${perigee_source}/Postproc_Tool/Interpolater.cpp
-  ${perigee_source}/Mesh/QuadPts_vis_tet4.cpp
+  ${perigee_source}/Element/FEAElement_Tet4.cpp
+  #${perigee_source}/Mesh/QuadPts_vis_tet4.cpp
+  ${perigee_source}/Mesh/QuadPts_vis.cpp
   ##
   #${perigee_source}/Postproc_Tool/PostVectSolution.cpp
   #${perigee_source}/Postproc_Tool/VTK_Writer.cpp
@@ -149,9 +152,9 @@ TARGET_LINK_LIBRARIES( perigee_preprocess ${EXTRA_LINK_LIBS} )
 ADD_LIBRARY( perigee_analysis ${perigee_analysis_lib_src} )
 TARGET_LINK_LIBRARIES( perigee_analysis ${EXTRA_LINK_LIBS} )
 
-## 3. Postprocess lib
-#ADD_LIBRARY( perigee_postprocess ${perigee_postprocess_lib_src} )
-#TARGET_LINK_LIBRARIES( perigee_postprocess ${EXTRA_LINK_LIBS} perigee_analysis )
+# 3. Postprocess lib
+ADD_LIBRARY( perigee_postprocess ${perigee_postprocess_lib_src} )
+TARGET_LINK_LIBRARIES( perigee_postprocess ${EXTRA_LINK_LIBS} perigee_analysis )
 # -------------------------------------------------------------------
 
 # ===================================================================
@@ -167,9 +170,9 @@ ADD_EXECUTABLE( analysis_3d_EP EP_3d_driver.cpp)
 
 ## 1.3 Post-process
 #
-#ADD_EXECUTABLE( prepostproc3d Pre_postprocess3d.cpp)
-##ADD_EXECUTABLE( post_compare_manu_3d post_compare_manu_3d.cpp)
-#ADD_EXECUTABLE( vis_3d_EP vis_3DEP.cpp)
+ADD_EXECUTABLE( prepostproc3d Pre_postprocess3d.cpp)
+#ADD_EXECUTABLE( post_compare_manu_3d post_compare_manu_3d.cpp)
+ADD_EXECUTABLE( vis_3d_EP vis_3DEP.cpp)
 
 # -------------------------------------------------------------------
 # 2. Link libraries
@@ -181,14 +184,14 @@ TARGET_LINK_LIBRARIES( preprocess3d ${EXTRA_LINK_LIBS} perigee_preprocess )
 TARGET_LINK_LIBRARIES( analysis_3d_EP ${EXTRA_LINK_LIBS} perigee_analysis )
 
 ## 2.3 Postprocess
-#TARGET_LINK_LIBRARIES( prepostproc3d ${EXTRA_LINK_LIBS} perigee_preprocess
-#  perigee_analysis )
+TARGET_LINK_LIBRARIES( prepostproc3d ${EXTRA_LINK_LIBS} perigee_preprocess
+  perigee_analysis )
 #
 #TARGET_LINK_LIBRARIES( post_compare_manu_3d ${EXTRA_LINK_LIBS} 
 #  perigee_preprocess perigee_analysis perigee_postprocess )
 #
-#TARGET_LINK_LIBRARIES( vis_3d_EP ${EXTRA_LINK_LIBS}
-#  perigee_preprocess perigee_analysis perigee_postprocess )
+TARGET_LINK_LIBRARIES( vis_3d_EP ${EXTRA_LINK_LIBS}
+  perigee_preprocess perigee_analysis perigee_postprocess )
 
 
 #EOF

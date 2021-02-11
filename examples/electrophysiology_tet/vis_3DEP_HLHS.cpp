@@ -1,5 +1,5 @@
 // ==================================================================
-// vis_3DEP.cpp for purkinje lines
+// vis_3DEP.cpp for tet elements, hlhs model
 // ------------------------------------------------------------------
 // This is the visualization driver to visualize 3DEP solution
 // in VTK format.
@@ -17,10 +17,8 @@
 #include "AGlobal_Mesh_Info_FEM_3D.hpp"
 #include "APart_Basic_Info.hpp"
 #include "APart_Node.hpp"
-//#include "QuadPts_vis_tet4.hpp"
-#include "QuadPts_vis.hpp"
-//#include "FEAElement_Tet4.hpp"
-#include "FEAElement_Line2_3D_der1.hpp"
+#include "QuadPts_vis_tet4.hpp"
+#include "FEAElement_Tet4.hpp"
 #include "VisDataPrep_3DEP.hpp"
 #include "VTK_Writer_EP_3D.hpp"
 
@@ -61,8 +59,8 @@ int main( int argc, char * argv[] )
   const int dof = 1;
 
   int time_start = 0;
-  int time_step = 1;
-  int time_end = 500;
+  int time_step = 5;
+  int time_end = 1000;
   double dt = 1.0;
 
   bool isXML = true;
@@ -124,21 +122,15 @@ int main( int argc, char * argv[] )
   PetscPrintf(PETSC_COMM_WORLD, "Postprocessing - visualization.\n");
 
   SYS_T::commPrint("===> Build sampling points.");
+  IQuadPts * quad = new QuadPts_vis_tet4();
 
-  int nLocBas = GMIptr->get_nLocBas();
-  IQuadPts * quad = new QuadPts_vis(nLocBas);
   quad -> print_info();
   
   SYS_T::commPrint("===> Setup element container. \n");
-  if( GMIptr->get_elemType() != 512 ){
-    SYS_T::print_fatal("Error: Element type not supported.\n");
-  }
-  
-  FEAElement * element
-    = new FEAElement_Line2_3D_der1( quad-> get_num_quadPts() );
+  FEAElement * element = new FEAElement_Tet4( quad-> get_num_quadPts() );
 
   IVisDataPrep * visprep = new VisDataPrep_3DEP();
-  visprep->print_info();
+  //visprep->print_info();
   //std::cout << "comp size" << visprep->get_arrayCompSize() << std::endl;
   //==========================================================
   // legacy NS implementation:
@@ -164,7 +156,7 @@ int main( int argc, char * argv[] )
   for(int ii=0; ii<visprep->get_arrayCompSize(); ++ii)
     pointArrays[ii] = new double [pNode->get_nlocghonode() * visprep->get_arraySizes(ii)];
 
-  VTK_Writer_EP_3D * vtk_w = new VTK_Writer_EP_3D( GMIptr,  element_part_file);
+  VTK_Writer_EP_3D * vtk_w = new VTK_Writer_EP_3D( GMIptr, element_part_file);
 
   std::ostringstream time_index;
 
@@ -188,20 +180,20 @@ int main( int argc, char * argv[] )
 				  pNode -> get_ntotalnode(),
 				  time * dt, sol_bname, out_bname, name_to_write, isXML );
     }
-//    
-//  MPI_Barrier(PETSC_COMM_WORLD);
-//
-//  // Finalize
-//  for(int ii=0; ii<visprep->get_ptarray_size(); ++ii)
-//    delete [] pointArrays[ii];
-//  delete [] pointArrays;
-//  delete vtk_w;
-//  delete quad; delete element; delete visprep;
-//  delete pNode; delete locElem; delete PartBasic; delete GMIptr;
-//  delete locIEN; delete fNode;
-//  PetscFinalize();
-//  return 0;
-//  SYS_T::commPrint("===> FIN. \n");
+    
+  MPI_Barrier(PETSC_COMM_WORLD);
+
+  // Finalize
+  for(int ii=0; ii<visprep->get_ptarray_size(); ++ii)
+    delete [] pointArrays[ii];
+  delete [] pointArrays;
+  delete vtk_w;
+  delete quad; delete element; delete visprep;
+  delete pNode; delete locElem; delete PartBasic; delete GMIptr;
+  delete locIEN; delete fNode;
+  PetscFinalize();
+  return 0;
+  SYS_T::commPrint("===> FIN. \n");
 }
 
 // EOF

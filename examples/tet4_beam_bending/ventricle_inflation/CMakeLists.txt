@@ -224,8 +224,8 @@ INCLUDE(../../../conf/message_compiler_setup.cmake)
 # ===================================================================
 # 1. Make executable
 # 1.1 Preprocess
-ADD_EXECUTABLE( preprocess3d_h5 preprocess_tet_h5.cpp)
-ADD_EXECUTABLE( gmshIO gmsh_process.cpp)
+ADD_EXECUTABLE( preprocess3d preprocess_tet.cpp)
+#ADD_EXECUTABLE( gmshIO gmsh_process.cpp)
 
 #ADD_EXECUTABLE( vtp_gen vtp_generator.cpp )
 # 1.2 Analysis and tests
@@ -233,19 +233,19 @@ ADD_EXECUTABLE( lpsso3d solid_driver.cpp)
 #ADD_EXECUTABLE( blockvms3d block_solid_solver.cpp)
 ADD_EXECUTABLE( dssegso3d seg_diagscale_solid_driver.cpp)
 #ADD_EXECUTABLE( shsegso3d shellpc_diagscale_solid_driver.cpp)
-
-# 1.3 Post-process
-ADD_EXECUTABLE( preposth5 prepost_tet_h5.cpp)
-#ADD_EXECUTABLE( vis3d_block vis_block_upv.cpp)
-ADD_EXECUTABLE( vis3d_coupled vis_coupled.cpp)
-ADD_EXECUTABLE( manu_compare post_compare_manu.cpp)
+#
+## 1.3 Post-process
+#ADD_EXECUTABLE( preposth5 prepost_tet_h5.cpp)
+##ADD_EXECUTABLE( vis3d_block vis_block_upv.cpp)
+#ADD_EXECUTABLE( vis3d_coupled vis_coupled.cpp)
+#ADD_EXECUTABLE( manu_compare post_compare_manu.cpp)
 
 # -------------------------------------------------------------------
 # 2. Link libraries
 # 2.1 Preprocess
-TARGET_LINK_LIBRARIES( preprocess3d_h5 ${EXTRA_LINK_LIBS} perigee_preprocess )
+TARGET_LINK_LIBRARIES( preprocess3d ${EXTRA_LINK_LIBS} perigee_preprocess )
 
-TARGET_LINK_LIBRARIES( gmshIO perigee_preprocess )
+#TARGET_LINK_LIBRARIES( gmshIO perigee_preprocess )
 
 # 2.2 Analysis and tests
 TARGET_LINK_LIBRARIES( lpsso3d ${EXTRA_LINK_LIBS} perigee_analysis )
@@ -256,14 +256,14 @@ TARGET_LINK_LIBRARIES( dssegso3d ${EXTRA_LINK_LIBS} perigee_analysis
 #TARGET_LINK_LIBRARIES( shsegso3d ${EXTRA_LINK_LIBS} perigee_analysis
 #  perigee_bstlib )
 
-# 2.3 Postprocess
-TARGET_LINK_LIBRARIES( preposth5 ${EXTRA_LINK_LIBS} perigee_analysis 
-  perigee_preprocess )
-
-#TARGET_LINK_LIBRARIES( vis3d_block ${EXTRA_LINK_LIBS} perigee_postprocess )
-TARGET_LINK_LIBRARIES( vis3d_coupled ${EXTRA_LINK_LIBS} perigee_postprocess )
-
-TARGET_LINK_LIBRARIES( manu_compare ${EXTRA_LINK_LIBS} perigee_analysis
-  perigee_postprocess )
+## 2.3 Postprocess
+#TARGET_LINK_LIBRARIES( preposth5 ${EXTRA_LINK_LIBS} perigee_analysis 
+#  perigee_preprocess )
+#
+##TARGET_LINK_LIBRARIES( vis3d_block ${EXTRA_LINK_LIBS} perigee_postprocess )
+#TARGET_LINK_LIBRARIES( vis3d_coupled ${EXTRA_LINK_LIBS} perigee_postprocess )
+#
+#TARGET_LINK_LIBRARIES( manu_compare ${EXTRA_LINK_LIBS} perigee_analysis
+#  perigee_postprocess )
 
 #EOF

@@ -3,7 +3,7 @@
 VisDataPrep_3DEP::VisDataPrep_3DEP()
 {
   arrayCompSize = 1;
-  arrayNames.push_back("Temperature");
+  arrayNames.push_back("Transmembrane V.");
   arraySizes.push_back(1);
 }
 

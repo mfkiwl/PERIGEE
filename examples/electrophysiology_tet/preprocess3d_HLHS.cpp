@@ -1,5 +1,5 @@
 // ==================================================================
-// preprocess_3d_main.cpp
+// preprocess_3d_main.cpp for the HLHS model
 // ------------------------------------------------------------------
 // This preprocess code is used for handling the 3D geometry described
 // by tetrahdral elements 
