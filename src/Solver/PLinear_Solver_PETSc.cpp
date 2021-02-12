@@ -9,6 +9,18 @@ PLinear_Solver_PETSc::PLinear_Solver_PETSc()
   KSPSetFromOptions(ksp);
 }
 
+PLinear_Solver_PETSc::PLinear_Solver_PETSc(PCType pc_type)
+: rtol( 1.0e-5 ), atol( 1.0e-50 ), dtol( 1.0e50 ),
+  maxits(10000)
+{
+  KSPCreate(PETSC_COMM_WORLD, &ksp);
+  KSPSetTolerances(ksp, rtol, atol, dtol, maxits);
+  PC pc;
+  KSPGetPC(ksp,&pc);
+  PCSetType(pc,pc_type); /* A simple, but non-scalable choice */
+  KSPSetFromOptions(ksp);
+}
+
 
 PLinear_Solver_PETSc::PLinear_Solver_PETSc(
     const double &input_rtol, const double &input_atol,

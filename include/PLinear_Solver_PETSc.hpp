@@ -20,7 +20,13 @@ class PLinear_Solver_PETSc
     //   maxits = 10000, and the user may reset the parameters by options
     // --------------------------------------------------------------
     PLinear_Solver_PETSc();
-    
+  
+    // --------------------------------------------------------------
+    // ! Same as the default constructor above, just lets the user 
+    // choose a preconditioner type. 
+    // --------------------------------------------------------------
+    PLinear_Solver_PETSc(PCType pc_type);
+  
     // --------------------------------------------------------------
     // ! Construct KSP with input tolerances and maximum iteration
     // --------------------------------------------------------------

@@ -17,7 +17,7 @@ int main( int argc, char * argv[] )
   //gmshFile.append("/PERIGEE/examples/electrophysiology_tet/mesh/HLHS_myo.msh");
   //gmshFile.append("/PERIGEE/examples/electrophysiology_tet/mesh/cube.msh");
   //gmshFile.append("/PERIGEE/examples/electrophysiology_tet/mesh/single_tet.msh");
-  gmshFile.append("/PERIGEE/examples/electrophysiology_tet/mesh/threelines.msh");  
+  gmshFile.append("/PERIGEE/examples/electrophysiology_tet/mesh/twolines.msh");  
   
   PetscInitialize(&argc, &argv, (char *)0, PETSC_NULL);
   SYS_T::GetOptionString("-gmsh_file", gmshFile);

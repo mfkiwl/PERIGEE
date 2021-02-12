@@ -15,43 +15,51 @@
 #include <cmath>
 #include <iomanip>
 #include "Vec_Tools.hpp"
-//#include "QuadPts_Gauss_Tet.hpp"
-#include "QuadPts_Gauss.hpp"
-//#include "QuadPts_Gauss_Triangle.hpp"
+#include "QuadPts_Gauss_Tet.hpp"
+#include "QuadPts_Gauss_Triangle.hpp"
 #include "HDF5_PartReader.hpp"
+//#include "HDF5_Writer.hpp"
+//#include "BernsteinBasis_Array.hpp"
 #include "FEANode.hpp"
-//#include "FEAElement_Tet4.hpp"
-//#include "FEAElement_Tet10_v2.hpp"
-//#include "FEAElement_Triangle3_3D_der0.hpp"
-//#include "FEAElement_Triangle6_3D_der0.hpp"
-#include "FEAElement_Line2_3D_der1.hpp"
+//#include "AExtractor_3D_NURBS_xyz.hpp"
+
+#include "FEAElement_Tet4.hpp"
+#include "FEAElement_Tet10_v2.hpp"
+#include "FEAElement_Triangle3_3D_der0.hpp"
+#include "FEAElement_Triangle6_3D_der0.hpp"
+
 #include "AGlobal_Mesh_Info_FEM_3D.hpp"
+//#include "APart_Basic_Info.hpp"
 #include "ALocal_Elem.hpp"
 #include "ALocal_IEN.hpp"
 #include "ALocal_NodalBC.hpp"
 #include "ALocal_Inflow_NodalBC.hpp"
 #include "ALocal_BC_3D.hpp"
+//#include "IALocal_meshSize.hpp"
+//#include "ALocal_meshSize_3D_NURBS.hpp"
 #include "AInt_Weight.hpp"
 #include "APart_Node.hpp"
 #include "APart_Basic_Info.hpp"
+//#include "PDNSolution.hpp"
 #include "PDNTimeStep.hpp"
 #include "PDNSolution_EP.hpp"
 #include "TimeMethod_GenAlpha.hpp"
 #include "PLocAssem_EP_3D.hpp"
 #include "PGAssem_EP.hpp"
+//#include "PLinear_Solver_PETSc.hpp"
+//#include "PNonlinear_Solver.hpp"
+//#include "PTime_Solver.hpp"
 #include "PTime_Solver_EP_OperatorSplit.hpp"
 #include "IonicModel_AP.hpp"
-#include "IonicModel_Test.hpp"
 
 int main(int argc, char *argv[])
 {
   // Number of quadrature points for tets and triangles
-  // Use: 1 / 1 for linear, 2 / 1 for quadratic
-  int nqp_line = 1, nqp_vertex = 0;
-  //Note: nqp_vertex=1 is redundant fix this
+  // Suggested values: 5 / 4 for linear, 17 / 13 for quadratic
+  int nqp_tet = 4, nqp_tri = 3;
 
-  // Estimate of the nonzero per row for the sparse matrix 
-  int nz_estimate = 300;
+  //// Estimate of the nonzero per row for the sparse matrix 
+  //int nz_estimate = 300;
 
   // partition file base name
   std::string part_file("part");
@@ -68,12 +76,12 @@ int main(int argc, char *argv[])
   double initial_time = 0.0;
   double initial_step = 1.0;
   int initial_index = 0;
-  double final_time = 100.0;
+  double final_time = 2.0;
 
   // Time solver parameters
   std::string sol_bName("SOL_");
   int ttan_renew_freq = 1;
-  int sol_record_freq = 1;
+  int sol_record_freq = 5;
 
   //// Restart options
   //bool is_restart = false;
@@ -91,9 +99,9 @@ int main(int argc, char *argv[])
 
   // ======= Read Command Line Arguments =======
   SYS_T::commPrint("===> Reading arguments from Command line ... \n");
-
-  SYS_T::GetOptionInt("-nqp_line", nqp_line);
-  SYS_T::GetOptionInt("-nqp_vertex", nqp_vertex);
+//  
+  SYS_T::GetOptionInt("-nqp_tet", nqp_tet);
+  SYS_T::GetOptionInt("-nqp_tri", nqp_tri);
   SYS_T::GetOptionString("-part_file", part_file);
   SYS_T::GetOptionReal("-nl_rtol", nl_rtol);
   SYS_T::GetOptionReal("-nl_atol", nl_atol);
@@ -109,8 +117,8 @@ int main(int argc, char *argv[])
   SYS_T::GetOptionString("-sol_name", sol_bName);
 
   SYS_T::cmdPrint("-part_file:", part_file);
-  SYS_T::cmdPrint("-nqp_line:", nqp_line);
-  SYS_T::cmdPrint("-nqp_vertex:", nqp_vertex);
+  SYS_T::cmdPrint("-nqp_tet:", nqp_tet);
+  SYS_T::cmdPrint("-nqp_tri:", nqp_tri);
   SYS_T::cmdPrint("-nl_atol:", nl_atol); 
   SYS_T::cmdPrint("-nl_dtol:", nl_dtol); 
   SYS_T::cmdPrint("-nl_maxits:", nl_maxits);
@@ -129,11 +137,16 @@ int main(int argc, char *argv[])
   
   //// 1.1 Get points' coordinates 
   FEANode * fNode = new FEANode(part_file, rank);
-  fNode->print_info();
+//
+//  // 1.2 Get mesh size for each local element
+//  IALocal_meshSize * locmSize = new ALocal_meshSize_3D_NURBS(h5reader);
+//
+//  // 1.3 Get extraction operator for each local elements
+//  IAExtractor * fExt = new AExtractor_3D_NURBS_xyz(h5reader);
+  
   
   // 1.4 Get LIEN for each local elements
   ALocal_IEN * locIEN = new ALocal_IEN(part_file, rank);
-  locIEN->print_info();  
 
   // 1.5 Get Global Mesh Info
   IAGlobal_Mesh_Info * GMIptr = new AGlobal_Mesh_Info_FEM_3D(part_file,rank);
@@ -149,7 +162,9 @@ int main(int argc, char *argv[])
 
   // 1.8 Get local BC info
   ALocal_NodalBC * locbc = new ALocal_NodalBC(part_file, rank);
+   //IALocal_BC * locbc = new ALocal_BC_3D(h5reader);
   locbc->print_info();
+  //ALocal_Inflow_NodalBC * locinfnbc = new ALocal_Inflow_NodalBC(part_file, rank);
 
   ALocal_EBC * locebc = new ALocal_EBC(part_file, rank);
   locebc->print_info();
@@ -169,14 +184,13 @@ int main(int argc, char *argv[])
   // ======= Generate Finite Element =======
   // ===== Quadrature rules =====
   SYS_T::commPrint("===> Build quadrature rules. \n");
-  IQuadPts * quad_line   = new QuadPts_Gauss( nqp_line );
-  //IQuadPts * quad_vertex = new QuadPts_Gauss( nqp_vertex );
-  quad_line->print_info();
-  std::cout << "quad dim" << quad_line->get_dim() << std::endl;
-  //quad_vertex->print_info();
-
+  IQuadPts * quadv = new QuadPts_Gauss_Tet( nqp_tet );
+  IQuadPts * quads = new QuadPts_Gauss_Triangle( nqp_tri );
+  quadv->print_info();
+  quads->print_info();
+  
   SYS_T::commPrint("===> Build quadrature weight ... \n");
-  AInt_Weight * Int_w_vol = new AInt_Weight(quad_line);
+  AInt_Weight * Int_w_vol = new AInt_Weight(quadv);
   Int_w_vol->print_info();
   
   // ===== Finite Element Container =====
@@ -193,10 +207,19 @@ int main(int argc, char *argv[])
       //FEAElement * elementv	= nullptr; 
       //FEAElement * elements	= nullptr; 
       
-      if( GMIptr->get_elemType() == 512 ){
-	elemArray[ee] = new FEAElement_Line2_3D_der1( nqp_line ); // elem type 512
+      if( GMIptr->get_elemType() == 501 ){
+	elemArray[ee] = new FEAElement_Tet4( nqp_tet ); // elem type 501
 	feaelement_memsize += elemArray[ee]->get_memory_usage(); 
-	//elemsArray[ee] = new FEAElement_Triangle3_3D_der0( nqp_tri ); 
+	elemsArray[ee] = new FEAElement_Triangle3_3D_der0( nqp_tri ); 
+      }
+      else if( GMIptr->get_elemType() == 502 ){
+	SYS_T::print_fatal_if( nqp_tet < 29,
+			       "Error: not enough quadrature points for tets.\n" );
+	SYS_T::print_fatal_if( nqp_tri < 13,
+			       "Error: not enough quadrature points for triangles.\n" );
+	elemArray[ee] = new FEAElement_Tet10_v2( nqp_tet ); // elem type 502
+	feaelement_memsize += elemArray[ee]->get_memory_usage(); 
+	elemsArray[ee] = new FEAElement_Triangle6_3D_der0( nqp_tri ); 
       }
       else SYS_T::print_fatal("Error: Element type not supported.\n");
     }
@@ -215,16 +238,19 @@ int main(int argc, char *argv[])
 
   //====== Ionic model setup
   SYS_T::commPrint("===> Generate Ionic Model ... \n");
-  //IonicModel * ionicmodel_ptr = new IonicModel_AP () ;
-  IonicModel * ionicmodel_ptr = new IonicModel_Test () ;
+  IonicModel * ionicmodel_ptr = new IonicModel_AP () ;
   ionicmodel_ptr -> print_info();
 
   //====== Local assembly pointer
   SYS_T::commPrint("===> Initialize local assembly routine ... \n");
   IPLocAssem * locAssem_ptr =
     new PLocAssem_EP_3D(tm_galpha_ptr, ionicmodel_ptr,
-			GMIptr->get_nLocBas(), quad_line->get_num_quadPts() );
+			GMIptr->get_nLocBas(), quadv->get_num_quadPts() );
   
+  //std::cout << "gmi locbas" << GMIptr->get_nLocBas() << std::endl;
+  //std::cout << "elements locbas " << elements->get_nLocBas() << std::endl;
+  //std::cout << "quadv num " << quadv->get_num_quadPts() << std::endl;  
+
   // ---------------------------------------
 
   // ======= Solution Initialization =======
@@ -261,7 +287,7 @@ int main(int argc, char *argv[])
   SYS_T::commPrint("===> Matrix nonzero structure fixed ... \n");
 
   // 2.5 Setup linear solver context
-  PLinear_Solver_PETSc * lsolver = new PLinear_Solver_PETSc(PCJACOBI);
+  PLinear_Solver_PETSc * lsolver = new PLinear_Solver_PETSc();
   SYS_T::commPrint("===> PETSc linear solver setted up:\n");
   SYS_T::commPrint("----------------------------------------------------------- \n");
   lsolver->Info();
@@ -274,16 +300,16 @@ int main(int argc, char *argv[])
   gloAssem_ptr->Assem_mass_residual( disp,// hist,
 				     timeinfo, //ionicmodel_ptr,
 				     locElem, locAssem_ptr, locIEN, pNode,
-				     fNode, quad_line, elemArray, locbc );
+				     fNode, quadv, elemArray, locbc );
 
-  
+    
   lsolver->Solve( gloAssem_ptr->K, gloAssem_ptr->G, velo); 
   SYS_T::commPrint("initial solution's time derivative obtained. \n"); 
 
   // 2.7 Setup nonlinear solver context
   PNonlinear_Solver_EP * nsolver
     = new PNonlinear_Solver_EP(nl_rtol, nl_atol,
-			       nl_dtol, nl_maxits, nl_refreq);
+					    nl_dtol, nl_maxits, nl_refreq);
   SYS_T::commPrint("===> Nonlinear solver setted up:\n");
   nsolver->Info();
 
@@ -298,7 +324,7 @@ int main(int argc, char *argv[])
   SYS_T::commPrint("===> Start Finite Element Analysis:\n");
     tsolver->TM_generalized_alpha(
       velo, disp, hist, timeinfo, tm_galpha_ptr, locElem, locIEN, pNode,
-      fNode, locbc, quad_line, elemArray, ionicmodel_ptr, locAssem_ptr,
+      fNode, locbc, quadv, elemArray, ionicmodel_ptr, locAssem_ptr,
       gloAssem_ptr, lsolver, nsolver );
 
   // ======= PETSc Finalize =======
@@ -309,7 +335,7 @@ int main(int argc, char *argv[])
   delete locIEN;
   delete locElem;
   delete locbc;
-  delete quad_line;// delete quads;
+  delete quadv; delete quads;
   delete pNode;
   delete Int_w_vol;
   delete disp;
