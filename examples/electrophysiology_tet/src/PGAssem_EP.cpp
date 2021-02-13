@@ -16,16 +16,16 @@ PGAssem_EP::PGAssem_EP( const IPLocAssem * const &locassem_ptr,
   int udegree = agmi_ptr->get_zdegree();
   int nlocalnode = pnode_ptr->get_nlocalnode();
 
-  std::cout << "PGAssem constructor \n"
-	    << "sdegree" << sdegree <<"\n"
-	    << "tdegree" << tdegree <<"\n"
-	    << "udegree" << udegree <<"\n"
-	    << std::endl;
+  //std::cout << "PGAssem constructor \n"
+  //	    << "sdegree" << sdegree <<"\n"
+  //	    << "tdegree" << tdegree <<"\n"
+  //	    << "udegree" << udegree <<"\n"
+  //	    << std::endl;
 
   int nz_prow;
   if((tdegree==0)&&(udegree==0)) {
-    nz_prow = 2 * dof * (2*sdegree+1);
-  }else if (sdegree==0) {
+    nz_prow = dof * (2*sdegree+1);
+  }else if ((tdegree==0)&&(udegree==0)&&(sdegree==0)) {
     SYS_T::commPrint("element degrees in space are all zero");
   }else{
     nz_prow = dof * (2*sdegree+1) * (2*tdegree+1) * (2*udegree+1);
@@ -629,7 +629,7 @@ void PGAssem_EP::Assem_tangent_residual(
       //		   row_index, local_d, INSERT_VALUES);
 
       //std::cout << "local assem residual" << std::endl ;
-      //PetscScalarView(4, lassem_ptr->Residual ,PETSC_VIEWER_STDOUT_WORLD);
+      //PetscScalarView(nLocBas, lassem_ptr->Residual ,PETSC_VIEWER_STDOUT_WORLD);
 	
     }
   }
@@ -646,7 +646,7 @@ void PGAssem_EP::Assem_tangent_residual(
   VecAssemblyBegin(G);
   VecAssemblyEnd(G);
 
-  //std::cout<< "residual and tangent the end of tangent calc" << std::endl;
+  //std::cout<< "residual and tangent the end of PGassem tangent calc" << std::endl;
   //Print_G();
   //MatView(K, PETSC_VIEWER_STDOUT_WORLD);
 }
@@ -751,7 +751,7 @@ void PGAssem_EP::Assem_residual(
   //VecAssemblyBegin(sol_d->solution);
   //VecAssemblyEnd(sol_d->solution);
 
-  //std::cout<< "hist new at the end of residual calc" << std::endl;
+  //std::cout<< "residual at the end of PGassem residual calc" << std::endl;
   //Print_G();
 }
 

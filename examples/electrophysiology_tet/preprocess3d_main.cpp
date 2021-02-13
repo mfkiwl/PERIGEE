@@ -223,7 +223,7 @@ int main( int argc, char * argv[] )
   //dir_list.push_back(sur_file_top);
   
   NBC_list[0] = new NodalBC_Line_3D_vtp( nFunc );
-  NBC_list[0]->print_info();
+  //NBC_list[0]->print_info();
   //NBC_list[1] = new NodalBC_3D_vtp( dir_list, nFunc );
   //NBC_list[2] = new NodalBC_3D_vtp( dir_list, nFunc );
   //NBC_list[3] = new NodalBC_3D_vtp( dir_list, nFunc );
@@ -237,7 +237,7 @@ int main( int argc, char * argv[] )
   std::vector<std::string> ebclist;
   ebclist.clear();
   ElemBC * ebc = new ElemBC_3D_Line( ebclist );
-  ebc->print_info();
+  //ebc->print_info();
 
   const bool isPrintPartInfo = true;
   const int proc_size = cpu_size;

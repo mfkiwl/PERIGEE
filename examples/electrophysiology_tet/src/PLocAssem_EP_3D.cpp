@@ -429,8 +429,7 @@ void PLocAssem_EP_3D::Assem_Mass_Residual(
 
 	for(A=0; A<nLocBas; ++A)
 	  {
-	    Residual[A] -= gwts * (
-				   k11 * d_x * dR_dx[A] + k12 * d_y * dR_dx[A] + k13 * d_z * dR_dx[A]
+	    Residual[A] -= gwts * (k11 * d_x * dR_dx[A] + k12 * d_y * dR_dx[A] + k13 * d_z * dR_dx[A]
 				   + k21 * d_x * dR_dy[A] + k22 * d_y * dR_dy[A] + k23 * d_z * dR_dy[A]
 				   + k31 * d_x * dR_dz[A] + k32 * d_y * dR_dz[A] + k33 * d_z * dR_dz[A]);
 
@@ -445,8 +444,6 @@ void PLocAssem_EP_3D::Assem_Mass_Residual(
   }
   else if (element->get_elemDim() == 1) {
     
-    std::cout << "mass res. eelment dim 1" <<std::endl;
-
     element->buildBasis( quad, eleCtrlPts_x, eleCtrlPts_y, eleCtrlPts_z );
   
     int ii, qua, A, B, index; // iterator

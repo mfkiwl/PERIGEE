@@ -166,8 +166,8 @@ int main(int argc, char *argv[])
   locbc->print_info();
   //ALocal_Inflow_NodalBC * locinfnbc = new ALocal_Inflow_NodalBC(part_file, rank);
 
-  ALocal_EBC * locebc = new ALocal_EBC(part_file, rank);
-  locebc->print_info();
+  //ALocal_EBC * locebc = new ALocal_EBC(part_file, rank);
+  //locebc->print_info();
 
   APart_Node * pNode = new APart_Node(part_file, rank);
   pNode->print_info();

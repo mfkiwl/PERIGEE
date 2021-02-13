@@ -1,4 +1,8 @@
 // ==================================================================
+// !!!WARNING: set up the linear solver in a better way, initial velo
+// calculation isn't converging due to mass assembly, and solver
+// convergence is taking a lot of iterations through time stepping
+//
 // Input:
 // partition file in hdf5 format.
 //
@@ -50,8 +54,8 @@ int main(int argc, char *argv[])
   int nqp_line = 1, nqp_vertex = 0;
   //Note: nqp_vertex=1 is redundant fix this
 
-  // Estimate of the nonzero per row for the sparse matrix 
-  int nz_estimate = 300;
+  //// Estimate of the nonzero per row for the sparse matrix 
+  //int nz_estimate = 300;
 
   // partition file base name
   std::string part_file("part");
@@ -129,11 +133,11 @@ int main(int argc, char *argv[])
   
   //// 1.1 Get points' coordinates 
   FEANode * fNode = new FEANode(part_file, rank);
-  fNode->print_info();
+  //fNode->print_info();
   
   // 1.4 Get LIEN for each local elements
   ALocal_IEN * locIEN = new ALocal_IEN(part_file, rank);
-  locIEN->print_info();  
+  //locIEN->print_info();  
 
   // 1.5 Get Global Mesh Info
   IAGlobal_Mesh_Info * GMIptr = new AGlobal_Mesh_Info_FEM_3D(part_file,rank);
@@ -145,17 +149,17 @@ int main(int argc, char *argv[])
   
   // 1.7 Get local element info
   ALocal_Elem * locElem = new ALocal_Elem(part_file, rank);
-  locElem->print_info();
+  //locElem->print_info();
 
   // 1.8 Get local BC info
   ALocal_NodalBC * locbc = new ALocal_NodalBC(part_file, rank);
-  locbc->print_info();
+  //locbc->print_info();
 
-  ALocal_EBC * locebc = new ALocal_EBC(part_file, rank);
-  locebc->print_info();
+  //ALocal_EBC * locebc = new ALocal_EBC(part_file, rank);
+  ////locebc->print_info();
 
   APart_Node * pNode = new APart_Node(part_file, rank);
-  pNode->print_info();
+  //pNode->print_info();
 
   if(size != PartBasic->get_cpu_size())
   {
@@ -170,14 +174,11 @@ int main(int argc, char *argv[])
   // ===== Quadrature rules =====
   SYS_T::commPrint("===> Build quadrature rules. \n");
   IQuadPts * quad_line   = new QuadPts_Gauss( nqp_line );
-  //IQuadPts * quad_vertex = new QuadPts_Gauss( nqp_vertex );
-  quad_line->print_info();
-  std::cout << "quad dim" << quad_line->get_dim() << std::endl;
-  //quad_vertex->print_info();
-
+  //quad_line->print_info();
+  
   SYS_T::commPrint("===> Build quadrature weight ... \n");
   AInt_Weight * Int_w_vol = new AInt_Weight(quad_line);
-  Int_w_vol->print_info();
+  //Int_w_vol->print_info();
   
   // ===== Finite Element Container =====
   SYS_T::commPrint("===> Setup element container. \n");
@@ -276,10 +277,14 @@ int main(int argc, char *argv[])
 				     locElem, locAssem_ptr, locIEN, pNode,
 				     fNode, quad_line, elemArray, locbc );
 
-  
+  //SYS_T::commPrint("Mass residual: \n"); 
+  //gloAssem_ptr->Print_G();
+  //SYS_T::commPrint("Mass residual: \n"); 
+  //MatView(gloAssem_ptr->K, PETSC_VIEWER_STDOUT_WORLD);
   lsolver->Solve( gloAssem_ptr->K, gloAssem_ptr->G, velo); 
   SYS_T::commPrint("initial solution's time derivative obtained. \n"); 
-
+  //velo->PrintWithGhost();
+  
   // 2.7 Setup nonlinear solver context
   PNonlinear_Solver_EP * nsolver
     = new PNonlinear_Solver_EP(nl_rtol, nl_atol,
