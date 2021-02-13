@@ -80,8 +80,10 @@ void PDNSolution_EP::Init_Partial( const class APart_Node * const &pNode,
     z_coor = fNode ->  get_ctrlPts_z(ii);
 
     //set some nodes to 0 and some to -80
-    //if ( std::sqrt(std::pow(x_coor-104.9, 2.0) + std::pow(y_coor-301.5, 2.0) + std::pow(z_coor-248.24, 2.0)) <= 2.0 ) { //
-    if(x_coor < 20.0) {
+    if ( std::sqrt(std::pow(x_coor-(-107.11), 2.0)
+		   + std::pow(y_coor-(-301.313), 2.0)
+		   + std::pow(z_coor-248.33, 2.0)  ) <= 0.5 ) { //
+      //if(x_coor < 20.0) {
       value = 0.0;
     }
     else {

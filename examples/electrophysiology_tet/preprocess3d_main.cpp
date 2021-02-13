@@ -47,12 +47,13 @@ int main( int argc, char * argv[] )
 
 
   // Input files
-  // volume
-  std::string geo_file("./purkinje.vtu");
+  std::string geo_file("/home/oguz/LV-line.vtu");       
+  //std::string sur_file_tip0("/home/oguz/LV-line_endnodes.txt");
 
-//  // faces purkinje mesh  
-  std::string sur_file_tip0("./tip0_curve.vtp");
-  std::string sur_file_tip1("./tip1_curve.vtp");
+//  // volume & faces purkinje mesh  
+//  std::string geo_file("./purkinje.vtu");
+//  std::string sur_file_tip0("./tip0_curve.vtp");
+//  std::string sur_file_tip1("./tip1_curve.vtp");
   
 //  // faces for HLHS mesh  
 //  std::string sur_file_Base("./Base_Vol.vtp");
@@ -90,14 +91,12 @@ int main( int argc, char * argv[] )
   SYS_T::GetOptionInt("-cpu_size", cpu_size);
   SYS_T::GetOptionInt("-in_ncommon", in_ncommon);
   SYS_T::GetOptionString("-geo_file", geo_file);
-  SYS_T::GetOptionString("-sur_file_tip0", sur_file_tip0);
-  SYS_T::GetOptionString("-sur_file_tip1", sur_file_tip1 );
+  //SYS_T::GetOptionString("-sur_file_tip0", sur_file_tip0);
 
 
   std::cout<<"==== /Command Line Arguments ===="<<std::endl;
   std::cout<<" -geo_file: "<<geo_file<<std::endl;
-  std::cout<<" -sur_file_tip0" <<sur_file_tip0<<std::endl;
-  std::cout<<" -sur_file_tip1" <<sur_file_tip1<<std::endl;
+  //std::cout<<" -sur_file_tip0" <<sur_file_tip0<<std::endl;
 
 
   std::cout<<" -part_file: "<<part_file<<std::endl;
@@ -112,9 +111,7 @@ int main( int argc, char * argv[] )
 
   // Check if the geometrical file exist on disk
   SYS_T::file_check(geo_file); std::cout<<geo_file<<" found. \n";
-  SYS_T::file_check(sur_file_tip0); std::cout<<sur_file_tip0<<" found. \n";
-  SYS_T::file_check(sur_file_tip1); std::cout<<sur_file_tip1<<" found. \n";
-
+  //SYS_T::file_check(sur_file_tip0); std::cout<<sur_file_tip0<<" found. \n";
 
 // ----- Write the input argument into a HDF5 file
   hid_t cmd_file_id = H5Fcreate("preprocessor_cmd.h5",
@@ -127,14 +124,12 @@ int main( int argc, char * argv[] )
   cmdh5w->write_intScalar("dofMat", dofMat);
   cmdh5w->write_intScalar("elemType", elemType);
   cmdh5w->write_string("geo_file", geo_file);
-  cmdh5w->write_string("sur_file_tip0", sur_file_tip0);
-  cmdh5w->write_string("sur_file_tip1", sur_file_tip1);
-
+  //  cmdh5w->write_string("sur_file_tip0", sur_file_tip0);
   
   cmdh5w->write_string("part_file", part_file);
 
   delete cmdh5w; H5Fclose(cmd_file_id);
-  // ----- Finish writing
+  std::cout<< "// ----- Finish writing" << std::endl;
 
   // Read the geometry file for the whole FSI domain
   int nFunc, nElem;
@@ -142,7 +137,9 @@ int main( int argc, char * argv[] )
   std::vector<int> phy_tag;
   std::vector<double> ctrlPts;
 
-  TET_T::read_purkinje_lines(geo_file.c_str(), nFunc, nElem, ctrlPts, vecIEN, phy_tag);
+  // Warning: this function returns phy_tag as 1 only, for now.
+  TET_T::read_purkinje_lines(geo_file.c_str(),
+			     nFunc, nElem, ctrlPts, vecIEN, phy_tag);
 
   //for(unsigned int ii=0; ii<phy_tag.size(); ++ii)
   //{

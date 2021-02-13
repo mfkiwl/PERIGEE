@@ -24,7 +24,7 @@ PGAssem_EP::PGAssem_EP( const IPLocAssem * const &locassem_ptr,
 
   int nz_prow;
   if((tdegree==0)&&(udegree==0)) {
-    nz_prow = dof * (2*sdegree+1);
+    nz_prow = 2 * dof * (2*sdegree+1);
   }else if ((tdegree==0)&&(udegree==0)&&(sdegree==0)) {
     SYS_T::commPrint("element degrees in space are all zero");
   }else{

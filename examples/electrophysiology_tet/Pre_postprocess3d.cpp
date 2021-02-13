@@ -98,6 +98,7 @@ int main(int argc, char *argv[])
   // Check if the given geo file exist
   SYS_T::file_exist_check( geo_file.c_str() );
 
+  // Warning: this function returns phy_tag as 1 only, for now.
   TET_T::read_purkinje_lines(geo_file.c_str(), nFunc, nElem, ctrlPts, vecIEN, phy_tag);
 
     if(elemType == 512)

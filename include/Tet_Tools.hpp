@@ -113,13 +113,14 @@ namespace TET_T
   //           \para pt: xyz coordinate of the grids, length is 3 numpts
   //           \para ien_array: the connectivity array, 
   //                            length is 2 x numcels
-  //           \para phy_tag: the tag of the elements, length is numcels
+  //           \para phy_tag:  physical domain that the element belongs
   //   This function is specifically designed for purkinje fiber mesh 
   // ----------------------------------------------------------------
   void read_purkinje_lines( const std::string &filename,
-      int &numpts, int &numcels,
-      std::vector<double> &pt, std::vector<int> &ien_array,
-      std::vector<int> &phy_tag );
+			    int &numpts, int &numcels,
+			    std::vector<double> &pt,
+			    std::vector<int> &ien_array,
+			    std::vector<int> &phy_tag );
 
   // ----------------------------------------------------------------
   // ! read_vtp_grid: read the surface mesh from a .vtp file. The mesh

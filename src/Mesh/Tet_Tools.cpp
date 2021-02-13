@@ -192,9 +192,10 @@ void TET_T::read_vtu_grid( const std::string &filename,
 }
 
 void TET_T::read_purkinje_lines( const std::string &filename,
-    int &numpts, int &numcels,
-    std::vector<double> &pt, std::vector<int> &ien_array,
-    std::vector<int> &phy_tag )
+				 int &numpts, int &numcels,
+				 std::vector<double> &pt,
+				 std::vector<int> &ien_array,
+				 std::vector<int> &phy_tag )
 {
   vtkXMLUnstructuredGridReader * reader = vtkXMLUnstructuredGridReader::New();
   reader -> SetFileName( filename.c_str() );
@@ -204,8 +205,8 @@ void TET_T::read_purkinje_lines( const std::string &filename,
   numpts  = static_cast<int>( vtkugrid -> GetNumberOfPoints() );
   numcels = static_cast<int>( vtkugrid -> GetNumberOfCells() );
 
-  vtkCellData * celldata = vtkugrid->GetCellData();
-  vtkDataArray * cd = celldata->GetScalars("Physics_tag");
+  //vtkCellData * celldata = vtkugrid->GetCellData();
+  //vtkDataArray * cd = celldata->GetScalars("Physics_tag");
 
   double pt_xyz[3];
   pt.clear();
@@ -227,13 +228,12 @@ void TET_T::read_purkinje_lines( const std::string &filename,
     {
       ien_array.push_back( static_cast<int>( cell->GetPointId(0) ) );
       ien_array.push_back( static_cast<int>( cell->GetPointId(1) ) );
-      //ien_array.push_back( static_cast<int>( cell->GetPointId(2) ) );
-      //ien_array.push_back( static_cast<int>( cell->GetPointId(3) ) );
 
-      phy_tag.push_back( static_cast<int>( cd->GetComponent(ii, 0) ) );
+      phy_tag.push_back( 1 ) ;
+      // to read from vtu : static_cast<int>( cd->GetComponent(ii, 0) ) 
     }
     // later implementation: 32 is for cubic line
-    else SYS_T::print_fatal("Error: read_purkinje_lines read a mesh with non-line elements. \n"); 
+    else SYS_T::print_fatal("Error: read_purkinje_lines reads only line elements. \n"); 
   }
 
   reader->Delete();

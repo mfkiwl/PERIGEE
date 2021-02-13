@@ -73,7 +73,7 @@ int main(int argc, char *argv[])
   double initial_time = 0.0;
   double initial_step = 1.0;
   int initial_index = 0;
-  double final_time = 100.0;
+  double final_time = 800.0;
 
   // Time solver parameters
   std::string sol_bName("SOL_");
