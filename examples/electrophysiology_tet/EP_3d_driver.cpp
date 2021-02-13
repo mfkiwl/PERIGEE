@@ -45,6 +45,7 @@
 #include "PGAssem_EP.hpp"
 #include "PTime_Solver_EP_OperatorSplit.hpp"
 #include "IonicModel_AP.hpp"
+#include "IonicModel_Purkinje.hpp"
 #include "IonicModel_Test.hpp"
 
 int main(int argc, char *argv[])
@@ -217,7 +218,8 @@ int main(int argc, char *argv[])
   //====== Ionic model setup
   SYS_T::commPrint("===> Generate Ionic Model ... \n");
   //IonicModel * ionicmodel_ptr = new IonicModel_AP () ;
-  IonicModel * ionicmodel_ptr = new IonicModel_Test () ;
+  IonicModel * ionicmodel_ptr = new IonicModel_Purkinje () ;
+  //IonicModel * ionicmodel_ptr = new IonicModel_Test () ;
   ionicmodel_ptr -> print_info();
 
   //====== Local assembly pointer

@@ -115,7 +115,7 @@ int main(int argc, char *argv[])
   std::cout<<"nFunc: "<<nFunc<<std::endl;
 
   IIEN * IEN = new IEN_Line_P1(nElem, vecIEN);
-  IEN->print_IEN();
+  //IEN->print_IEN();
   
   VEC_T::clean(vecIEN);
 
