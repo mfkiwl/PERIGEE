@@ -47,7 +47,8 @@ int main( int argc, char * argv[] )
 
 
   // Input files
-  std::string geo_file("/home/oguz/LV-line.vtu");       
+  std::string geo_file
+    ("/home/oguz/PERIGEE/examples/electrophysiology_tet/mesh/RV-line.vtu");
   //std::string sur_file_tip0("/home/oguz/LV-line_endnodes.txt");
 
 //  // volume & faces purkinje mesh  
