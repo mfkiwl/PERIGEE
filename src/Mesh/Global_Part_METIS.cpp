@@ -132,6 +132,186 @@ Global_Part_METIS::Global_Part_METIS( const int &cpu_size,
   std::cout<<"=== Global partition generated. \n";
 }
 
+
+Global_Part_METIS::Global_Part_METIS( const int &cpu_size,
+        const int &in_ncommon, const bool &isDualGraph,
+	const std::vector<IMesh *>  &mesh_list,
+	const std::vector<IIEN *> &IEN_list,
+        const char * const &element_part_name,
+        const char * const &node_part_name )
+: isMETIS(true), isDual(isDualGraph), dual_edge_ncommon(in_ncommon)
+{
+
+  if(mesh_list.size() != IEN_list.size())
+  {
+    std::cerr<<"ERROR: METIS cannot handle partition graph into one subdomain. \n";
+    exit(1);
+  }
+    
+  std::vector<idx_t> nElem_list, nFunc_list, nLocBas_list;
+  
+  for (auto it=mesh_list.begin(); it!=mesh_list.end(); ++it) {
+    nElem_list.push_back((*it)->get_nElem());
+    nFunc_list.push_back((*it)->get_nFunc());
+    nLocBas_list.push_back((*it)->get_nLocBas());
+  }
+
+  if(cpu_size <= 1)
+  {
+    std::cerr<<"ERROR: METIS cannot handle partition graph into one subdomain. \n";
+    exit(1);
+  }
+
+  std::vector<int>::iterator vec_iter=
+    std::max_element(nLocBas_list.begin(), nLocBas_list.end());
+  int maxLocBas=*vec_iter;
+
+  if(isDualGraph)
+  {
+    if( in_ncommon < 1 || in_ncommon > maxLocBas - 1 )
+    {
+      std::cerr<<"ERROR: ncommon: "<<in_ncommon<<" is wrong! \n";
+      exit(1);
+    }
+  }
+
+  idx_t options[METIS_NOPTIONS];
+  METIS_SetDefaultOptions(options);
+  options[METIS_OPTION_NUMBERING] = 0;
+
+  idx_t nparts = cpu_size;
+  idx_t objval;
+  idx_t ncommon = in_ncommon;
+
+  std::cout<<"-- allocating eptr and eind arrays... \n";
+
+  const int nElem_total= std::accumulate(nElem_list.begin(), nElem_list.end(), 0);
+  const idx_t eptr_size= nElem_total + 1;
+  const idx_t eind_size
+    = std::inner_product(nElem_list.begin(), nElem_list.end(),
+			 nLocBas_list.begin(), 0.0);
+  idx_t * eptr = new idx_t [eptr_size];
+  
+  std::cout<<"---- eptr allocated, with length "<<eptr_size<<" and size: ";
+  SYS_T::print_mem_size(double(eptr_size) * sizeof(idx_t));
+  std::cout<<"\n";
+
+  idx_t * eind = new idx_t [eind_size];
+
+  std::cout<<"---- eind allocated with length "<<eind_size<<" and size: ";
+  SYS_T::print_mem_size(double(eind_size) * sizeof(idx_t));
+  std::cout<<"\n";
+
+  clock_t time_tracker = clock();
+
+  std::vector<int> nLocBas_ee;
+  std::vector<IIEN *> IEN_ee;
+  std::vector<int> numbers_ee;
+  //vec_iter=nLocBas_ee.begin();
+  
+  for( int jj=0; jj<mesh_list.size(); ++jj){
+    nLocBas_ee.insert(nLocBas_ee.end(), nElem_list.at(jj), nLocBas_list.at(jj));
+    IEN_ee.insert(IEN_ee.end(), nElem_list.at(jj), IEN_list.at(jj));
+    vec_iter= numbers_ee.insert(numbers_ee.end(), nElem_list.at(jj), 0);
+    std::iota(vec_iter, numbers_ee.end(), 0);
+  }
+
+  std::cout << "nlocbas_ee 0 " << nLocBas_ee.at(0)<< "\n"
+	    << "nlocbas_ee 1 " << nLocBas_ee.at(1)<< "\n"
+	    << "numbers_ee 0 " << numbers_ee.at(0)<< "\n"
+	    << "numbers_ee 1 " << numbers_ee.at(1)<< "\n";
+
+  for( idx_t ee=0; ee<nElem_total; ++ee )
+  {
+    eptr[ee] = eptr[ee-1] + nLocBas_ee[ee-1];
+    for(int ii=0; ii<nLocBas_ee[ee]; ++ii){
+      eind[eptr[ee] + ii] = (IEN_ee.at(ee))->get_IEN(numbers_ee.at(ee), ii);
+    }
+  }
+  eptr[nElem_total] = eptr[nElem_total-1] + nLocBas_ee[nElem_total-1];
+  std::cout << "eptr 0 " << eptr[0]<< "\n"
+	    << "eptr 1 " << eptr[1]<< "\n"
+	    << "eptr 2 " << eptr[2]<< "\n";
+
+  std::cout << "eind 0 " << eind[0]<< "\n"
+	    << "eind 1 " << eind[1]<< "\n"
+	    << "eind 2 " << eind[2]<< "\n"
+	    << "eind 3 " << eind[3]<< "\n"
+	    << "eind 4 " << eind[4]<< "\n"
+	    << "eind 5 " << eind[5]<< "\n";
+  
+  time_tracker = clock() - time_tracker;
+
+  std::cout<<"---- eptr eind generated, taking ";
+  std::cout<<((double) time_tracker)/CLOCKS_PER_SEC<<" seconds. \n";
+//
+//  epart = new idx_t [nElem];
+//  npart = new idx_t [nFunc];
+//  std::cout<<"---- epart and npart vector has been allocated. \n";
+//
+//  idx_t ne = nElem;
+//  idx_t nn = nFunc;
+//
+//  time_tracker = clock();
+//  int metis_result;
+//  if( isDualGraph )
+//  {
+//    std::cout<<"---- calling METIS_PartMeshDual ... \n";
+//    metis_result = METIS_PartMeshDual( &ne, &nn, eptr, eind, NULL,
+//        NULL, &ncommon, &nparts, NULL, options, &objval, epart, npart );
+//  }
+//  else
+//  {
+//    std::cout<<"---- calling METIS_PartMeshNodal ... \n";
+//    metis_result = METIS_PartMeshNodal( &ne, &nn, eptr, eind, NULL,
+//        NULL, &nparts, NULL, NULL, &objval, epart, npart );
+//  }
+//
+//  if(metis_result != METIS_OK)
+//  {
+//    std::cerr<<"ERROR: PARTITION FAILED: "<<std::endl;
+//    switch( metis_result)
+//    {
+//      case METIS_ERROR_INPUT:
+//        std::cout << "METIS_ERROR_INPUT" << std::endl;
+//        break;
+//      case METIS_ERROR_MEMORY:
+//        std::cout << "METIS_ERROR_MEMORY" << std::endl;
+//        break;
+//      case METIS_ERROR:
+//        std::cout << "METIS_ERROR" << std::endl;
+//        break;
+//      default:
+//        break;
+//    }
+//    exit(1);
+//  }
+//
+//  delete [] eptr; eptr = nullptr;
+//  delete [] eind; eind = nullptr;
+//  
+//  time_tracker = clock() - time_tracker;
+//
+//  std::cout<<"-- METIS partition successfully completed, taking ";
+//  std::cout<<((double) time_tracker)/CLOCKS_PER_SEC<<" seconds. \n";
+// 
+//  time_tracker = clock();
+//  std::cout<<"-- writing epart file takes "; 
+//  write_part_hdf5(element_part_name, epart, nElem, cpu_size, isDualGraph, in_ncommon, true );
+//  time_tracker = clock() - time_tracker;
+//  std::cout<<((double) time_tracker)/CLOCKS_PER_SEC<<" seconds. \n";
+//  
+//  time_tracker = clock();
+//  std::cout<<"-- writing npart file takes "; 
+//  write_part_hdf5(node_part_name, npart, nFunc, cpu_size, isDualGraph, in_ncommon, true );
+//  time_tracker = clock() - time_tracker;
+//  std::cout<<((double) time_tracker)/CLOCKS_PER_SEC<<" seconds. \n";
+//
+//  std::cout<<"=== Global partition generated. \n";
+}
+
+
+
 Global_Part_METIS::~Global_Part_METIS()
 {
   delete [] epart; delete [] npart;
