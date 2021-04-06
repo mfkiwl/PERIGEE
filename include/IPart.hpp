@@ -41,6 +41,7 @@
 #include "IGlobal_Part.hpp"
 #include "Map_Node_Index.hpp"
 #include "IIEN.hpp"
+#include "IMesh.hpp"
 
 class IPart
 {
@@ -273,6 +274,9 @@ class IPart
     {SYS_T::print_exit("Error: print_part_local_to_global is not implemented. \n");}
 
     virtual void print_part_LIEN() const
+    {SYS_T::print_exit("Error: print_part_LIEN is not implemented. \n");}
+  
+    virtual void print_part_LIEN(const IMesh * const &mesh) const
     {SYS_T::print_exit("Error: print_part_LIEN is not implemented. \n");}
 
     virtual void print_part_loadbalance_edgecut() const

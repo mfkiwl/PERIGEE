@@ -11,28 +11,40 @@
 
 class IAGlobal_Mesh_Info
 {
-  public:
-    IAGlobal_Mesh_Info(){};
-    virtual ~IAGlobal_Mesh_Info(){};
+public:
+  IAGlobal_Mesh_Info(){};
+  virtual ~IAGlobal_Mesh_Info(){};
 
-    virtual int get_xdegree() const = 0;
-    virtual int get_ydegree() const = 0;
-    virtual int get_zdegree() const = 0;
+  virtual int get_xdegree() const = 0;
+  virtual int get_ydegree() const = 0;
+  virtual int get_zdegree() const = 0;
 
-    virtual double get_max_hx() const = 0;
-    virtual double get_max_hy() const = 0;
-    virtual double get_max_hz() const = 0;
+  virtual int get_xdegree(const int &ee) const
+  {SYS_T::print_fatal("Error: IAGLobal_Mesh_Info::get_xdegree(elem_num) is not implemented. \n"); return -1;}
+  virtual int get_ydegree(const int &ee) const
+  {SYS_T::print_fatal("Error: IAGLobal_Mesh_Info::get_ydegree(elem_num) is not implemented. \n"); return -1;}
+  virtual int get_zdegree(const int &ee) const
+  {SYS_T::print_fatal("Error: IAGLobal_Mesh_Info::get_zdegree(elem_num) is not implemented. \n"); return -1;}
 
-    virtual int get_nElem() const = 0;
-    virtual int get_nFunc() const = 0;
+  virtual double get_max_hx() const = 0;
+  virtual double get_max_hy() const = 0;
+  virtual double get_max_hz() const = 0;
+
+  virtual int get_nElem() const = 0;
+  virtual int get_nFunc() const = 0;
     
-    virtual int get_nLocBas() const = 0;
-    virtual int get_probDim() const = 0;
+  virtual int get_nLocBas() const = 0;
+  virtual int get_nLocBas(const int &ee) const
+  {SYS_T::print_fatal("Error: IAGLobal_Mesh_Info::get_nLocBas(elem_num) is not implemented. \n"); return -1;}
+  
+  virtual int get_probDim() const = 0;
 
-    virtual int get_elemType() const
-    {SYS_T::print_fatal("Error: IAGLobal_Mesh_Info::get_elemType is not implemented. \n"); return -1;}
+  virtual int get_elemType() const
+  {SYS_T::print_fatal("Error: IAGLobal_Mesh_Info::get_elemType is not implemented. \n"); return -1;}
+  virtual int get_elemType(const int &ee) const
+  {SYS_T::print_fatal("Error: IAGLobal_Mesh_Info::get_elemType(elem_num) is not implemented. \n"); return -1;}
 
-    virtual void print_info() const = 0;
+  virtual void print_info() const = 0;
 };
 
 #endif

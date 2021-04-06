@@ -14,25 +14,21 @@ int main( int argc, char * argv[] )
   char * char_home_dir = getenv("HOME");
   std::string gmshVol (char_home_dir);
   std::string gmshPur (char_home_dir);
-  //gmshFile.append("/PERIGEE/examples/electrophysiology_tet/mesh/beam.msh");
-  //gmshFile.append("/PERIGEE/examples/electrophysiology_tet/mesh/HLHS_myo.msh");
-  //gmshFile.append("/PERIGEE/examples/electrophysiology_tet/mesh/cube.msh");
 
-
-  gmshPur.append("/PERIGEE/examples/electrophysiology_tet/mesh/oneline.msh");
   gmshVol.append("/PERIGEE/examples/electrophysiology_tet/mesh/single_tet.msh");
+  gmshPur.append("/PERIGEE/examples/electrophysiology_tet/mesh/oneline.msh");
   
   PetscInitialize(&argc, &argv, (char *)0, PETSC_NULL);
-  SYS_T::GetOptionString("-gmsh_Pur", gmshPur);
   SYS_T::GetOptionString("-gmsh_Vol", gmshVol);
-  std::cout<<" -gmsh_Pur: "<<gmshPur<<std::endl;
+  SYS_T::GetOptionString("-gmsh_Pur", gmshPur);
   std::cout<<" -gmsh_Vol: "<<gmshVol<<std::endl;
+  std::cout<<" -gmsh_Pur: "<<gmshPur<<std::endl;
 
-  Gmsh_FileIO * GIOPur = new Gmsh_FileIO( gmshPur );
   Gmsh_FileIO * GIOVol = new Gmsh_FileIO( gmshVol );
+  Gmsh_FileIO * GIOPur = new Gmsh_FileIO( gmshPur );
 
-  GIOPur -> print_info();
   GIOVol -> print_info();
+  GIOPur -> print_info();
 
   ////three lines
   //GIO -> write_vtp_purkinje(0,0,true);//tip0
@@ -64,16 +60,16 @@ int main( int argc, char * argv[] )
   //  //GIO -> write_vtp(2,0);//diagface
   //  //GIO -> write_vtp(3,0);//bottom
 
-  const std::string wmname_pur("purkinje");
   const std::string wmname_vol("tet_vol");
+  const std::string wmname_pur("purkinje");
   
   const bool isXML = true;
-  GIOPur -> write_vtu_purkinje( wmname_pur, isXML );
   GIOVol -> write_vtu( wmname_vol, isXML );
+  GIOPur -> write_vtu_purkinje( wmname_pur, isXML );
 
 
-  delete GIOPur;
   delete GIOVol; 
+  delete GIOPur;
   PetscFinalize();
   return 0;
 }

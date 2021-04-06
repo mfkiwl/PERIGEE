@@ -65,6 +65,10 @@ SET( perigee_preprocess_lib_src
   ${perigee_source}/Mesh/QuadPts_Gauss_Triangle.cpp
   ${perigee_source}/Element/FEAElement_Triangle3_3D_der0.cpp
   ${perigee_source}/Element/FEAElement_Triangle6_3D_der0.cpp
+  ${perigee_SOURCE_DIR}/src/IEN_Mixed.cpp
+  ${perigee_SOURCE_DIR}/src/Mesh_Mixed.cpp
+  ${perigee_SOURCE_DIR}/src/Global_Part_METIS_Mixed.cpp
+  ${perigee_SOURCE_DIR}/src/Part_Mixed_Mesh.cpp
   )
 
 # 2. Anlysis source cpp
@@ -77,8 +81,8 @@ SET( perigee_analysis_lib_src
   ${perigee_source}/System/HDF5_PartReader.cpp
   ${perigee_source}/System/HDF5_Writer.cpp
   ${perigee_source}/System/HDF5_Reader.cpp
-  #${perigee_source}/Mesh/QuadPts_Gauss_Triangle.cpp
-  #${perigee_source}/Mesh/QuadPts_Gauss_Tet.cpp
+  ${perigee_source}/Mesh/QuadPts_Gauss_Triangle.cpp
+  ${perigee_source}/Mesh/QuadPts_Gauss_Tet.cpp
   ${perigee_source}/Mesh/QuadPts_Gauss.cpp
   ${perigee_source}/Analysis_Tool/AGlobal_Mesh_Info_FEM_3D.cpp  
   ${perigee_source}/Analysis_Tool/APart_Basic_Info.cpp
@@ -91,15 +95,16 @@ SET( perigee_analysis_lib_src
   ${perigee_source}/Analysis_Tool/ALocal_Inflow_NodalBC.cpp
   ${perigee_source}/Analysis_Tool/ALocal_EBC.cpp
   ${perigee_source}/Element/FEANode.cpp
-  #${perigee_source}/Element/FEAElement_Triangle3_3D_der0.cpp
+  ${perigee_source}/Element/FEAElement_Triangle3_3D_der0.cpp
   #${perigee_source}/Element/FEAElement_Triangle6_3D_der0.cpp
-  #${perigee_source}/Element/FEAElement_Tet4.cpp
+  ${perigee_source}/Element/FEAElement_Tet4.cpp
   #${perigee_source}/Element/FEAElement_Tet10_v2.cpp
   ${perigee_source}/Element/FEAElement_Line2_3D_der1.cpp
   ${perigee_source}/Solver/PDNSolution.cpp
   ${perigee_source}/Solver/PDNTimeStep.cpp
   ${perigee_source}/Solver/TimeMethod_GenAlpha.cpp
   ${perigee_source}/Solver/PLinear_Solver_PETSc.cpp
+  ${perigee_SOURCE_DIR}/src/ALocal_IEN_Mixed.cpp
   ${perigee_SOURCE_DIR}/src/PLocAssem_EP_3D.cpp
   ${perigee_SOURCE_DIR}/src/PDNSolution_EP.cpp
   ${perigee_SOURCE_DIR}/src/PTime_Solver_EP_OperatorSplit.cpp
@@ -108,7 +113,9 @@ SET( perigee_analysis_lib_src
   ${perigee_SOURCE_DIR}/src/IonicModel_AP.cpp
   ${perigee_SOURCE_DIR}/src/IonicModel_FHN.cpp
   ${perigee_SOURCE_DIR}/src/IonicModel_Test.cpp
+  ${perigee_SOURCE_DIR}/src/IonicModel_Purkinje.cpp
   ${perigee_SOURCE_DIR}/src/IonicModel.cpp
+  ${perigee_SOURCE_DIR}/src/AGlobal_Mesh_Info_Mixed.cpp
   )
 
 # 3. Postprocess cpp

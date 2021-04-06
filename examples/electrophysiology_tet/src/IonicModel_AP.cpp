@@ -1,48 +1,48 @@
-#include "IonicModel_Purkinje.hpp"
+#include "IonicModel_AP.hpp"
 
-IonicModel_Purkinje::IonicModel_Purkinje()
+IonicModel_AP::IonicModel_AP()
   //           d_iso, d_ani, chi,  C_m
-  : IonicModel(1.0, 0.0, 1.0, 1.0),
+  : IonicModel(0.176, 0.0, 140.0, 0.1),
     ap_1{100}, ap_2{80}, ap_3{12.9}, m1{0.2},
     m2{0.3}, alpha{0.01}, gamma{0.002}, b{0.15}, c{8.0}
 {
-  //SYS_T::commPrint("IonicModel_Purkinje constructor. \n");
+  //SYS_T::commPrint("AP constructor. \n");
 };
 
-IonicModel_Purkinje::~IonicModel_Purkinje()
+IonicModel_AP::~IonicModel_AP()
 {
-  //SYS_T::commPrint("IonicModel_Purkinje destructor. \n");
+  //SYS_T::commPrint("AP destructor. \n");
 };
 
-void IonicModel_Purkinje::print_info () const
+void IonicModel_AP::print_info () const
 {
-  PetscPrintf(PETSC_COMM_WORLD, "\t  Purkinje ionic model: \n");
-  //PetscPrintf(PETSC_COMM_WORLD, "\t  ap_1 = %e \n", ap_1);
-  //PetscPrintf(PETSC_COMM_WORLD, "\t  ap_2 = %e \n", ap_2);
-  //PetscPrintf(PETSC_COMM_WORLD, "\t  ap_3 = %e \n", ap_3);
+  PetscPrintf(PETSC_COMM_WORLD, "\t  Aliev-Panfilov EP: \n");
+  PetscPrintf(PETSC_COMM_WORLD, "\t  ap_1 = %e \n", ap_1);
+  PetscPrintf(PETSC_COMM_WORLD, "\t  ap_2 = %e \n", ap_2);
+  PetscPrintf(PETSC_COMM_WORLD, "\t  ap_3 = %e \n", ap_3);
 };
 
-//double IonicModel_Purkinje::get_diso() const
+//double IonicModel_AP::get_diso() const
 //{
 //  return d_iso;
 //};
 //
-//double IonicModel_Purkinje::get_dani() const
+//double IonicModel_AP::get_dani() const
 //{
 //  return d_ani;
 //};
 //
-//double IonicModel_Purkinje::get_chi() const
+//double IonicModel_AP::get_chi() const
 //{
 //  return chi;
 //};
 //
-//double IonicModel_Purkinje::get_C_m() const
+//double IonicModel_AP::get_C_m() const
 //{
 //  return C_m;
 //};
 
-void IonicModel_Purkinje::get_Iion(const double &r_old_in,
+void IonicModel_AP::get_Iion(const double &r_old_in,
 			     const double &V_in,
 			     const double &I_stim,
 			     double &f_r,

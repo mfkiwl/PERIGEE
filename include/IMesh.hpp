@@ -32,6 +32,28 @@ class IMesh
     virtual int get_nElem() const = 0;
     virtual int get_nLocBas() const = 0;
 
+    virtual int get_nLocBas(const int &ee) const
+    {SYS_T::print_exit("Error: get_nLocBas(ee) is not implemented. \n"); return 0;}
+
+    virtual void get_nLocBas_vec(std::vector< int >  &nLocBas_vec_in) const
+    {SYS_T::print_exit("Error: get_nLocBas_vec is not implemented. \n");}
+
+    virtual int get_elemType(const int &ee) const
+    {SYS_T::print_exit("Error: get_nLocBas(ee) is not implemented. \n"); return 0;}
+
+    virtual void get_elemType_vec(std::vector< int >  &elemType_vec_in) const
+    {SYS_T::print_exit("Error: get_elemType_vec is not implemented. \n");}
+
+    virtual void get_stu_degree(std::vector <int >  &stu_of_elem,
+				 const int &ee) const
+    {SYS_T::print_exit("Error: get_stu_degree is not implemented. \n");}
+
+    virtual void get_stu_deg_vec(std::vector< std::vector< int > > &stu_deg_vec_in) const
+         {SYS_T::print_exit("Error: get_stu_deg_vec is not implemented. \n");}
+
+    virtual int get_nElemXnLocBas() const
+    {SYS_T::print_exit("Error: get_nElemXnLocBas is not implemented. \n"); return 0;}
+
     virtual int get_nFunc_x() const
     {SYS_T::print_exit("Error: get_nFunc_x is not implemented. \n"); return 0;}
     
