@@ -76,7 +76,7 @@ int main(int argc, char *argv[])
   double initial_time = 0.0;
   double initial_step = 1.0;
   int initial_index = 0;
-  double final_time = 1.0;
+  double final_time = 500;
 
   // Time solver parameters
   std::string sol_bName("SOL_");
@@ -141,34 +141,30 @@ int main(int argc, char *argv[])
   
   //// 1.1 Get points' coordinates 
   FEANode * fNode = new FEANode(part_file, rank);
-  if (rank==0) {
-    fNode->print_info();
-  }
-  
+  //if (rank==1)
+  //  fNode->print_info();
+    
   // 1.4 Get LIEN for each local elements
   ALocal_IEN_Mixed * locIEN = new ALocal_IEN_Mixed(part_file, rank);
-  if (rank==0) {
-    locIEN->print_info();
-  }
-
+  locIEN->print_info();
+  
   // 1.5 Get Global Mesh Info
   IAGlobal_Mesh_Info * GMIptr = new AGlobal_Mesh_Info_Mixed(part_file,rank);
-  if (rank==0) {
-    GMIptr->print_info();
-  }
-
+  //if (rank==1)
+  //  GMIptr->print_info();
 
   // 1.6 Get partition info
   APart_Basic_Info * PartBasic = new APart_Basic_Info(part_file, rank);
   SYS_T::commPrint("APart_Basic_Info: \n");
-  PartBasic->print_info();
+  //if (rank==1)
+  //  PartBasic->print_info();
 
   
   // 1.7 Get local element info
   ALocal_Elem * locElem = new ALocal_Elem(part_file, rank);
   SYS_T::commPrint("ALocal_Elem: \n");
-  locElem->print_info();
-  
+  //  if (rank==1)
+  //locElem->print_info();
 
   // 1.8 Get local BC info
   ALocal_NodalBC * locbc = new ALocal_NodalBC(part_file, rank);
@@ -178,11 +174,11 @@ int main(int argc, char *argv[])
   ////locebc->print_info();
 
   APart_Node * pNode = new APart_Node(part_file, rank);
-  //pNode->print_info();
-  
+  //if (rank==1)
+  //  pNode->print_info();
+    
   if(size != PartBasic->get_cpu_size())
   {
-    std::cout << "yo" << std::endl;
     PetscPrintf(PETSC_COMM_WORLD,
         "Error: Assigned CPU number does not match the partition number. \n");
     MPI_Abort(PETSC_COMM_WORLD,1);
@@ -205,17 +201,30 @@ int main(int argc, char *argv[])
   Int_w_line->print_info();
   AInt_Weight * Int_w_v = new AInt_Weight(quadv);
   Int_w_v->print_info();
-  
+
+  std::vector<IQuadPts *> quadArray; 
+  quadArray.resize(locElem->get_nlocalele());
+  int local_elemType;
+
+  for(int ee=0; ee<locElem->get_nlocalele(); ++ee) {
+
+    local_elemType = GMIptr->get_elemType(locElem->get_elem_loc(ee));
+
+    if ( local_elemType == 512 ){
+      quadArray[ee] =quad_line;
+    }
+    else if ( local_elemType == 501 ){
+      quadArray[ee] =quadv;
+    }
+  }
+    
   // ===== Finite Element Container =====
   SYS_T::commPrint("===> Setup element container. \n");
 
   std::vector<FEAElement *> elemArray; 
   elemArray.resize(locElem->get_nlocalele());
-  std::vector<FEAElement *> elemsArray; 
-  elemsArray.resize(locElem->get_nlocalele());
   double feaelement_memsize = 0.0; clock_t elem_timer = clock();
 
-  int local_elemType;
   for(int ee=0; ee<locElem->get_nlocalele(); ++ee)
     {
      //FEAElement * elementv	= nullptr; 
@@ -226,13 +235,11 @@ int main(int argc, char *argv[])
      if ( local_elemType == 512 ){
        elemArray[ee] = new FEAElement_Line2_3D_der1( nqp_line ); // elem type 512
        feaelement_memsize += elemArray[ee]->get_memory_usage(); 
-       //elemsArray[ee] = new FEAElement_Triangle3_3D_der0( nqp_tri );
-       
+
      } else if( local_elemType == 501 ){
 	elemArray[ee] = new FEAElement_Tet4( nqp_tet ); // elem type 501
 	feaelement_memsize += elemArray[ee]->get_memory_usage(); 
-	elemsArray[ee] = new FEAElement_Triangle3_3D_der0( nqp_tri );
-	
+
      }
      else std::cout<<"Error: Element type not supported.\n";
    }
@@ -260,24 +267,28 @@ int main(int argc, char *argv[])
   //====== Local assembly pointer
   SYS_T::commPrint("===> Initialize local assembly routine ... \n");
   int nLocBas;  
-  std::vector<IPLocAssem *> LocAssem_array; 
-  LocAssem_array.resize(locElem->get_nlocalele());
+  std::vector<IPLocAssem *> locAssem_array; 
+  locAssem_array.resize(locElem->get_nlocalele());
+  std::vector<IonicModel *> ionicmodel_array; 
+  ionicmodel_array.resize(locElem->get_nlocalele());
 
   for(int ee=0; ee<locElem->get_nlocalele(); ++ee) {
 
     local_elemType = GMIptr->get_elemType(locElem->get_elem_loc(ee));
 
     if ( local_elemType == 512 ){
-      LocAssem_array[ee] =
+      locAssem_array[ee] =
     	new PLocAssem_EP_3D(tm_galpha_ptr, ionicmodel_pur,
     			    GMIptr->get_nLocBas(locElem->get_elem_loc(ee)),
 			    quad_line->get_num_quadPts() );
+      ionicmodel_array[ee]= ionicmodel_pur;
     }
     else if ( local_elemType == 501 ){
-      LocAssem_array[ee] =
+      locAssem_array[ee] =
 	new PLocAssem_EP_3D(tm_galpha_ptr, ionicmodel_myo,
 			    GMIptr->get_nLocBas(locElem->get_elem_loc(ee)),
 			    quadv->get_num_quadPts() );
+      ionicmodel_array[ee]= ionicmodel_myo;
     }
   }
 
@@ -287,6 +298,9 @@ int main(int argc, char *argv[])
   PDNSolution * disp = new PDNSolution_EP(pNode, fNode, locbc, 2); // make it 2
   PDNSolution * velo = new PDNSolution_EP(pNode, fNode, locbc, 0);
   PDNSolution * hist = new PDNSolution_EP(pNode, fNode, locbc, 0);
+
+  std::cout << "initial solution: " << std::endl;
+  disp->PrintNoGhost();
 
   //if( is_restart )
   //{
@@ -308,90 +322,95 @@ int main(int argc, char *argv[])
 
   // ============= Global Assembly pointer
   int vpetsc_type = 0; // petsc version controller
-//  PGAssem_EP * gloAssem_ptr
-//    = new PGAssem_EP(locAssem_ptr, GMIptr, pNode, vpetsc_type);
+  PGAssem_EP * gloAssem_ptr
+    = new PGAssem_EP(locAssem_array, GMIptr, locElem, locIEN, pNode, locbc);
   // ============= Estimate the matrix structure
-//  gloAssem_ptr->Assem_nonzero_estimate( locElem, locAssem_ptr, locIEN, pNode, locbc );
-//  
-//  gloAssem_ptr->Fix_nonzero_err_str();
-//  SYS_T::commPrint("===> Matrix nonzero structure fixed ... \n");
-//
-//  // 2.5 Setup linear solver context
-//  PLinear_Solver_PETSc * lsolver = new PLinear_Solver_PETSc(PCJACOBI);
-//  SYS_T::commPrint("===> PETSc linear solver setted up:\n");
-//  SYS_T::commPrint("----------------------------------------------------------- \n");
-//  lsolver->Info();
-//  SYS_T::commPrint("----------------------------------------------------------- \n");
-//  //PC preproc; lsolver->GetPC(&preproc);
-//  //PCSetType( preproc, PCASM );
-//
-//  // 2.6 Assembly mass matrix and solve for consistent initial solution
-//  gloAssem_ptr->Clear_KG();
-//  gloAssem_ptr->Assem_mass_residual( disp,// hist,
-//				     timeinfo, //ionicmodel_pur,
-//				     locElem, locAssem_ptr, locIEN, pNode,
-//				     fNode, quad_line, elemArray, locbc );
-//
-//  //SYS_T::commPrint("Mass residual: \n"); 
-//  //gloAssem_ptr->Print_G();
-//  //SYS_T::commPrint("Mass residual: \n"); 
-//  //MatView(gloAssem_ptr->K, PETSC_VIEWER_STDOUT_WORLD);
-//  lsolver->Solve( gloAssem_ptr->K, gloAssem_ptr->G, velo); 
-//  SYS_T::commPrint("initial solution's time derivative obtained. \n"); 
-//  //velo->PrintWithGhost();
-//  
-//  // 2.7 Setup nonlinear solver context
-//  PNonlinear_Solver_EP * nsolver
-//    = new PNonlinear_Solver_EP(nl_rtol, nl_atol,
-//			       nl_dtol, nl_maxits, nl_refreq);
-//  SYS_T::commPrint("===> Nonlinear solver setted up:\n");
-//  nsolver->Info();
-//
-//  // 2.8 Setup time marching context
-//  PTime_Solver_EP_OperatorSplit * tsolver =
-//    new PTime_Solver_EP_OperatorSplit( sol_bName, sol_record_freq,
-//				      ttan_renew_freq, final_time );
-//
-//  SYS_T::commPrint("===> Time marching solver setted up:\n");
-//  tsolver->Info();
-//
-//  SYS_T::commPrint("===> Start Finite Element Analysis:\n");
-//    tsolver->TM_generalized_alpha(
-//      velo, disp, hist, timeinfo, tm_galpha_ptr, locElem, locIEN, pNode,
-//      fNode, locbc, quad_line, elemArray, ionicmodel_pur, locAssem_ptr,
-//      gloAssem_ptr, lsolver, nsolver );
-//
-//  // ======= PETSc Finalize =======
-//  SYS_T::commPrint("\n===> Clean memory ... \n");
-//  delete fNode;
-//  delete GMIptr;
-//  delete PartBasic;
-//  delete locIEN;
-//  delete locElem;
-//  delete locbc;
-//  delete quad_line;// delete quads;
-//  delete pNode;
-//  delete Int_w_v;
-//  delete Int_w_line;
-//  delete disp;
-//  delete velo;
-//  delete hist;  
-//  delete timeinfo;
-//  delete tm_galpha_ptr;
-//  delete ionicmodel_pur;
-//  delete ionicmodel_myo;
-//  delete locAssem_ptr;
-//  delete gloAssem_ptr;
-//  delete lsolver;
-//  delete nsolver;
-//  delete tsolver;
-//  std::vector<FEAElement *>::iterator it_elema;
-//  for(it_elema = elemArray.begin(); it_elema != elemArray.end(); ++it_elema) {
-//    delete *it_elema;
-//  }
-//  ////---------------------------------------
-//  SYS_T::commPrint("===> Exit program. \n");
-//  PetscFinalize();
-//  return 0;
+  gloAssem_ptr->Assem_nonzero_estimate( locElem, locAssem_array,
+					locIEN, pNode, locbc );
+  
+  gloAssem_ptr->Fix_nonzero_err_str();
+  SYS_T::commPrint("===> Matrix nonzero structure fixed ... \n");
+
+  // 2.5 Setup linear solver context
+  PLinear_Solver_PETSc * lsolver = new PLinear_Solver_PETSc(PCJACOBI);
+  SYS_T::commPrint("===> PETSc linear solver setted up:\n");
+  SYS_T::commPrint("----------------------------------------------------------- \n");
+  lsolver->Info();
+  SYS_T::commPrint("----------------------------------------------------------- \n");
+  //PC preproc; lsolver->GetPC(&preproc);
+  //PCSetType( preproc, PCASM );
+
+  // 2.6 Assembly mass matrix and solve for consistent initial solution
+  gloAssem_ptr->Clear_KG();
+  gloAssem_ptr->Assem_mass_residual( disp, timeinfo,
+				     locElem, locAssem_array, locIEN, pNode,
+				     fNode, quadArray, elemArray, locbc );
+
+  SYS_T::commPrint("Mass residual: \n"); 
+  gloAssem_ptr->Print_G();
+  SYS_T::commPrint("Mass tangent: \n"); 
+  MatView(gloAssem_ptr->K, PETSC_VIEWER_STDOUT_WORLD);
+  lsolver->Solve( gloAssem_ptr->K, gloAssem_ptr->G, velo); 
+  SYS_T::commPrint("initial solution's time derivative obtained. \n");
+  SYS_T::commPrint("Velo: \n"); 
+  velo->PrintWithGhost();
+  SYS_T::commPrint("Disp. \n"); 
+  disp->PrintNoGhost();  
+  // 2.7 Setup nonlinear solver context
+  PNonlinear_Solver_EP * nsolver
+    = new PNonlinear_Solver_EP(nl_rtol, nl_atol,
+			       nl_dtol, nl_maxits, nl_refreq);
+  SYS_T::commPrint("===> Nonlinear solver setted up:\n");
+  nsolver->Info();
+
+  // 2.8 Setup time marching context
+  PTime_Solver_EP_OperatorSplit * tsolver =
+    new PTime_Solver_EP_OperatorSplit( sol_bName, sol_record_freq,
+				      ttan_renew_freq, final_time );
+
+  SYS_T::commPrint("===> Time marching solver setted up:\n");
+  tsolver->Info();
+
+  SYS_T::commPrint("===> Start Finite Element Analysis:\n");
+  tsolver->TM_generalized_alpha(
+      velo, disp, hist, timeinfo, tm_galpha_ptr, locElem, locIEN, pNode,
+      fNode, locbc, quadArray, elemArray, ionicmodel_array, locAssem_array,
+      gloAssem_ptr, lsolver, nsolver );
+
+  // ======= PETSc Finalize =======
+  SYS_T::commPrint("\n===> Clean memory ... \n");
+  delete fNode;
+  delete GMIptr;
+  delete PartBasic;
+  delete locIEN;
+  delete locElem;
+  delete locbc;
+  delete quad_line; delete quadv; delete quads;
+  delete pNode;
+  delete Int_w_v;
+  delete Int_w_line;
+  delete disp;
+  delete velo;
+  delete hist;  
+  delete timeinfo;
+  delete tm_galpha_ptr;
+  delete ionicmodel_pur;
+  delete ionicmodel_myo;
+  //delete gloAssem_ptr;
+  delete lsolver;
+  delete nsolver;
+  delete tsolver;
+  std::vector<FEAElement *>::iterator it_elema;
+  for(it_elema = elemArray.begin(); it_elema != elemArray.end(); ++it_elema) {
+    delete *it_elema;
+  }
+  std::vector<IPLocAssem *>::iterator it_loca;
+  for(it_loca = locAssem_array.begin(); it_loca != locAssem_array.end(); ++it_loca) {
+    delete *it_loca;
+  }
+  //---------------------------------------
+  SYS_T::commPrint("===> Exit program. \n");
+  PetscFinalize();
+  return 0;
 }
 //EOF

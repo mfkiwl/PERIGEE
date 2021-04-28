@@ -14,7 +14,7 @@
 class Mesh_Mixed : public IMesh
 {
 public:
-  Mesh_Mixed(const std::vector< IMesh * > mesh_list,
+  Mesh_Mixed(const std::vector< IMesh * > &mesh_list,
 	     const std::vector< int > &elemType_list,
 	     const IIEN * const &ien_ptr);
   //Mesh_Mixed(const int &in_nfunc, const int &in_nelem);

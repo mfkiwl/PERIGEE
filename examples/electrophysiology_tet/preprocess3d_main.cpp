@@ -81,7 +81,7 @@ int main( int argc, char * argv[] )
 //
   const std::string part_file("part");
 
-  int cpu_size = 2;
+  int cpu_size = 2; //WARNING ; MULTI-TASK IS NOT WORKING PROPERLY ATM (16 APR '21)
   int in_ncommon = 1;
   const bool isDualGraph = true;
 
@@ -90,13 +90,13 @@ int main( int argc, char * argv[] )
   MPI_Comm_size(PETSC_COMM_WORLD, &size);
   MPI_Comm_rank(PETSC_COMM_WORLD, &rank);
 
-  // Enforce serial run.
-  if(size != 1)
-  {
-    cout<<"ERROR: Given processor number is greater than 1."; 
-    cout<<"Preprocess code has to be serial!"<<endl;
-    MPI_Abort(PETSC_COMM_WORLD, 1);
-  }
+  // Enforce parallel run.
+  //if(size == 1)
+  //{
+  //  cout<<"ERROR: Given processor number is greater than 1."; 
+  //  cout<<"Preprocess code has to be serial!"<<endl;
+  //  MPI_Abort(PETSC_COMM_WORLD, 1);
+  //}
 
   SYS_T::GetOptionInt("-cpu_size", cpu_size);
   SYS_T::GetOptionInt("-in_ncommon", in_ncommon);
@@ -277,8 +277,8 @@ int main( int argc, char * argv[] )
   }
   
   else if(cpu_size == 1) {
-    //global_part = new Global_Part_Serial( mesh_myo, "epart", "npart" );
-    std::cerr<<"ERROR: complete serial parting: "<<cpu_size<<std::endl;
+    global_part = new Global_Part_Serial( mesh_combined, "epart", "npart" );
+    //std::cerr<<"ERROR: complete serial parting: "<<cpu_size<<std::endl;
   }
   else
     {
@@ -327,7 +327,7 @@ int main( int argc, char * argv[] )
   ElemBC * ebc = new ElemBC_3D_Line( ebclist );
   ebc->print_info();
 
-  const bool isPrintPartInfo = true;
+  const bool isPrintPartInfo = false;
   const int proc_size = cpu_size;
 
   std::vector<int> list_nlocalnode, list_nghostnode, list_ntotalnode, list_nbadnode;
@@ -348,13 +348,16 @@ int main( int argc, char * argv[] )
 					proc_size, dofNum, dofMat, 
 					isPrintPartInfo );       
     mytimer->Stop();
-    part->print_part_ele() ;
-    part->print_part_node();
-    part->print_part_ghost_node() ;
-    part->print_part_local_to_global() ;
-    part->print_part_LIEN(mesh_combined) ;
-    part->print_part_loadbalance_edgecut() ;
-    cout<<"-- proc "<<proc_rank<<" Time taken: "<<mytimer->get_sec()<<" sec. \n";
+    //    if (proc_rank ==0) {
+      cout<<"-- proc "<<proc_rank<<"  part_mixed_mesh info. \n";
+      part->print_part_ele() ;
+      part->print_part_node();
+      part->print_part_ghost_node() ;
+      part->print_part_local_to_global() ;
+      part->print_part_LIEN(mesh_combined) ;
+      part->print_part_loadbalance_edgecut() ;
+      cout<<"-- proc "<<proc_rank<<" Time taken: "<<mytimer->get_sec()<<" sec. \n";
+      //}
 
     part -> write( part_file.c_str() );
 

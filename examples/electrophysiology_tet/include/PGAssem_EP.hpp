@@ -17,6 +17,7 @@
 #include "APart_Node.hpp"
 #include "ALocal_Elem.hpp"
 #include "ALocal_IEN.hpp"
+#include "ALocal_IEN_Mixed.hpp"
 #include "IAGlobal_Mesh_Info.hpp"
 #include "ALocal_NodalBC.hpp"
 #include "IPLocAssem.hpp"
@@ -42,6 +43,15 @@ class PGAssem_EP
     // G is the residual vector
     Vec G;
 
+  //constructor for nonuniform element types 
+  PGAssem_EP( const std::vector< IPLocAssem * > &locassem_array,
+	      const IAGlobal_Mesh_Info * const &agmi_ptr,
+	      const ALocal_Elem * const &alelem_ptr,
+	      const ALocal_IEN_Mixed * const &aien_ptr,
+	      const APart_Node * const &pnode_ptr,
+	      const ALocal_NodalBC * const &part_bc );
+
+    //constructor that specifies petsc version 
     PGAssem_EP( const IPLocAssem * const &locassem_ptr,
         const IAGlobal_Mesh_Info * const &agmi_ptr,
         const APart_Node * const &pnode_ptr,
@@ -128,7 +138,12 @@ class PGAssem_EP
         const APart_Node * const &node_ptr,
         const ALocal_NodalBC * const &bc_part );
 
-
+    void Assem_nonzero_estimate(
+	const ALocal_Elem * const &alelem_ptr,
+	std::vector< IPLocAssem * > &locassem_array,
+	const ALocal_IEN_Mixed * const &lien_ptr,
+	const APart_Node * const &node_ptr,
+	const ALocal_NodalBC * const &bc_part );
 
     // ------------------------------------------------------------------------
     // ! Assembly tangent matrix and residual vector,
@@ -157,6 +172,25 @@ class PGAssem_EP
         //const AInt_Weight * const &wei_ptr,
 	std::vector<FEAElement*> &eptr_array,
         const ALocal_NodalBC * const &bc_part );
+
+  // this version is for mixed mesh .
+      void Assem_tangent_residual(const PDNSolution * const &sol_a,
+				  const PDNSolution * const &sol_b,
+				  //const PDNSolution * const &sol_c,//pre_hist
+				  //PDNSolution * const &sol_d,//new hist
+				  const double &t_n,
+				  const double &dt,
+				  //const double &dt_ion,
+				  //const IonicModel * const &ionicmodel_ptr,
+				  const ALocal_Elem * const &alelem_ptr,
+				  std::vector< IPLocAssem * > &lassem_array,
+				  const ALocal_IEN_Mixed * const &lien_ptr,
+				  const APart_Node * const &node_ptr,
+				  const FEANode * const &fnode_ptr,
+				  const std::vector< IQuadPts * > &quad_array,
+				  //const AInt_Weight * const &wei_ptr,
+				  std::vector<FEAElement*> &eptr_array,
+				  const ALocal_NodalBC * const &bc_part );
 
     
     // ------------------------------------------------------------------------
@@ -196,54 +230,79 @@ class PGAssem_EP
     std::vector<FEAElement*> &eptr_array,
     const ALocal_NodalBC * const &bc_part );
 
-    
+  //this version is for mixed mesh   
+  void Assem_residual(const PDNSolution * const &sol_a, //velo
+		      const PDNSolution * const &sol_b, //disp
+		      const double &t_n,
+		      const double &dt,
+		      const ALocal_Elem * const &alelem_ptr,
+		      std::vector< IPLocAssem * > &lassem_array,
+		      const ALocal_IEN_Mixed * const &lien_ptr,
+		      const APart_Node * const &node_ptr,
+		      const FEANode * const &fnode_ptr,
+		      const std::vector< IQuadPts * > &quad_array,
+		      std::vector<FEAElement*> &eptr_array,
+		      const ALocal_NodalBC * const &bc_part );
 
     // ------------------------------------------------------------------------
     // ! Assembly mass matrix and its residual vector
     // ------------------------------------------------------------------------
     void Assem_mass_residual(
         const PDNSolution * const &sol_a,
-	//const PDNSolution * const &sol_b, //hist
 	const PDNTimeStep * const &time_info,
-	//const IonicModel * const &ionicmodel_ptr,
         const ALocal_Elem * const &alelem_ptr,
         IPLocAssem * const &lassem_ptr, 
         const ALocal_IEN * const &lien_ptr,
         const APart_Node * const &node_ptr,
         const FEANode * const &fnode_ptr,
 	const IQuadPts * const &quad,
-        //const AInt_Weight * const &wei_ptr,
 	std::vector<FEAElement*> &eptr_array,
         const ALocal_NodalBC * const &bc_part );
 
+  void Assem_mass_residual(
+        const PDNSolution * const &sol_a,
+	const PDNTimeStep * const &time_info,
+        const ALocal_Elem * const &alelem_ptr,
+        std::vector<IPLocAssem *> &lassem_array, 
+        const ALocal_IEN_Mixed * const &lien_ptr,
+        const APart_Node * const &node_ptr,
+        const FEANode * const &fnode_ptr,
+	const std::vector< IQuadPts * > &quad_array,
+	std::vector<FEAElement*> &eptr_array,
+        const ALocal_NodalBC * const &bc_part );
 
-    // ------------------------------------------------------------------------
-    // ! Assembly mass matrix and its residual vector for 3D problems
-    //   without cached quadrature info.
-    // ! -----------------
-    // ! The following input are needed for element quadrature evaluation
-    // ! IALocal_meshSize : object saving the mesh size
-    // ! BernsteinBasis : pre-evaluated Bernstein polynomial at Gauss 
-    // !                  quadrature points for volumetric integration
-    // ! IAExtractor : Bezier extraction operator
-    // ------------------------------------------------------------------------
+  // ------------------------------------------------------------------------
+  // update values strictly at the node (without element interpolation and
+  //  the diffusion process) according to the operator splitting idea .
+  // ------------------------------------------------------------------------
   void Update_nodal_velo(const PDNSolution * const &sol_a, //disp
-			 //const PDNSolution * const &sol_d, //velo
 			 const PDNSolution * const &sol_b, //pre_hist
 			 const double &t_n,
 			 const double &dt,
 			 const IonicModel * const &ionicmodel_ptr,
 			 const ALocal_Elem * const &alelem_ptr,
-			 //IPLocAssem * const &lassem_ptr, 
 			 const ALocal_IEN * const &lien_ptr,
 			 const APart_Node * const &node_ptr,
 			 const FEANode * const &fnode_ptr,
-			 //const AInt_Weight * const &wei_ptr,
-			 //const std::vector<FEAElement*> &eptr_array,
 			 const ALocal_NodalBC * const &bc_part,
 			 PDNSolution * const &sol_c, //new hist
 			 PDNSolution * const &sol_d //new hist
-			 );  
+			 );
+
+  //this version is for the nonuniform element types
+  void Update_nodal_velo(const PDNSolution * const &sol_a, //disp
+			 const PDNSolution * const &sol_b, //pre_hist
+			 const double &t_n,
+			 const double &dt,
+			 const std::vector< IonicModel * > &ionicmodel_array,
+			 const ALocal_Elem * const &alelem_ptr,
+			 const ALocal_IEN_Mixed * const &lien_ptr,
+			 const APart_Node * const &node_ptr,
+			 const FEANode * const &fnode_ptr,
+			 const ALocal_NodalBC * const &bc_part,
+			 PDNSolution * const &sol_c, //new hist
+			 PDNSolution * const &sol_d //new hist
+			 );
 
     // ------------------------------------------------------------------------
     // ! Print_G : print the residual vector G on screen
@@ -306,8 +365,29 @@ class PGAssem_EP
     void GetLocal(const double * const &array, const int * const &IEN,
         double * const &local_array) const
     {
+      if (nLocBas ==0 ) {
+	SYS_T::print_exit("Error: nLocBas in PGAssem is zero. Meant to use the other GetLocal function? \n");
+      }
+      
       int offset1, offset2;
       for(int ii=0; ii<nLocBas; ++ii)
+      {
+        offset1 = ii * dof;
+        offset2 = IEN[ii] * dof;
+        for(int jj=0; jj<dof; ++jj)
+          local_array[offset1 + jj] = array[offset2 + jj];
+      }
+    }
+
+    void GetLocal(const double * const &array, const int * const &IEN,
+		  double * const &local_array, const int &nlocbas_in) const
+    {
+      if (nlocbas_in ==0 ) {
+	SYS_T::print_exit("Error: nLocBas in PGAssem is zero. Meant to use the other GetLocal function? \n");
+      }
+      
+      int offset1, offset2;
+      for(int ii=0; ii<nlocbas_in; ++ii)
       {
         offset1 = ii * dof;
         offset2 = IEN[ii] * dof;
@@ -330,6 +410,12 @@ class PGAssem_EP
     // ------------------------------------------------------------------------
     void Get_dnz_onz( const int &nElem,
         const ALocal_IEN * const &lien_ptr,
+        const APart_Node * const &node_ptr,
+        const ALocal_NodalBC * const &bc_part,
+        PetscInt * const &dnz, PetscInt * const &onz ) const;
+
+      void Get_dnz_onz( const int &nElem,
+        const ALocal_IEN_Mixed * const &lien_ptr,
         const APart_Node * const &node_ptr,
         const ALocal_NodalBC * const &bc_part,
         PetscInt * const &dnz, PetscInt * const &onz ) const;

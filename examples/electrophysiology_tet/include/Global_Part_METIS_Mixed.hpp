@@ -27,12 +27,12 @@ class Global_Part_METIS_Mixed : public IGlobal_Part
         const char * const &element_part_name,
         const char * const &node_part_name );
 
-  Global_Part_METIS_Mixed( const int &cpu_size,
-		     const int &in_ncommon, const bool &isDualGraph,
-		     const std::vector<IMesh *> &mesh_list,
-		     const std::vector<IIEN *> &IEN_list,
-		     const char * const &element_part_name,
-		     const char * const &node_part_name );
+  //Global_Part_METIS_Mixed( const int &cpu_size,
+  //		     const int &in_ncommon, const bool &isDualGraph,
+  //		     const std::vector<IMesh *> &mesh_list,
+  //		     const std::vector<IIEN *> &IEN_list,
+  //		     const char * const &element_part_name,
+  //		     const char * const &node_part_name );
 
     virtual ~Global_Part_METIS_Mixed();
 

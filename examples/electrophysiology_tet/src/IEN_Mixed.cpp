@@ -106,7 +106,8 @@ IEN_Mixed::IEN_Mixed(const std::vector< std::vector<int> > &IEN_list,
     location= std::find(vecIEN_2.begin(), vecIEN_2.end(), ii);
     
     while (location!=vecIEN_2.end()){
-      (node2_locations.at(ii)).push_back(*location);
+      //(node2_locations.at(ii)).push_back(*location);
+      (node2_locations.at(ii)).push_back(std::distance(vecIEN_2.begin(),location));
       location= std::find(location+1, vecIEN_2.end(), ii);
     }
   }

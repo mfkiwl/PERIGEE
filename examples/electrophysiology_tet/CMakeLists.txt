@@ -124,11 +124,12 @@ SET( perigee_postprocess_lib_src
   ${perigee_source}/Postproc_Tool/PostVectSolution.cpp
   ${perigee_source}/Postproc_Tool/Vis_Tools.cpp
   #${perigee_SOURCE_DIR}/src/VisDataPrep_NS_3D.cpp
-  ${perigee_SOURCE_DIR}/src/VTK_Writer_EP_3D.cpp
+  #${perigee_SOURCE_DIR}/src/VTK_Writer_EP_3D.cpp
+  ${perigee_SOURCE_DIR}/src/VTK_Writer_EP_Mixed.cpp
   #${perigee_SOURCE_DIR}/src/Post_error_tet4_ns.cpp
   #${perigee_source}/Postproc_Tool/Interpolater.cpp
   ${perigee_source}/Element/FEAElement_Tet4.cpp
-  #${perigee_source}/Mesh/QuadPts_vis_tet4.cpp
+  ${perigee_source}/Mesh/QuadPts_vis_tet4.cpp
   ${perigee_source}/Mesh/QuadPts_vis.cpp
   ##
   #${perigee_source}/Postproc_Tool/PostVectSolution.cpp
@@ -136,6 +137,7 @@ SET( perigee_postprocess_lib_src
   ${perigee_SOURCE_DIR}/src/VisDataPrep_3DEP.cpp
   #${perigee_SOURCE_DIR}/src/Post_error.cpp
   ${perigee_source}/Postproc_Tool/Interpolater.cpp
+  #${perigee_SOURCE_DIR}/src/ALocal_IEN_Mixed.cpp
   )
 # ===============================================
 # Finish setting my own source code

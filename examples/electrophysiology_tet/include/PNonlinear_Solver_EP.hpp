@@ -87,6 +87,33 @@ class PNonlinear_Solver_EP
         bool &conv_flag,
         int &nl_counter ) const;
 
+  //this version for mixed mesh 
+  void Gen_alpha_solve(const bool &new_tangent_flag,
+		       const double &curr_time,
+		       const double &dt,
+		       const PDNSolution * const &pre_velo,
+		       const PDNSolution * const &pre_disp,
+		       //const PDNSolution * const &pre_hist,    
+		       const TimeMethod_GenAlpha * const &tmga_ptr,
+		       const ALocal_Elem * const &alelem_ptr,
+		       const ALocal_IEN_Mixed * const &lien_ptr,
+		       const APart_Node * const &anode_ptr,
+		       const FEANode * const &feanode_ptr,
+		       const ALocal_NodalBC * const &bc_part,
+		       const std::vector< IQuadPts * > &quad_array,
+		       ///const IQuadPts * const &quad,
+		       //const AInt_Weight * const &wei_ptr,
+		       std::vector<FEAElement *> &ele_array,
+		       //const IonicModel * const &ionicmodel_ptr,
+		       std::vector< IPLocAssem * > &lassem_array,
+		       //IPLocAssem * const &lassem_ptr,
+		       PGAssem_EP * const &gassem_ptr,
+		       PLinear_Solver_PETSc * const &lsolver_ptr,
+		       PDNSolution * const &velo,
+		       PDNSolution * const &disp,
+		       //PDNSolution * const &hist,
+		       bool &conv_flag,
+		       int &nl_counter ) const;
 
   private:
     const double nr_tol;

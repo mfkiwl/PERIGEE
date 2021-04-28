@@ -2,7 +2,8 @@
 
 IonicModel_Purkinje::IonicModel_Purkinje()
   //           d_iso, d_ani, chi,  C_m
-  : IonicModel(1.0, 0.0, 1.0, 1.0),
+  //: IonicModel(1.0,   0.0,   1.0,  1.0),
+  : IonicModel(0.176, 0.0, 140.0, 0.1),
     ap_1{100}, ap_2{80}, ap_3{12.9}, m1{0.2},
     m2{0.3}, alpha{0.01}, gamma{0.002}, b{0.15}, c{8.0}
 {

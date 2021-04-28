@@ -1,6 +1,6 @@
 #include "Mesh_Mixed.hpp"
 
-Mesh_Mixed::Mesh_Mixed(const std::vector< IMesh * > mesh_list,
+Mesh_Mixed::Mesh_Mixed(const std::vector< IMesh * > &mesh_list,
 		       const std::vector< int > &elemType_list,
 		       const IIEN * const &ien_ptr)
 {

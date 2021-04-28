@@ -379,8 +379,6 @@ void PLocAssem_EP_3D::Assem_Tangent_Residual(
 
 void PLocAssem_EP_3D::Assem_Mass_Residual(
     const double * const &disp,
-    //const double * const &Iion,
-    //const double * const &dPhi_Iion,    
     FEAElement * const &element,
     const double * const &eleCtrlPts_x,
     const double * const &eleCtrlPts_y,
