@@ -327,7 +327,7 @@ int main( int argc, char * argv[] )
   ElemBC * ebc = new ElemBC_3D_Line( ebclist );
   ebc->print_info();
 
-  const bool isPrintPartInfo = false;
+  const bool isPrintPartInfo = true;
   const int proc_size = cpu_size;
 
   std::vector<int> list_nlocalnode, list_nghostnode, list_ntotalnode, list_nbadnode;

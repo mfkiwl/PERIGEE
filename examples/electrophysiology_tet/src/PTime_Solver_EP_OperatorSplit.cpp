@@ -201,13 +201,24 @@ void PTime_Solver_EP_OperatorSplit::TM_generalized_alpha(
       time      = time_info->get_time();
       time_half =time+dt_half;
 
-      ////Manuf soln no diffusion
+      ////debugging pupose - no diffusion
       //gassem_ptr->Update_nodal_velo(pre_disp, pre_hist,
       //				    time, dt,
       //				    ionicmodel_array, alelem_ptr, lien_ptr,
       //				    anode_ptr, feanode_ptr, bc_part,
       //				    cur_disp, cur_hist);
-      //
+
+      ////debugging pupose - no ionic update
+      //nsolver_ptr
+      //	->Gen_alpha_solve(renew_flag, time, dt, 
+      //			  pre_velo, pre_disp,
+      //			  tmga_ptr, alelem_ptr, lien_ptr,
+      //			  anode_ptr, feanode_ptr, bc_part,
+      //			  quad_array, ele_array, 
+      //			  lassem_array, gassem_ptr, 
+      //			  lsolver_ptr, cur_velo, cur_disp,
+      //			  conv_flag, nl_counter);
+      
       //Step 1 - Update of ionic variables
       gassem_ptr->Update_nodal_velo(pre_disp, pre_hist,
       			    time, dt_half,
@@ -231,7 +242,7 @@ void PTime_Solver_EP_OperatorSplit::TM_generalized_alpha(
       	         	    time_half, dt_half,
       			    ionicmodel_array, alelem_ptr, lien_ptr,
       			    anode_ptr, feanode_ptr, bc_part,
-      			    cur_disp, cur_hist   ); 
+      			    cur_disp, cur_hist   );
 
       time_info->TimeIncrement();
 
@@ -239,8 +250,6 @@ void PTime_Solver_EP_OperatorSplit::TM_generalized_alpha(
 		  time_info->get_time(), time_info->get_step(),
 		  time_info->get_index());
 
-      SYS_T::commPrint("Disp. \n"); 
-      cur_disp->PrintNoGhost();  
 
       if(time_info->get_index()%sol_record_freq == 0)
 	{

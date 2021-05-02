@@ -34,6 +34,8 @@
 #include "IonicModel.hpp"
 #include "PDNTimeStep.hpp"
 
+#include <sstream>
+
 class PGAssem_EP
 {
   public:
@@ -49,7 +51,8 @@ class PGAssem_EP
 	      const ALocal_Elem * const &alelem_ptr,
 	      const ALocal_IEN_Mixed * const &aien_ptr,
 	      const APart_Node * const &pnode_ptr,
-	      const ALocal_NodalBC * const &part_bc );
+	      const ALocal_NodalBC * const &part_bc ,
+	      const int cpu_rank_in );
 
     //constructor that specifies petsc version 
     PGAssem_EP( const IPLocAssem * const &locassem_ptr,
@@ -445,6 +448,8 @@ class PGAssem_EP
     // ------------------------------------------------------------------------
     // ! Private data structures
     // ------------------------------------------------------------------------
+    int cpu_rank;
+  
     //   nLocBas: number of basis per element
     int nLocBas;
 

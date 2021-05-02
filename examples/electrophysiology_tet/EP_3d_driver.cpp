@@ -146,7 +146,8 @@ int main(int argc, char *argv[])
     
   // 1.4 Get LIEN for each local elements
   ALocal_IEN_Mixed * locIEN = new ALocal_IEN_Mixed(part_file, rank);
-  locIEN->print_info();
+  if (rank==1)
+    locIEN->print_info();
   
   // 1.5 Get Global Mesh Info
   IAGlobal_Mesh_Info * GMIptr = new AGlobal_Mesh_Info_Mixed(part_file,rank);
@@ -323,7 +324,7 @@ int main(int argc, char *argv[])
   // ============= Global Assembly pointer
   int vpetsc_type = 0; // petsc version controller
   PGAssem_EP * gloAssem_ptr
-    = new PGAssem_EP(locAssem_array, GMIptr, locElem, locIEN, pNode, locbc);
+    = new PGAssem_EP(locAssem_array, GMIptr, locElem, locIEN, pNode, locbc, rank);
   // ============= Estimate the matrix structure
   gloAssem_ptr->Assem_nonzero_estimate( locElem, locAssem_array,
 					locIEN, pNode, locbc );
@@ -346,16 +347,16 @@ int main(int argc, char *argv[])
 				     locElem, locAssem_array, locIEN, pNode,
 				     fNode, quadArray, elemArray, locbc );
 
-  SYS_T::commPrint("Mass residual: \n"); 
-  gloAssem_ptr->Print_G();
-  SYS_T::commPrint("Mass tangent: \n"); 
-  MatView(gloAssem_ptr->K, PETSC_VIEWER_STDOUT_WORLD);
-  lsolver->Solve( gloAssem_ptr->K, gloAssem_ptr->G, velo); 
-  SYS_T::commPrint("initial solution's time derivative obtained. \n");
-  SYS_T::commPrint("Velo: \n"); 
-  velo->PrintWithGhost();
-  SYS_T::commPrint("Disp. \n"); 
-  disp->PrintNoGhost();  
+  //SYS_T::commPrint("Mass residual: \n"); 
+  //gloAssem_ptr->Print_G();
+  //SYS_T::commPrint("Mass tangent: \n"); 
+  //MatView(gloAssem_ptr->K, PETSC_VIEWER_STDOUT_WORLD);
+  //lsolver->Solve( gloAssem_ptr->K, gloAssem_ptr->G, velo); 
+  //SYS_T::commPrint("initial solution's time derivative obtained. \n");
+  //SYS_T::commPrint("Velo: \n"); 
+  //velo->PrintWithGhost();
+  //SYS_T::commPrint("Disp. \n"); 
+  //disp->PrintNoGhost();  
   // 2.7 Setup nonlinear solver context
   PNonlinear_Solver_EP * nsolver
     = new PNonlinear_Solver_EP(nl_rtol, nl_atol,

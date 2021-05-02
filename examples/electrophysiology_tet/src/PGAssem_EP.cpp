@@ -5,7 +5,9 @@ PGAssem_EP::PGAssem_EP( const std::vector< IPLocAssem * > &locassem_array,
 			const ALocal_Elem * const &alelem_ptr,
 			const ALocal_IEN_Mixed * const &aien_ptr,
 			const APart_Node * const &pnode_ptr,
-			const ALocal_NodalBC * const &part_bc )
+			const ALocal_NodalBC * const &part_bc ,
+			const int cpu_rank_in)
+  :cpu_rank(cpu_rank_in)
 {
   //member variables  that are not assigned here and should be assigned in
   // element for loops :
@@ -962,7 +964,7 @@ void PGAssem_EP::Assem_tangent_residual(const PDNSolution * const &sol_a,
 					std::vector<FEAElement*> &eptr_array,
 					const ALocal_NodalBC * const &bc_part)
 {
-  std::cout << "start assem tangent res." << std::endl ;  
+  //  std::cout << "start assem tangent res." << std::endl ;  
   int nElem = alelem_ptr->get_nlocalele();
   int loc_dof, nlocbas_ee;
   int loc_index, lrow_index; // lcol_index;
@@ -992,17 +994,17 @@ void PGAssem_EP::Assem_tangent_residual(const PDNSolution * const &sol_a,
   
       fnode_ptr->get_ctrlPts_xyz(nlocbas_ee, IEN_e, ectrl_x, ectrl_y, ectrl_z);
 
-      std::cout << "local_a : " <<"\n";
-      for (int i = 0; i < nlocbas_ee; ++i) 
-	std::cout << local_a[i] << "\t";
-      std::cout << std::endl;
+      //std::cout << "local_a : " <<"\n";
+      //for (int i = 0; i < nlocbas_ee; ++i) 
+      //	std::cout << local_a[i] << "\t";
+      //std::cout << std::endl;
 
       fnode_ptr->get_ctrlPts_xyz(nlocbas_ee, IEN_e, ectrl_x, ectrl_y, ectrl_z);
 
-      std::cout << "element " << ee<< " coords : " <<"\n"
-		<< "x \t y \t z \n";
+      //std::cout << "element " << ee<< " coords : " <<"\n"
+      //		<< "x \t y \t z \n";
       for (int i=0; i<nlocbas_ee; ++i){
-	std::cout << ectrl_x[i] << "\t" << ectrl_y[i] <<"\t"<< ectrl_z[i] << "\n";
+	//std::cout << ectrl_x[i] << "\t" << ectrl_y[i] <<"\t"<< ectrl_z[i] << "\n";
       }
 
       (lassem_array.at(ee))->
@@ -1029,10 +1031,10 @@ void PGAssem_EP::Assem_tangent_residual(const PDNSolution * const &sol_a,
   
       VecSetValues(G, loc_dof, row_index, (lassem_array.at(ee))->Residual, ADD_VALUES);
 
-      std::cout << "local assem" << std::endl ;
-      PetscScalarView(nlocbas_ee, (lassem_array.at(ee))->Residual ,PETSC_VIEWER_STDOUT_WORLD);
-      std::cout << "local tangent " << std::endl ;
-      PetscScalarView(nlocbas_ee*nlocbas_ee, (lassem_array.at(ee))->Tangent,PETSC_VIEWER_STDOUT_WORLD);
+      //std::cout << "local assem" << std::endl ;
+      //PetscScalarView(nlocbas_ee, (lassem_array.at(ee))->Residual ,PETSC_VIEWER_STDOUT_WORLD);
+      //std::cout << "local tangent " << std::endl ;
+      //PetscScalarView(nlocbas_ee*nlocbas_ee, (lassem_array.at(ee))->Tangent,PETSC_VIEWER_STDOUT_WORLD);
     }
   }
   VecAssemblyBegin(G);
@@ -1046,10 +1048,10 @@ void PGAssem_EP::Assem_tangent_residual(const PDNSolution * const &sol_a,
   VecAssemblyBegin(G);
   VecAssemblyEnd(G);
 
-  std::cout<< "residual and tangent the end of PGassem tangent calc" << std::endl;
-  Print_G();
-  MatView(K, PETSC_VIEWER_STDOUT_WORLD);
-  std::cout << "end assem tangent-residual ." << std::endl ;  
+  //std::cout<< "residual and tangent the end of PGassem tangent calc" << std::endl;
+  //Print_G();
+  //MatView(K, PETSC_VIEWER_STDOUT_WORLD);
+  //std::cout << "end assem tangent-residual ." << std::endl ;  
 }
 
 
@@ -1172,7 +1174,7 @@ void PGAssem_EP::Assem_residual(
     std::vector<FEAElement*> &eptr_array,
     const ALocal_NodalBC * const &bc_part )
 {
-  std::cout << "start assem  residual" << std::endl ;  
+  //  std::cout << "start assem  residual" << std::endl ;  
   int nElem = alelem_ptr->get_nlocalele();
   int loc_dof, nlocbas_ee;
   int loc_index, lrow_index;
@@ -1227,9 +1229,9 @@ void PGAssem_EP::Assem_residual(
   //VecAssemblyBegin(sol_d->solution);
   //VecAssemblyEnd(sol_d->solution);
 
-  std::cout<< "residual at the end of PGassem residual calc" << std::endl;
-  Print_G();
-  std::cout << "end assem residual." << std::endl ;  
+  //std::cout<< "residual at the end of PGassem residual calc" << std::endl;
+  //Print_G();
+  //std::cout << "end assem residual." << std::endl ;  
 }
 
 
@@ -1336,17 +1338,17 @@ void PGAssem_EP::Assem_mass_residual(const PDNSolution * const &sol_a,
       lien_ptr->get_LIEN_e(ee, IEN_e);
       GetLocal(array_a, IEN_e, local_a, nlocbas_ee);
 
-      std::cout << "local_a : " <<"\n";
-      for (int i = 0; i < nlocbas_ee; ++i)
-	std::cout << local_a[i] << "\t";
-      std::cout << std::endl;
+      //std::cout << "local_a : " <<"\n";
+      //for (int i = 0; i < nlocbas_ee; ++i)
+      //	std::cout << local_a[i] << "\t";
+      //std::cout << std::endl;
 
       fnode_ptr->get_ctrlPts_xyz(nlocbas_ee, IEN_e, ectrl_x, ectrl_y, ectrl_z);
 
-      std::cout << "element " << ee<< " coords : " <<"\n"
-		<< "x \t y \t z \n";
+      //std::cout << "element " << ee<< " coords : " <<"\n"
+      //		<< "x \t y \t z \n";
       for (int i=0; i<nlocbas_ee; ++i){
-	std::cout << ectrl_x[i] << "\t" << ectrl_y[i] <<"\t"<< ectrl_z[i] << "\n";
+	//std::cout << ectrl_x[i] << "\t" << ectrl_y[i] <<"\t"<< ectrl_z[i] << "\n";
       }
 
       (lassem_array.at(ee))->Assem_Mass_Residual(local_a,eptr_array.at(ee), ectrl_x,
@@ -1369,10 +1371,10 @@ void PGAssem_EP::Assem_mass_residual(const PDNSolution * const &sol_a,
       		   (lassem_array.at(ee))->Tangent, ADD_VALUES);
       VecSetValues(G, loc_dof, row_index, (lassem_array.at(ee))->Residual, ADD_VALUES);
 
-      std::cout <<"local tangent:" << std::endl;
-      PetscScalarView(nlocbas_ee*nlocbas_ee, (lassem_array.at(ee))->Tangent,PETSC_VIEWER_STDOUT_WORLD);
-      std::cout <<"local residual:" << std::endl;
-      PetscScalarView(nlocbas_ee, (lassem_array.at(ee))->Residual,PETSC_VIEWER_STDOUT_WORLD);
+      //std::cout <<"local tangent:" << std::endl;
+      //PetscScalarView(nlocbas_ee*nlocbas_ee, (lassem_array.at(ee))->Tangent,PETSC_VIEWER_STDOUT_WORLD);
+      //std::cout <<"local residual:" << std::endl;
+      //PetscScalarView(nlocbas_ee, (lassem_array.at(ee))->Residual,PETSC_VIEWER_STDOUT_WORLD);
     }
 
     delete IEN_e; IEN_e = nullptr;
@@ -1512,13 +1514,16 @@ void PGAssem_EP::Update_nodal_velo(const PDNSolution * const &sol_a, //disp
   //member variables  that are not assigned before and should be assigned in
   // element for loops :
   // nLocBas , row_index, col_index, local_a b c d, IEN_e, ectrl_xyz
-  //std::cout << "new nodal velo update: " << std::endl;
   int nElem = alelem_ptr->get_nlocalele();
   int loc_dof, nlocbas_ee;
   int loc_index, lrow_index; // lcol_index;
 
   int node_num = node_ptr->get_nlocghonode();
 
+  //std::ostringstream oss;
+  //std::string out_str;
+  //oss.clear(); out_str.clear();
+  
   sol_a->GetLocalArray( array_a, node_ptr );//V_in
   sol_b->GetLocalArray( array_b, node_ptr );//hist_old
   sol_c->GetLocalArray( array_c, node_ptr );//V_new
@@ -1535,6 +1540,7 @@ void PGAssem_EP::Update_nodal_velo(const PDNSolution * const &sol_a, //disp
 
   for (int count{ 0 }; count < node_num; ++count)
     {
+      //GET LOCGHOST NODE TO ELEM 
       lien_ptr->get_node_to_elem(count, ee);
       //std::cout << "node : " << count << "is in elements \n";
       //VEC_T::print(ee);
@@ -1556,6 +1562,7 @@ void PGAssem_EP::Update_nodal_velo(const PDNSolution * const &sol_a, //disp
 
       array_c   [count] = V_new;
       array_d   [count] = r_new;
+      
     }
 
   for( int ee=0; ee<nElem; ++ee )
@@ -1569,10 +1576,6 @@ void PGAssem_EP::Update_nodal_velo(const PDNSolution * const &sol_a, //disp
       local_c =     new double [dof * nlocbas_ee];  
       local_d =     new double [dof * nlocbas_ee];
       IEN_e =                new int [nlocbas_ee];
-
-      //  col_index = new PetscInt [dof * nLocBas];
-      //  local_a = new double [dof * nLocBas];
-      //  local_b = new double [dof * nLocBas];
 
       lien_ptr->get_LIEN_e(ee, IEN_e);
 
@@ -1593,7 +1596,7 @@ void PGAssem_EP::Update_nodal_velo(const PDNSolution * const &sol_a, //disp
       
       VecSetValues(sol_c->solution, loc_dof, row_index, local_c, INSERT_VALUES);
       VecSetValues(sol_d->solution, loc_dof, row_index, local_d, INSERT_VALUES);
-
+  
       delete row_index; row_index=nullptr;
       delete local_c  ; local_c  =nullptr;
       delete local_d  ; local_d  =nullptr;
@@ -1601,11 +1604,16 @@ void PGAssem_EP::Update_nodal_velo(const PDNSolution * const &sol_a, //disp
     }
   }
 
+  //oss << "================END PGASSEM==============\n";
+  //out_str = oss.str();
+  //SYS_T::synPrint( out_str , cpu_rank);
+
   VecAssemblyBegin(sol_c->solution);
   VecAssemblyEnd(sol_c->solution);
   VecAssemblyBegin(sol_d->solution);
   VecAssemblyEnd(sol_d->solution);
-  
+  sol_c->GhostUpdate();
+  sol_d->GhostUpdate();
 }
 				     
 
