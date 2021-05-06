@@ -65,7 +65,7 @@ int main( int argc, char * argv[] )
 
   int time_start = 0;
   int time_step = 1;
-  int time_end = 500;
+  int time_end = 1;
   double dt = 1.0;
 
   bool isXML = true;
@@ -197,10 +197,10 @@ int main( int argc, char * argv[] )
 
     PetscPrintf(PETSC_COMM_WORLD, "Time %d: Read %s and Write %s \n",
 		time, name_to_read.c_str(), name_to_write.c_str() );
-    
+
     visprep->get_pointArray(name_to_read, anode_mapping_file, pnode_mapping_file,
 			    pNode, GMIptr, dof, pointArrays);
-	  
+		
     vtk_w->writeOutput_compact( GMIptr, fNode, locIEN, locElem,
 				visprep, elemArray, quadArray, pointArrays, rank, size, 
 				pNode -> get_ntotalnode(),

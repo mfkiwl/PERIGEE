@@ -42,6 +42,12 @@ using namespace std;
 
 int main(int argc, char *argv[])
 {
+
+  //warning: check that the first node of purkinje is not in the endnodes list.
+  std::string endnodes_file
+    ("/home/oguz/PERIGEE/examples/electrophysiology_tet/mesh/LV-line_endnodes-picked.txt");
+//  std::string endnodes_file
+//    ("/home/oguz/PERIGEE/examples/electrophysiology_tet/mesh/endnodes.txt");
   
   int sysret = system("rm -rf postpart_p*.h5");
   SYS_T::print_fatal_if(sysret != 0, "Error: system call failed. \n");
@@ -145,12 +151,12 @@ int main(int argc, char *argv[])
 
   // Generate IEN
   IIEN * IEN_myo = new IEN_Tetra_P1(nElem_myo, vecIEN_myo);
-  std::cout << "IEN myo" << std::endl;
-  IEN_myo->print_IEN();
+  //std::cout << "IEN myo" << std::endl;
+  //IEN_myo->print_IEN();
 
   IIEN * IEN_pur = new IEN_Line_P1(nElem_pur, vecIEN_pur);
-  std::cout << "IEN pur" << std::endl;
-  IEN_pur->print_IEN();
+  //std::cout << "IEN pur" << std::endl;
+  //IEN_pur->print_IEN();
 
   // Generate the mesh
   IMesh * mesh_myo = new Mesh_Tet4(nFunc_myo, nElem_myo);
@@ -179,9 +185,6 @@ int main(int argc, char *argv[])
   ctrlPts_list.push_back(ctrlPts_pur);
 
   //
-  //warning: check that the first node of purkinje is not in the endnodes list.
-  std::string endnodes_file
-    ("/home/oguz/PERIGEE/examples/electrophysiology_tet/mesh/endnodes.txt");
   
   IIEN * IEN_combined= new IEN_Mixed ( IEN_list, mesh_list, //elemType_list,
 				       ctrlPts_list, endnodes_file.c_str(),
@@ -189,15 +192,21 @@ int main(int argc, char *argv[])
 				       ctrlPts_combined);
   //
   
-  std::cout << "ctrlpts combined:" << std::endl;
-  VEC_T::print( ctrlPts_combined );
-  //std::cout << "elemType combined:" << std::endl;
-  //VEC_T::print( elemType_combined );
-  VEC_T::clean( vecIEN_myo );
-  VEC_T::clean( vecIEN_pur );
+  //std::cout << "ctrlpts combined:" << std::endl;
+  //VEC_T::print( ctrlPts_combined );
+  ////std::cout << "elemType combined:" << std::endl;
+  ////VEC_T::print( elemType_combined );
+  //VEC_T::clean( vecIEN_myo );
+  //VEC_T::clean( vecIEN_pur );
 
   IMesh * mesh_combined = new Mesh_Mixed(mesh_list, elemType_list, IEN_combined);
   mesh_combined -> print_mesh_info();
+
+  //int db_elem = 47395;
+  //std::cout << "nodes of element :" << db_elem << "\n" 
+  //	    << IEN_combined->get_IEN(db_elem, 0) << ", "
+  //	    << IEN_combined->get_IEN(db_elem, 1) <<  std::endl;
+  
   
   // Partition
   IGlobal_Part * global_part;
@@ -222,7 +231,7 @@ int main(int argc, char *argv[])
 
   Map_Node_Index * mnindex =
     new Map_Node_Index(global_part, cpu_size, mesh_combined->get_nFunc());
-  mnindex->print_info();
+  //mnindex->print_info();
   mnindex->write_hdf5("post_node_mapping");
   
   cout<<"\n=== Start Partition ... \n";
@@ -248,7 +257,7 @@ int main(int argc, char *argv[])
   
   // Clean memory
   cout<<"\n=== Clean memory. \n";
-  delete mnindex; delete global_part;delete mytimer;
+  delete mnindex; delete global_part; delete mytimer;
   delete mesh_myo;delete mesh_pur;delete mesh_combined;
   delete IEN_myo;delete IEN_pur;delete IEN_combined;
   PetscFinalize();

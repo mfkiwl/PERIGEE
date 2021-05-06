@@ -43,17 +43,17 @@ void Mesh_Mixed::print_mesh_info() const
 {
   std::cout<<'\n';
   std::cout<<"======= Mesh_Mixed ======="<<std::endl;
-  std::cout<<"Degree S-T-U: "<<std::endl;
-  for( auto it=stu_degrees.begin(); it!=stu_degrees.end(); ++it ){
-    VEC_T::print(*it);
-  }
+  //std::cout<<"Degree S-T-U: "<<std::endl;
+  //for( auto it=stu_degrees.begin(); it!=stu_degrees.end(); ++it ){
+  //  VEC_T::print(*it);
+  //}
   std::cout<<"Total Elem: "<<get_nElem()<<std::endl;
   std::cout<<"Total Func: "<<get_nFunc()<<std::endl;
   std::cout<<"Local Basis times element: "<<get_nElemXnLocBas()<<std::endl;
-  std::cout<<"Local Basis per element: "<<std::endl;
-  VEC_T::print(nLocBas);
-  std::cout<<"Element type per element: "<<std::endl;
-  VEC_T::print(elemType);
+  //std::cout<<"Local Basis per element: "<<std::endl;
+  //VEC_T::print(nLocBas);
+  //std::cout<<"Element type per element: "<<std::endl;
+  //VEC_T::print(elemType);
   std::cout<<"========================="<<std::endl;
 }
 

@@ -81,44 +81,50 @@ class ALocal_IEN_Mixed
 
   // this function returns the element numbers that involve the node that is input.
   // node number is in the range of nlocghonode. element number is in local elements.
-    virtual void get_node_to_elem(const int &node, std::vector<int> &elem_list) const
-    {
-      elem_list = node_to_element.at(node);
-    }
+  virtual void get_node_to_elem(const int &node, std::vector<int> &elem_list) const
+  {
+    elem_list = node_to_element.at(node);
+  }
   
-    // Print the info of this class.
-    virtual void print_info() const;
+  // Print the info of this class.
+  virtual void print_info() const;
   
-  protected:
-    // --------------------------------------------------------------
-    // Get stride length
-    // This returns the stride length of the IEN array. For certain problems
-    // the results is different from the nLocBas stored in AGlobal_Mesh_Info.
-    // The logic is this: the one in AGlobal_Mesh_Info is related to the
-    // original data in the preprocessor, i.e. the geometry. The one stroed
-    // in this class is the number of basis functions for the physics 
-    // interpolation. In non-isoparametric elements, the two can be different. 
-    // --------------------------------------------------------------
-    virtual int get_stride() const
-     {SYS_T::print_fatal("Error: ALocal_IEN_Mixed::get_stride needs local element index . \n"); return -1;}
+protected:
+  // --------------------------------------------------------------
+  // Get stride length
+  // This returns the stride length of the IEN array. For certain problems
+  // the results is different from the nLocBas stored in AGlobal_Mesh_Info.
+  // The logic is this: the one in AGlobal_Mesh_Info is related to the
+  // original data in the preprocessor, i.e. the geometry. The one stroed
+  // in this class is the number of basis functions for the physics 
+  // interpolation. In non-isoparametric elements, the two can be different. 
+  // --------------------------------------------------------------
+  virtual int get_stride() const
+  {SYS_T::print_fatal("Error: ALocal_IEN_Mixed::get_stride needs local element index . \n"); return -1;}
 
-    virtual int get_stride(const int &ee) const {return stride.at(ee);}
+  virtual int get_stride(const int &ee) const {return stride.at(ee);}
   
-    // The number of local element. This int data is assumed to be also
-    // stored in ALocal_Elem.
-    int nlocalele; 
+  // The number of local element. This int data is assumed to be also
+  // stored in ALocal_Elem.
+  int nlocalele; 
     
-    // The value can be changed due to the FEM basis function enrichment
-    // Users should check if one uses a derived class.
-    std::vector< int > nLocBas_loc;
-    std::vector< int > stride;
+  // The value can be changed due to the FEM basis function enrichment
+  // Users should check if one uses a derived class.
+  std::vector< int > nLocBas_loc;
+  std::vector< int > stride;
     
-    // The LIEN array may be enriched due to use of non-isoparametric elements.
-    // Users should check if one uses a derived class.
-    std::vector<int> LIEN;
+  // The LIEN array may be enriched due to use of non-isoparametric elements.
+  // Users should check if one uses a derived class.
+  std::vector<int> LIEN;
 
-    // this keeps the elements that each node belongs to.
-    std::vector< std::vector< int > > node_to_element;
+  // this keeps the elements that each node belongs to.
+  std::vector< std::vector< int > > node_to_element;
+
+  //// this keeps the  first element that each node belongs to.
+  //// the first element will belong to the first of the multiple meshes inputted
+  //// for example meshes are supplied in order: myocardium - RV purkinje - LV purkinje;
+  //// then a LVpurkinje-myocardium junction node will use its ionic model from myocardium.
+  ////std::vector< int > node_to_element;
 };
 
 #endif

@@ -22,7 +22,7 @@ PGAssem_EP::PGAssem_EP( const std::vector< IPLocAssem * > &locassem_array,
   int * dnnz = new int [nlocrow];
   int * onnz = new int [nlocrow];
 
-  SYS_T::commPrint("===> Estimate sparse nonzero structure. \n");
+  SYS_T::commPrint("===> Estimate sparse nonzero structure - in mixed mesh. \n");
   Get_dnz_onz(nElem, aien_ptr, pnode_ptr, part_bc, dnnz, onnz);
   
   Init_petsc_35(dnnz, onnz, nlocrow);
@@ -413,7 +413,7 @@ void PGAssem_EP::Assem_nonzero_estimate(
      const ALocal_NodalBC * const &bc_part )
 {
   int nElem = alelem_ptr->get_nlocalele();
-  int loc_dof;
+  int loc_dof, nlocbas_ee;
   int loc_index, lrow_index; // lcol_index;
   
   // loop over elements and insert 1.0 to every possible slots
@@ -422,14 +422,15 @@ void PGAssem_EP::Assem_nonzero_estimate(
   }
   
   for(int e=0; e<nElem; ++e) {
-  
-    (locassem_array.at(e))->Assem_Estimate();
-    loc_dof = dof * (lien_ptr->get_nLocBas_loc(e));
 
-    row_index = new PetscInt [dof * (lien_ptr->get_nLocBas_loc(e))];
-    col_index = new PetscInt [dof * (lien_ptr->get_nLocBas_loc(e))];
+    nlocbas_ee= lien_ptr->get_nLocBas_loc(e);
+    (locassem_array.at(e))->Assem_Estimate();
+    loc_dof = dof * nlocbas_ee;
+
+    row_index = new PetscInt [dof * nlocbas_ee];
+    col_index = new PetscInt [dof * nlocbas_ee];
     
-    for(int i=0; i<(lien_ptr->get_nLocBas_loc(e)); ++i) {
+    for(int i=0; i<nlocbas_ee; ++i) {
       
       loc_index  = lien_ptr->get_LIEN(e, i);
 
@@ -646,6 +647,7 @@ void PGAssem_EP::Get_dnz_onz( const int &nElem,
 			      const ALocal_NodalBC * const &bc_part,
 			      PetscInt * const &dnz, PetscInt * const &onz ) const
 {
+  //SYS_T::commPrint("===> get_dnz_onz for mixed mesh begin. \n");  
   const int nlocalnode = node_ptr->get_nlocalnode();
   const int nnode = node_ptr->get_nlocghonode();
 
@@ -685,16 +687,21 @@ void PGAssem_EP::Get_dnz_onz( const int &nElem,
   int row, col, ien_index, part_id_row, part_id_col;
 
   std::vector<int> elem4node;
-
+  
+  //SYS_T::commPrint("===> checkpoint 1 . \n");
+  
   // loop for each row 
   for( int ii=0; ii<nnode; ++ii )
   {
     elem4node.clear();
-    for(int ee=0; ee<nElem; ++ee)
-    {
-      if( lien_ptr->isNode_in_Elem(ee, ii) )
-        elem4node.push_back(ee);
-    }
+
+    //for(int ee=0; ee<nElem; ++ee)
+    //{
+    //  if( lien_ptr->isNode_in_Elem(ee, ii) )
+    //    elem4node.push_back(ee);
+    //}
+    
+    lien_ptr->get_node_to_elem(ii, elem4node);
 
     for( int mm=0; mm<dof; ++mm )
     {
@@ -751,6 +758,8 @@ void PGAssem_EP::Get_dnz_onz( const int &nElem,
   VecAssemblyBegin(vonz);
   VecAssemblyEnd(vonz);
 
+  //  SYS_T::commPrint("===> checkpoint 2 . \n");
+    
   // We need to handle the Dirichlet and Periodic Slave nodes
   for(int mm=0; mm<dof; ++mm)
   {
@@ -777,6 +786,8 @@ void PGAssem_EP::Get_dnz_onz( const int &nElem,
       }
     }
   }
+
+  ///  SYS_T::commPrint("===> checkpoint 3 . \n");
 
   VecAssemblyBegin(vdnz);
   VecAssemblyEnd(vdnz);
@@ -807,6 +818,8 @@ void PGAssem_EP::Get_dnz_onz( const int &nElem,
 
   const int max_onz = vec_size - dof * nlocalnode;
 
+  //  SYS_T::commPrint("===> checkpoint 4 . \n");
+  
   VecGetArray(vonz, &array_onz);
   for(int ii=0; ii<dof*nlocalnode; ++ii)
   {
@@ -819,6 +832,8 @@ void PGAssem_EP::Get_dnz_onz( const int &nElem,
 
   VecDestroy(&vdnz);
   VecDestroy(&vonz);
+
+  //  SYS_T::commPrint("===> get_dnz_onz end  . \n");
 }
 
 

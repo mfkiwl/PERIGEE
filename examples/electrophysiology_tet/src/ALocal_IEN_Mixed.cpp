@@ -33,7 +33,7 @@ ALocal_IEN_Mixed::ALocal_IEN_Mixed( const std::string &fileBaseName, const int &
   std::vector<int>::iterator location;
   std::vector< std::vector<int> > node_locations;
   node_locations.resize(nlocghonode);//resize the 1st dimension only
-
+  
   for (int ii=0; ii<nlocghonode ; ii++) {
     location= std::find(LIEN.begin(), LIEN.end(), ii );
     

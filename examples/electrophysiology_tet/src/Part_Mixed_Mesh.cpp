@@ -121,8 +121,8 @@ void Part_Mixed_Mesh::Generate_Partition( const IMesh * const &mesh,
   //  elemType_loc.at(e)= mesh->get_elemType(elem_loc[e]);
   //  mesh->get_stu_degree(stu_Degree_loc.at(e), elem_loc[e]);
   }
-  std::cout<<" nlocbas local: " <<std::endl;
-  VEC_T::print(nLocBas_loc);
+  //std::cout<<" nlocbas local: " <<std::endl;
+  //VEC_T::print(nLocBas_loc);
   //VEC_T::print(elemType_loc);
   //for( auto it=stu_Degree_loc.begin(); it!=stu_Degree_loc.end(); ++it ){
   //  VEC_T::print(*it);
@@ -332,8 +332,8 @@ void Part_Mixed_Mesh::write( const char * inputFileName ) const
     for(int ii=0; ii<probDim; ++ii)
       row_stu_degree.at(e*probDim + ii) = (stu_Degree.at(e)).at(ii);
   }
-  std::cout << "row stu deg" << std::endl;
-  VEC_T::print(row_stu_degree);
+  //std::cout << "row stu deg" << std::endl;
+  //VEC_T::print(row_stu_degree);
   h5w -> write_intMatrix( group_id_3, "degree", row_stu_degree, nElem, probDim);
   
   h5w->write_intVector( group_id_3, "nLocBas", nLocBas );
@@ -367,8 +367,8 @@ void Part_Mixed_Mesh::write( const char * inputFileName ) const
     for(int ii=0; ii<(nLocBas_loc.at(e)); ++ii)
       row_LIEN.push_back(LIEN[e][ii]);
   }
-  std::cout << "row LIEN" << std::endl;
-  VEC_T::print(row_LIEN);
+  //std::cout << "row LIEN" << std::endl;
+  //VEC_T::print(row_LIEN);
   
   h5w -> write_intVector( group_id_5, "LIEN", row_LIEN);
   

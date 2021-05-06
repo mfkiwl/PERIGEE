@@ -56,9 +56,16 @@ int main( int argc, char * argv[] )
   //std::vector< int > elemType_combined;
 
   // Input files
-  std::string geo_file_myo("./tet_vol.vtu");
-  std::string geo_file_pur("./purkinje.vtu");
-  //std::string sur_file_tip0("/home/oguz/LV-line_endnodes.txt");
+  std::string geo_file_myo("./myo.vtu");
+  //std::string geo_file_pur("./purkinje.vtu");
+  std::string geo_file_pur("/home/oguz/PERIGEE/examples/electrophysiology_tet/mesh/LV-line.vtu");
+
+  //warning: check that the first node of purkinje is not in the endnodes list.
+  std::string endnodes_file
+    ("/home/oguz/PERIGEE/examples/electrophysiology_tet/mesh/LV-line_endnodes-picked.txt");
+  //std::string endnodes_file
+  //  ("/home/oguz/PERIGEE/examples/electrophysiology_tet/mesh/endnodes.txt");
+
 
 //  // volume & faces purkinje mesh  
 //  std::string geo_file("./purkinje.vtu");
@@ -81,7 +88,7 @@ int main( int argc, char * argv[] )
 //
   const std::string part_file("part");
 
-  int cpu_size = 2; //WARNING ; MULTI-TASK IS NOT WORKING PROPERLY ATM (16 APR '21)
+  int cpu_size = 1; 
   int in_ncommon = 1;
   const bool isDualGraph = true;
 
@@ -159,25 +166,25 @@ int main( int argc, char * argv[] )
 			     ctrlPts_pur, vecIEN_pur, phy_tag_pur);
 
   //*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
-  std::cout << "nelem myo" << nElem_myo <<"\n"
-	    << "nFunc myo" << nFunc_myo <<"\n"
-	    << "ctrl pts myo" ;
-  for (auto i = ctrlPts_myo.begin(); i != ctrlPts_myo.end(); ++i)
-    std::cout << *i << ' ';
-  std::cout << "\n" << "vec IEN myo" ;
-  for (auto i = vecIEN_myo.begin(); i != vecIEN_myo.end(); ++i)
-    std::cout << *i << ' ';
-  std::cout << "\n" << std::endl;
-
-  std::cout << "nelem pur" << nElem_pur <<"\n"
-	    << "nFunc pur" << nFunc_pur <<"\n"
-	    << "ctrl pts pur" ;
-  for (auto i = ctrlPts_pur.begin(); i != ctrlPts_pur.end(); ++i)
-    std::cout << *i << ' ';
-  std::cout << "\n" << "vec IEN pur" ;
-  for (auto i = vecIEN_pur.begin(); i != vecIEN_pur.end(); ++i)
-    std::cout << *i << ' ';
-  std::cout << "\n" << std::endl;
+  //std::cout << "nelem myo" << nElem_myo <<"\n"
+  //	    << "nFunc myo" << nFunc_myo <<"\n"
+  //	    << "ctrl pts myo" ;
+  //for (auto i = ctrlPts_myo.begin(); i != ctrlPts_myo.end(); ++i)
+  //  std::cout << *i << ' ';
+  //std::cout << "\n" << "vec IEN myo" ;
+  //for (auto i = vecIEN_myo.begin(); i != vecIEN_myo.end(); ++i)
+  //  std::cout << *i << ' ';
+  //std::cout << "\n" << std::endl;
+  //
+  //std::cout << "nelem pur" << nElem_pur <<"\n"
+  //	    << "nFunc pur" << nFunc_pur <<"\n"
+  //	    << "ctrl pts pur" ;
+  //for (auto i = ctrlPts_pur.begin(); i != ctrlPts_pur.end(); ++i)
+  //  std::cout << *i << ' ';
+  //std::cout << "\n" << "vec IEN pur" ;
+  //for (auto i = vecIEN_pur.begin(); i != vecIEN_pur.end(); ++i)
+  //  std::cout << *i << ' ';
+  //std::cout << "\n" << std::endl;
 
   //*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
   
@@ -188,12 +195,12 @@ int main( int argc, char * argv[] )
 
   // Generate IEN
   IIEN * IEN_myo = new IEN_Tetra_P1(nElem_myo, vecIEN_myo);
-  std::cout << "IEN myo" << std::endl;
-  IEN_myo->print_IEN();
+  //std::cout << "IEN myo" << std::endl;
+  //IEN_myo->print_IEN();
 
   IIEN * IEN_pur = new IEN_Line_P1(nElem_pur, vecIEN_pur);
-  std::cout << "IEN pur" << std::endl;
-  IEN_pur->print_IEN();
+  //std::cout << "IEN pur" << std::endl;
+  //IEN_pur->print_IEN();
 
   if(elemType_myo == 501)
   {
@@ -244,22 +251,17 @@ int main( int argc, char * argv[] )
   ctrlPts_list.push_back(ctrlPts_myo);
   ctrlPts_list.push_back(ctrlPts_pur);
 
-  //warning: check that the first node of purkinje is not in the endnodes list.
-  std::string endnodes_file
-    ("/home/oguz/PERIGEE/examples/electrophysiology_tet/mesh/endnodes.txt");
   
   IIEN * IEN_combined= new IEN_Mixed ( IEN_list, mesh_list, //elemType_list,
 				       ctrlPts_list, endnodes_file.c_str(),
 				       //elemType_combined,
 				       ctrlPts_combined);
   
-  std::cout << "ctrlpts combined:" << std::endl;
-  VEC_T::print( ctrlPts_combined );
-  //std::cout << "elemType combined:" << std::endl;
-  //VEC_T::print( elemType_combined );
-  
-  VEC_T::clean( vecIEN_myo );
-  VEC_T::clean( vecIEN_pur );
+//  std::cout << "ctrlpts combined:" << std::endl;
+//  VEC_T::print( ctrlPts_combined );
+//  
+//  VEC_T::clean( vecIEN_myo );
+//  VEC_T::clean( vecIEN_pur );
   
   //IMesh * mesh_combined = new Mesh_Mixed(nFunc_tot, nElem_tot);
   IMesh * mesh_combined = new Mesh_Mixed(mesh_list, elemType_list, IEN_combined);
@@ -288,7 +290,7 @@ int main( int argc, char * argv[] )
 
   Map_Node_Index * mnindex =
     new Map_Node_Index(global_part, cpu_size, mesh_combined->get_nFunc());
-  mnindex->print_info();
+  //  mnindex->print_info();
   mnindex->write_hdf5("node_mapping");
 
   
@@ -307,7 +309,7 @@ int main( int argc, char * argv[] )
   //WARNING: need re-implementation of nodal boundary conditions implementation
   // if there will be any present. (dir_list is populated)
   NBC_list[0] = new NodalBC_Line_3D_vtp( mesh_combined->get_nFunc() );
-  NBC_list[0]->print_info();
+  //NBC_list[0]->print_info();
   /////NBC_list[1] = new NodalBC_3D_vtp( dir_list, nFunc );
   /////NBC_list[2] = new NodalBC_3D_vtp( dir_list, nFunc );
   /////NBC_list[3] = new NodalBC_3D_vtp( dir_list, nFunc );
@@ -325,7 +327,7 @@ int main( int argc, char * argv[] )
   std::vector<std::string> ebclist;
   ebclist.clear();
   ElemBC * ebc = new ElemBC_3D_Line( ebclist );
-  ebc->print_info();
+  //ebc->print_info();
 
   const bool isPrintPartInfo = true;
   const int proc_size = cpu_size;
@@ -349,15 +351,15 @@ int main( int argc, char * argv[] )
 					isPrintPartInfo );       
     mytimer->Stop();
     //    if (proc_rank ==0) {
-      cout<<"-- proc "<<proc_rank<<"  part_mixed_mesh info. \n";
-      part->print_part_ele() ;
-      part->print_part_node();
-      part->print_part_ghost_node() ;
-      part->print_part_local_to_global() ;
-      part->print_part_LIEN(mesh_combined) ;
-      part->print_part_loadbalance_edgecut() ;
-      cout<<"-- proc "<<proc_rank<<" Time taken: "<<mytimer->get_sec()<<" sec. \n";
-      //}
+    //cout<<"-- proc "<<proc_rank<<"  part_mixed_mesh info. \n";
+    //part->print_part_ele() ;
+    //part->print_part_node();
+    //part->print_part_ghost_node() ;
+    //part->print_part_local_to_global() ;
+    //part->print_part_LIEN(mesh_combined) ;
+    //part->print_part_loadbalance_edgecut() ;
+    cout<<"-- proc "<<proc_rank<<" Time taken: "<<mytimer->get_sec()<<" sec. \n";
+    //}
 
     part -> write( part_file.c_str() );
 

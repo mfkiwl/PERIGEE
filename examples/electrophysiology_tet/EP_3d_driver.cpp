@@ -76,7 +76,7 @@ int main(int argc, char *argv[])
   double initial_time = 0.0;
   double initial_step = 1.0;
   int initial_index = 0;
-  double final_time = 500;
+  double final_time = 1;
 
   // Time solver parameters
   std::string sol_bName("SOL_");
@@ -139,41 +139,46 @@ int main(int argc, char *argv[])
   SYS_T::commPrint("===> Reading mesh files ... \n");
   //HDF5_PartReader * h5reader = new HDF5_PartReader(part_file, rank);
   
-  //// 1.1 Get points' coordinates 
+  //// 1.1 Get points' coordinates
+  SYS_T::commPrint("===> FEANode ... \n");
   FEANode * fNode = new FEANode(part_file, rank);
   //if (rank==1)
   //  fNode->print_info();
     
   // 1.4 Get LIEN for each local elements
+  SYS_T::commPrint("===> ALocal_IEN_Mixed ... \n");
   ALocal_IEN_Mixed * locIEN = new ALocal_IEN_Mixed(part_file, rank);
-  if (rank==1)
-    locIEN->print_info();
+  //if (rank==1)
+  //  locIEN->print_info();
   
   // 1.5 Get Global Mesh Info
+  SYS_T::commPrint("===> AGlobal_Mesh_Info_Mixed ... \n");
   IAGlobal_Mesh_Info * GMIptr = new AGlobal_Mesh_Info_Mixed(part_file,rank);
   //if (rank==1)
   //  GMIptr->print_info();
 
   // 1.6 Get partition info
+  SYS_T::commPrint("===> APart_Basic_Info ... \n");
   APart_Basic_Info * PartBasic = new APart_Basic_Info(part_file, rank);
-  SYS_T::commPrint("APart_Basic_Info: \n");
   //if (rank==1)
   //  PartBasic->print_info();
 
   
   // 1.7 Get local element info
+  SYS_T::commPrint("===> ALocal_Elem ... \n");
   ALocal_Elem * locElem = new ALocal_Elem(part_file, rank);
-  SYS_T::commPrint("ALocal_Elem: \n");
   //  if (rank==1)
   //locElem->print_info();
 
   // 1.8 Get local BC info
+  SYS_T::commPrint("===> ALocal_NodalBC ... \n");
   ALocal_NodalBC * locbc = new ALocal_NodalBC(part_file, rank);
   //locbc->print_info();
   
   //ALocal_EBC * locebc = new ALocal_EBC(part_file, rank);
   ////locebc->print_info();
 
+  SYS_T::commPrint("===> APart_Node ... \n");
   APart_Node * pNode = new APart_Node(part_file, rank);
   //if (rank==1)
   //  pNode->print_info();
@@ -191,17 +196,17 @@ int main(int argc, char *argv[])
   // ===== Quadrature rules =====
   SYS_T::commPrint("===> Build quadrature rules. \n");
   IQuadPts * quad_line   = new QuadPts_Gauss( nqp_line );
-  quad_line->print_info();
+  //quad_line->print_info();
   IQuadPts * quadv = new QuadPts_Gauss_Tet( nqp_tet );
   IQuadPts * quads = new QuadPts_Gauss_Triangle( nqp_tri );
-  quadv->print_info();
-  quads->print_info();
+  //quadv->print_info();
+  //quads->print_info();
 
   SYS_T::commPrint("===> Build quadrature weight ... \n");
   AInt_Weight * Int_w_line = new AInt_Weight(quad_line);
-  Int_w_line->print_info();
+  //Int_w_line->print_info();
   AInt_Weight * Int_w_v = new AInt_Weight(quadv);
-  Int_w_v->print_info();
+  //Int_w_v->print_info();
 
   std::vector<IQuadPts *> quadArray; 
   quadArray.resize(locElem->get_nlocalele());
@@ -267,7 +272,7 @@ int main(int argc, char *argv[])
 
   //====== Local assembly pointer
   SYS_T::commPrint("===> Initialize local assembly routine ... \n");
-  int nLocBas;  
+
   std::vector<IPLocAssem *> locAssem_array; 
   locAssem_array.resize(locElem->get_nlocalele());
   std::vector<IonicModel *> ionicmodel_array; 
@@ -296,12 +301,12 @@ int main(int argc, char *argv[])
   // ---------------------------------------
 
   // ======= Solution Initialization =======
-  PDNSolution * disp = new PDNSolution_EP(pNode, fNode, locbc, 2); // make it 2
+  PDNSolution * disp = new PDNSolution_EP(pNode, fNode, locbc, 0); // make it 2
   PDNSolution * velo = new PDNSolution_EP(pNode, fNode, locbc, 0);
   PDNSolution * hist = new PDNSolution_EP(pNode, fNode, locbc, 0);
 
-  std::cout << "initial solution: " << std::endl;
-  disp->PrintNoGhost();
+  //std::cout << "initial solution: " << std::endl;
+  //disp->PrintNoGhost();
 
   //if( is_restart )
   //{
@@ -351,12 +356,15 @@ int main(int argc, char *argv[])
   //gloAssem_ptr->Print_G();
   //SYS_T::commPrint("Mass tangent: \n"); 
   //MatView(gloAssem_ptr->K, PETSC_VIEWER_STDOUT_WORLD);
-  //lsolver->Solve( gloAssem_ptr->K, gloAssem_ptr->G, velo); 
+
+  lsolver->Solve( gloAssem_ptr->K, gloAssem_ptr->G, velo); 
+
   //SYS_T::commPrint("initial solution's time derivative obtained. \n");
   //SYS_T::commPrint("Velo: \n"); 
-  //velo->PrintWithGhost();
+  //velo->PrintNoGhost();
   //SYS_T::commPrint("Disp. \n"); 
   //disp->PrintNoGhost();  
+
   // 2.7 Setup nonlinear solver context
   PNonlinear_Solver_EP * nsolver
     = new PNonlinear_Solver_EP(nl_rtol, nl_atol,

@@ -218,6 +218,8 @@ void PTime_Solver_EP_OperatorSplit::TM_generalized_alpha(
       //			  lassem_array, gassem_ptr, 
       //			  lsolver_ptr, cur_velo, cur_disp,
       //			  conv_flag, nl_counter);
+      //std::cout << "disp after single diffusion: " << std::endl;
+      //cur_disp->PrintNoGhost();
       
       //Step 1 - Update of ionic variables
       gassem_ptr->Update_nodal_velo(pre_disp, pre_hist,
@@ -225,7 +227,9 @@ void PTime_Solver_EP_OperatorSplit::TM_generalized_alpha(
       			    ionicmodel_array, alelem_ptr, lien_ptr,
       			    anode_ptr, feanode_ptr, bc_part,
       			    tmp_disp, tmp_hist );
-      
+      //std::cout << "tmp disp after 1st ionic: " << std::endl;
+      //tmp_disp->PrintNoGhost();
+      //
       //Step 2 - gen_alpha_solve  for the diffusion problem 
       nsolver_ptr
       	->Gen_alpha_solve(renew_flag, time, dt, 
@@ -236,13 +240,17 @@ void PTime_Solver_EP_OperatorSplit::TM_generalized_alpha(
       			  lassem_array, gassem_ptr, 
       			  lsolver_ptr, cur_velo, tmp2_disp,
       			  conv_flag, nl_counter);
-      
+      //std::cout << "tmp2 disp after diffusion: " << std::endl;
+      //tmp2_disp->PrintNoGhost();
+      //
       //Step 3 - Update of ionic variables
       gassem_ptr->Update_nodal_velo(tmp2_disp, tmp_hist,
       	         	    time_half, dt_half,
       			    ionicmodel_array, alelem_ptr, lien_ptr,
       			    anode_ptr, feanode_ptr, bc_part,
       			    cur_disp, cur_hist   );
+      //std::cout << "cur disp after second ionic: " << std::endl;
+      //cur_disp->PrintNoGhost();
 
       time_info->TimeIncrement();
 

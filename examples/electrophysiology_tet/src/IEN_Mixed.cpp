@@ -43,7 +43,7 @@ IEN_Mixed::IEN_Mixed(const std::vector< std::vector<int> > &IEN_list,
     endnodes.push_back(number);
   }
   VEC_T::sort_unique_resize(endnodes);
-  //  std::cout<< "endnodes:" <<std::endl;
+  //std::cout<< "endnodes:" <<std::endl;
   //VEC_T::print(endnodes);
 
   //2-Now find the closest nodes on Mesh1 to the nodes on Mesh2
@@ -66,24 +66,28 @@ IEN_Mixed::IEN_Mixed(const std::vector< std::vector<int> > &IEN_list,
     x2=ctrlPts_2.at(3*node2);
     y2=ctrlPts_2.at(3*node2+1);
     z2=ctrlPts_2.at(3*node2+2);
-    std::cout<< "node 2 coords" <<std::endl;
-    std::cout<< x2 <<","
-    	     << y2 <<","
-    	     << z2 <<std::endl;
+    //std::cout<< "node 2 coords" <<std::endl;
+    //std::cout<< x2 <<","
+    //	     << y2 <<","
+    //	     << z2 <<std::endl;
 
     for (int ii=0; ii<nnode1; ii++) {
       x1=ctrlPts_1.at(3*ii+0);
       y1=ctrlPts_1.at(3*ii+1);
       z1=ctrlPts_1.at(3*ii+2);
 
-      std::cout<< "node 1 coords" <<std::endl;
-      std::cout<< x1 <<","
-	       << y1 <<","
-	       << z1 <<std::endl;
-      distance = (x1-x2)*(x1-x2)+(y1-y2)*(y1-y2)+(z1-z2)*(z1-z2);
-      std::cout<< "distance:" << distance <<std::endl;
-      if (distance < 1e-2) {
+      //std::cout<< "node 1 coords" <<std::endl;
+      //std::cout<< x1 <<","
+      //	       << y1 <<","
+      //	       << z1 <<std::endl;
+      distance = sqrt((x1-x2)*(x1-x2)+(y1-y2)*(y1-y2)+(z1-z2)*(z1-z2));
+      //std::cout<< "distance:" << distance <<std::endl;
+      if (distance < 1.5 ) { // turn this tolerance value into a user param
       	node1= ii;
+	//std::cout<< "node 1 coords" <<std::endl;
+	//std::cout<< x1 <<","
+	//	 << y1 <<","
+	//	 << z1 <<std::endl;
       	break; 
       } else if((ii+1)==nnode1) { //is this else robust? 
 	std::cerr<<"ERROR: couldn't find a matching node for purkinje node: "
@@ -92,10 +96,13 @@ IEN_Mixed::IEN_Mixed(const std::vector< std::vector<int> > &IEN_list,
       }
     }
     node1_list.push_back(node1);
-    std::cout<< "node1-node2 couple is:" << node1<< "," << node2 <<std::endl;
+    //std::cout<< "node1-node2 couple is:" << node1<< "," << node2 
+    //     << "(dist :" << distance << ")" <<std::endl;
   }
-  std::cout<< "node1-list:" <<std::endl;
-  VEC_T::print(node1_list);
+
+  std::cout<< "IEN_Mixed: Successfully matched every purkinje endnode." <<std::endl;
+  //std::cout<< "node1-list:" <<std::endl;
+  //VEC_T::print(node1_list);
   
   //3- find locations of nodes in the IEN2 
   std::vector<int>::iterator location;
@@ -112,13 +119,12 @@ IEN_Mixed::IEN_Mixed(const std::vector< std::vector<int> > &IEN_list,
     }
   }
 
-  std::cout<< "node2-locations" << std::endl;
-  for( auto it = node2_locations.begin(); it != node2_locations.end(); it++ ){
-    for( auto it2 = (*it).begin(); it2 != (*it).end(); it2++ ){
-      std::cout<< *it2 <<std::endl;
-    }
-  }
-
+  //std::cout<< "node2-locations -first 10" << std::endl;
+  //for( auto it = node2_locations.begin(); it != node2_locations.begin()+10; it++ ){
+  //  VEC_T::print(*it);
+  //}
+  
+  
   //4- subtract nodes of endnodes from IEN2
   //   and keep the rest of the nodes separate
   std::vector<int> endnodes_reverse;
@@ -136,23 +142,37 @@ IEN_Mixed::IEN_Mixed(const std::vector< std::vector<int> > &IEN_list,
     locs2_replace.at(ii)= node2_locations.at(*it);
     ii++;
   }
+
+  //std::cout<< "ctrlpts2 before replace- first 10" << std::endl;
+  //for( auto it = ctrlPts_2.begin(); it != ctrlPts_2.begin()+30; it=it+3 ){
+  //  std::cout<< *(it) <<","
+  //	     << *(it+1) <<","
+  //	     << *(it+2) <<std::endl;
+  //}
+  
+  //  std::cout<< "endnodes reverse erases ctrlpts" << std::endl;
   for( auto it = endnodes_reverse.begin(); it != endnodes_reverse.end(); it++ ){
+    //std::cout << "endnode: " << *it << "\n";
     locs2_reorder.erase(locs2_reorder.begin() + (*it));
-    ctrlPts_2.erase(ctrlPts_2.begin()+(*it), ctrlPts_2.begin()+(*it)+3);
+    ctrlPts_2.erase(ctrlPts_2.begin()+(*it)*3, ctrlPts_2.begin()+(*it)*3+3);
   }
   
-  std::cout<< "locs 2 replace" << std::endl;
-  for( auto it = locs2_replace.begin(); it != locs2_replace.end(); it++ ){
-    for( auto it2 = (*it).begin(); it2 != (*it).end(); it2++ ){
-      std::cout<< *it2 <<std::endl;
-    }
-  }
-  std::cout<< "locs 2 reorder" << std::endl;
-  for( auto it = locs2_reorder.begin(); it != locs2_reorder.end(); it++ ){
-    for( auto it2 = (*it).begin(); it2 != (*it).end(); it2++ ){
-      std::cout<< *it2 <<std::endl;
-    }
-  }
+  //std::cout<< "locs 2 replace" << std::endl;
+  //for( auto it = locs2_replace.begin(); it != locs2_replace.end(); it++ ){
+  //  VEC_T::print(*it);
+  //}
+  //
+  //std::cout<< "locs 2 reorder - first 10" << std::endl;
+  //for( auto it = locs2_reorder.begin(); it != locs2_reorder.begin()+10; it++ ){
+  //  VEC_T::print(*it);
+  //}
+  //
+  //std::cout<< "ctrlpts2 after replace- first 10" << std::endl;
+  //for( auto it = ctrlPts_2.begin(); it != ctrlPts_2.begin()+30; it=it+3 ){
+  //  std::cout<< *(it) <<","
+  //	     << *(it+1) <<","
+  //	     << *(it+2) <<std::endl;
+  //}
 
   //5- merge the numbering of endnodes of IEN2 to IEN1
   //   and renumber rest of the nodes
@@ -199,10 +219,10 @@ IEN_Mixed::IEN_Mixed(const std::vector< std::vector<int> > &IEN_list,
 
   //copy IEN1 to IEN
   IEN=IEN1;
-  std::cout<< "ien  " << std::endl;
-  for( auto it = IEN.begin(); it != IEN.end(); it++ ){
-    VEC_T::print(*it);
-  }
+  //std::cout<< "ien  " << std::endl;
+  //for( auto it = IEN.begin(); it != IEN.end(); it++ ){
+  //  VEC_T::print(*it);
+  //}
 
   //assign output parameters
   nElem_tot = IEN.size();
