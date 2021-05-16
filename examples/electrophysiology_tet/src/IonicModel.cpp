@@ -9,12 +9,10 @@ IonicModel::IonicModel(const double d_iso_in,
   //SYS_T::commPrint("IonicModel constructor. \n");
 }
 
-
 IonicModel::~IonicModel()
 {
   //SYS_T::commPrint("IonicModel destructor. \n");
 }
-
 
 void IonicModel::print_info () const
 {
@@ -42,8 +40,7 @@ void IonicModel::get_Istim(double &Istim,
 			   const double &y,
 			   const double &z ) const
 {
-  const double pi = MATH_T::PI;
-
+  //const double pi = MATH_T::PI;
 
   ////MANUFACTURED SOLUTION, no ionic, Iion=0
   //Istim = 140.0*(cos(2.0*pi*x)/4.0 - 1.0/4.0)*(cos(2.0*pi*y) - 1.0) + (2.0*t*pi*pi*cos(2.0*pi*y)*(cos(2.0*pi*x)/4.0 - 1.0/4.0))/5.0 + (t*pi*pi*cos(2.0*pi*x)*(cos(2.0*pi*y) - 1.0))/10.0;
@@ -90,12 +87,8 @@ void IonicModel::get_Istim(double &Istim,
   //Istim = (43750.0*cos(2.0*pi*x))/9.0 - (175.0*t)/12.0 + (43750.0*cos(2.0*pi*y))/9.0 - (175.0*exp((3.0*t)/1000.0)*(250.0*cos(2.0*pi*x) + 250.0*cos(2.0*pi*y) - 250.0*cos(2.0*pi*x)*cos(2.0*pi*y) - 115.0))/9.0 + (175.0*t*cos(2.0*pi*x))/12.0 + (175.0*t*cos(2.0*pi*y))/12.0 - (43750.0*cos(2.0*pi*x)*cos(2.0*pi*y))/9.0 + 140.0*(cos(2.0*pi*x)/4.0 - 1.0/4.0)*(cos(2.0*pi*y) - 1.0) + 2275.0*((t*(cos(2.0*pi*x)/4.0 - 1.0/4.0)*(cos(2.0*pi*y) - 1.0))/65.0 - 9.0/13.0)*((t*(cos(2.0*pi*x)/4.0 - 1.0/4.0)*(cos(2.0*pi*y) - 1.0))/65.0 - 5.0/26.0)*((t*(cos(2.0*pi*x)/4.0 - 1.0/4.0)*(cos(2.0*pi*y) - 1.0))/65.0 - 22.0/13.0) - (175.0*t*cos(2.0*pi*x)*cos(2.0*pi*y))/12.0 + (2.0*t*pi*pi*cos(2.0*pi*y)*(cos(2.0*pi*x)/4.0 - 1.0/4.0))/5.0 + (t*pi*pi*cos(2.0*pi*x)*(cos(2.0*pi*y) - 1.0))/10.0 - 20125.0/9.0 ;
   //Istim = -Istim;
   
-  ////excite rectyangular area:
-  //if((x<= 0.2) && (y<=0.2) && (t<1.0)){
-  //  Istim = -100.0;
-  //} else {
-  Istim = 0.0;
-  //}
+  Istim = 0.0 ;
+
 }
 
 

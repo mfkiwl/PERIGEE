@@ -82,7 +82,7 @@ IEN_Mixed::IEN_Mixed(const std::vector< std::vector<int> > &IEN_list,
       //	       << z1 <<std::endl;
       distance = sqrt((x1-x2)*(x1-x2)+(y1-y2)*(y1-y2)+(z1-z2)*(z1-z2));
       //std::cout<< "distance:" << distance <<std::endl;
-      if (distance < 1.5 ) { // turn this tolerance value into a user param
+      if (distance < 1.7 ) { // turn this tolerance value into a user param
       	node1= ii;
 	//std::cout<< "node 1 coords" <<std::endl;
 	//std::cout<< x1 <<","

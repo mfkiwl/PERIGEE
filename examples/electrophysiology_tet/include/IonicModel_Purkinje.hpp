@@ -23,6 +23,12 @@ public:
   
   virtual void print_info() const; //const =0 ;
 
+  virtual void get_Istim(double &Istim,
+			 const double &t,
+			 const double &x,
+			 const double &y,
+			 const double &z ) const;
+
   //virtual double get_diso() const;
   //
   //virtual double get_dani() const;

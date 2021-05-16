@@ -45,19 +45,17 @@ PGAssem_EP::PGAssem_EP( const std::vector< IPLocAssem * > &locassem_array,
 
 //  nLocBas = agmi_ptr->get_nLocBas();
 //
-//  row_index = new PetscInt [dof * nLocBas];
-//  col_index = new PetscInt [dof * nLocBas];
-//  
-//  local_a = new double [dof * nLocBas];
-//  local_b = new double [dof * nLocBas];
-//  local_c = new double [dof * nLocBas];  
-//  local_d = new double [dof * nLocBas];
-//
-//  IEN_e = new int [nLocBas];
-//
-//  ectrl_x = new double [nLocBas];
-//  ectrl_y = new double [nLocBas];
-//  ectrl_z = new double [nLocBas];
+  row_index = nullptr;
+  col_index = nullptr;
+  local_a =   nullptr;
+  local_b =   nullptr;
+  local_c =   nullptr;  
+  local_d =   nullptr;
+  IEN_e =     nullptr;
+
+  ectrl_x = nullptr;
+  ectrl_y = nullptr;
+  ectrl_z = nullptr;
 //  
 }
 
@@ -445,8 +443,11 @@ void PGAssem_EP::Assem_nonzero_estimate(
     MatSetValues(K, loc_dof, row_index, loc_dof, col_index,
     		 (locassem_array.at(e))->Tangent, ADD_VALUES);
     
-    delete row_index; delete col_index;
-    row_index = nullptr; col_index = nullptr; 
+    delete[] row_index;
+    row_index= nullptr;
+    delete[] col_index;
+    col_index= nullptr;
+    
   }
   
   for( int fie=0; fie<dof; ++fie)
@@ -1050,6 +1051,14 @@ void PGAssem_EP::Assem_tangent_residual(const PDNSolution * const &sol_a,
       //PetscScalarView(nlocbas_ee, (lassem_array.at(ee))->Residual ,PETSC_VIEWER_STDOUT_WORLD);
       //std::cout << "local tangent " << std::endl ;
       //PetscScalarView(nlocbas_ee*nlocbas_ee, (lassem_array.at(ee))->Tangent,PETSC_VIEWER_STDOUT_WORLD);
+      delete [] IEN_e    ; IEN_e    =nullptr;
+      delete [] local_a  ; local_a  =nullptr;
+      delete [] local_b  ; local_b  =nullptr;
+      delete [] ectrl_x  ; ectrl_x  =nullptr;
+      delete [] ectrl_y  ; ectrl_y  =nullptr;
+      delete [] ectrl_z  ; ectrl_z  =nullptr;
+      delete [] row_index; row_index=nullptr;
+      delete [] col_index; col_index=nullptr;
     }
   }
   VecAssemblyBegin(G);
@@ -1236,7 +1245,17 @@ void PGAssem_EP::Assem_residual(
 
       //set residual values from element to global
       VecSetValues(G, loc_dof, row_index, lassem_array.at(ee)->Residual, ADD_VALUES);
+
+      delete [] IEN_e    ; IEN_e    =nullptr;
+      delete [] local_a  ; local_a  =nullptr;
+      delete [] local_b  ; local_b  =nullptr;
+      delete [] ectrl_x  ; ectrl_x  =nullptr;
+      delete [] ectrl_y  ; ectrl_y  =nullptr;
+      delete [] ectrl_z  ; ectrl_z  =nullptr;
+      delete [] row_index; row_index=nullptr;
+      delete [] col_index; col_index=nullptr;
     }
+    
   }
 
   VecAssemblyBegin(G);
@@ -1362,9 +1381,9 @@ void PGAssem_EP::Assem_mass_residual(const PDNSolution * const &sol_a,
 
       //std::cout << "element " << ee<< " coords : " <<"\n"
       //		<< "x \t y \t z \n";
-      for (int i=0; i<nlocbas_ee; ++i){
+      //for (int i=0; i<nlocbas_ee; ++i){
 	//std::cout << ectrl_x[i] << "\t" << ectrl_y[i] <<"\t"<< ectrl_z[i] << "\n";
-      }
+      //}
 
       (lassem_array.at(ee))->Assem_Mass_Residual(local_a,eptr_array.at(ee), ectrl_x,
 						 ectrl_y, ectrl_z, quad_array.at(ee)); 
@@ -1385,20 +1404,20 @@ void PGAssem_EP::Assem_mass_residual(const PDNSolution * const &sol_a,
       MatSetValues(K, loc_dof, row_index, loc_dof, col_index,
       		   (lassem_array.at(ee))->Tangent, ADD_VALUES);
       VecSetValues(G, loc_dof, row_index, (lassem_array.at(ee))->Residual, ADD_VALUES);
-
+      
       //std::cout <<"local tangent:" << std::endl;
       //PetscScalarView(nlocbas_ee*nlocbas_ee, (lassem_array.at(ee))->Tangent,PETSC_VIEWER_STDOUT_WORLD);
       //std::cout <<"local residual:" << std::endl;
       //PetscScalarView(nlocbas_ee, (lassem_array.at(ee))->Residual,PETSC_VIEWER_STDOUT_WORLD);
     }
 
-    delete IEN_e; IEN_e = nullptr;
-    delete local_a; local_a = nullptr;
-    delete ectrl_x; ectrl_x = nullptr;
-    delete ectrl_y; ectrl_y = nullptr;
-    delete ectrl_z; ectrl_z = nullptr;
-    delete row_index; row_index = nullptr;
-    delete col_index; col_index = nullptr;
+    delete [] IEN_e; IEN_e = nullptr;
+    delete [] local_a; local_a = nullptr;
+    delete [] ectrl_x; ectrl_x = nullptr;
+    delete [] ectrl_y; ectrl_y = nullptr;
+    delete [] ectrl_z; ectrl_z = nullptr;
+    delete [] row_index; row_index = nullptr;
+    delete [] col_index; col_index = nullptr;
   }
   
   VecAssemblyBegin(G);
@@ -1549,31 +1568,31 @@ void PGAssem_EP::Update_nodal_velo(const PDNSolution * const &sol_a, //disp
   double t_n_half {t_n + dt/2.0};
   double t_n1 {t_n + dt};
   int num{1};
-  std::vector<int> ee;
+  std::vector<int> node_to_elem;
   std::vector<double> Istim;
   Istim.resize(3);
 
   for (int count{ 0 }; count < node_num; ++count)
     {
       //GET LOCGHOST NODE TO ELEM 
-      lien_ptr->get_node_to_elem(count, ee);
+      lien_ptr->get_node_to_elem(count, node_to_elem);
       //std::cout << "node : " << count << "is in elements \n";
-      //VEC_T::print(ee);
+      //VEC_T::print(node_to_elem);
 
       V_in     = array_a[count];      
       r_old    = array_b[count];
 
       fnode_ptr->get_ctrlPts_xyz(num, &count,
 				 &ctrl_x, &ctrl_y, &ctrl_z);
-      ionicmodel_array[ee[0]]-> get_Istim (Istim.at(0), t_n,
+      ionicmodel_array[node_to_elem[0]]-> get_Istim (Istim.at(0), t_n,
 				  ctrl_x, ctrl_y, ctrl_z);
-      ionicmodel_array[ee[0]]-> get_Istim (Istim.at(1), t_n_half,
+      ionicmodel_array[node_to_elem[0]]-> get_Istim (Istim.at(1), t_n_half,
 				  ctrl_x, ctrl_y, ctrl_z);
-      ionicmodel_array[ee[0]]-> get_Istim (Istim.at(2), t_n1,
+      ionicmodel_array[node_to_elem[0]]-> get_Istim (Istim.at(2), t_n1,
 				  ctrl_x, ctrl_y, ctrl_z);
 
       //ionicmodel_ptr-> Forward_Euler(r_old, dt, V_in, Istim, r_new, V_new);
-      ionicmodel_array[ee[0]]-> Runge_Kutta_4(r_old, dt, V_in, Istim, r_new, V_new);
+      ionicmodel_array[node_to_elem[0]]-> Runge_Kutta_4(r_old, dt, V_in, Istim, r_new, V_new);
 
       array_c   [count] = V_new;
       array_d   [count] = r_new;
@@ -1612,10 +1631,10 @@ void PGAssem_EP::Update_nodal_velo(const PDNSolution * const &sol_a, //disp
       VecSetValues(sol_c->solution, loc_dof, row_index, local_c, INSERT_VALUES);
       VecSetValues(sol_d->solution, loc_dof, row_index, local_d, INSERT_VALUES);
   
-      delete row_index; row_index=nullptr;
-      delete local_c  ; local_c  =nullptr;
-      delete local_d  ; local_d  =nullptr;
-      delete IEN_e    ; IEN_e    =nullptr;
+      delete [] row_index; row_index=nullptr;
+      delete [] local_c  ; local_c  =nullptr;
+      delete [] local_d  ; local_d  =nullptr;
+      delete [] IEN_e    ; IEN_e    =nullptr;
     }
   }
 

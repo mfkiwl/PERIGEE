@@ -76,7 +76,7 @@ int main(int argc, char *argv[])
   double initial_time = 0.0;
   double initial_step = 1.0;
   int initial_index = 0;
-  double final_time = 1;
+  double final_time = 10;
 
   // Time solver parameters
   std::string sol_bName("SOL_");
@@ -301,7 +301,7 @@ int main(int argc, char *argv[])
   // ---------------------------------------
 
   // ======= Solution Initialization =======
-  PDNSolution * disp = new PDNSolution_EP(pNode, fNode, locbc, 0); // make it 2
+  PDNSolution * disp = new PDNSolution_EP(pNode, fNode, locbc, 3); 
   PDNSolution * velo = new PDNSolution_EP(pNode, fNode, locbc, 0);
   PDNSolution * hist = new PDNSolution_EP(pNode, fNode, locbc, 0);
 
@@ -359,7 +359,7 @@ int main(int argc, char *argv[])
 
   lsolver->Solve( gloAssem_ptr->K, gloAssem_ptr->G, velo); 
 
-  //SYS_T::commPrint("initial solution's time derivative obtained. \n");
+  SYS_T::commPrint("initial solution's time derivative obtained. \n");
   //SYS_T::commPrint("Velo: \n"); 
   //velo->PrintNoGhost();
   //SYS_T::commPrint("Disp. \n"); 
@@ -402,10 +402,10 @@ int main(int argc, char *argv[])
   delete velo;
   delete hist;  
   delete timeinfo;
+  delete gloAssem_ptr;
   delete tm_galpha_ptr;
   delete ionicmodel_pur;
   delete ionicmodel_myo;
-  //delete gloAssem_ptr;
   delete lsolver;
   delete nsolver;
   delete tsolver;
@@ -417,8 +417,9 @@ int main(int argc, char *argv[])
   for(it_loca = locAssem_array.begin(); it_loca != locAssem_array.end(); ++it_loca) {
     delete *it_loca;
   }
-  //---------------------------------------
-  SYS_T::commPrint("===> Exit program. \n");
+//  
+//  //---------------------------------------
+//  SYS_T::commPrint("===> Exit program. \n");
   PetscFinalize();
   return 0;
 }

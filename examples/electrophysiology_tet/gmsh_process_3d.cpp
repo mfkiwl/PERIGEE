@@ -21,9 +21,9 @@ int main( int argc, char * argv[] )
   std::cout<<" -gmsh_Vol: "<<gmshVol<<std::endl;
   Gmsh_FileIO * GIOVol = new Gmsh_FileIO( gmshVol );
   GIOVol -> print_info();
-
+  
   //std::string gmshPur (char_home_dir);
-  //gmshPur.append("/PERIGEE/examples/electrophysiology_tet/mesh/13lines.msh");
+  //gmshPur.append("/PERIGEE/examples/electrophysiology_tet/mesh/3lines.msh");
   //SYS_T::GetOptionString("-gmsh_Pur", gmshPur);
   //std::cout<<" -gmsh_Pur: "<<gmshPur<<std::endl;
   //Gmsh_FileIO * GIOPur = new Gmsh_FileIO( gmshPur );
@@ -68,7 +68,6 @@ int main( int argc, char * argv[] )
   //const std::string wmname_pur("purkinje");
   //GIOPur -> write_vtu_purkinje( wmname_pur, isXML );
   //delete GIOPur;
-
 
   PetscFinalize();
   return 0;

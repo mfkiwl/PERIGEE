@@ -67,25 +67,25 @@ int main( int argc, char * argv[] )
   //  ("/home/oguz/PERIGEE/examples/electrophysiology_tet/mesh/endnodes.txt");
 
 
-//  // volume & faces purkinje mesh  
-//  std::string geo_file("./purkinje.vtu");
-//  std::string sur_file_tip0("./tip0_curve.vtp");
-//  std::string sur_file_tip1("./tip1_curve.vtp");
-  
-//  // faces for HLHS mesh  
-//  std::string sur_file_Base("./Base_Vol.vtp");
-//  std::string sur_file_Epi ("./Epi_Vol.vtp");
-//  std::string sur_file_RV  ("./RV_Vol.vtp");
-//  std::string sur_file_LV  ("./LV_Vol.vtp");
-//  
-//  // faces for cube/beam mesh  
-//  //std::string sur_file_top("./top_vol.vtp");
-//  //std::string sur_file_bot("./bot_vol.vtp");
-//  //std::string sur_file_lef("./lef_vol.vtp");
-//  //std::string sur_file_rig("./rig_vol.vtp");
-//  //std::string sur_file_fro("./fro_vol.vtp");
-//  //std::string sur_file_bac("./bac_vol.vtp");
-//
+  //  // volume & faces purkinje mesh  
+  //  std::string geo_file("./purkinje.vtu");
+  //  std::string sur_file_tip0("./tip0_curve.vtp");
+  //  std::string sur_file_tip1("./tip1_curve.vtp");
+    
+  //  // faces for HLHS mesh  
+  //  std::string sur_file_Base("./Base_Vol.vtp");
+  //  std::string sur_file_Epi ("./Epi_Vol.vtp");
+  //  std::string sur_file_RV  ("./RV_Vol.vtp");
+  //  std::string sur_file_LV  ("./LV_Vol.vtp");
+  //  
+  //  // faces for cube/beam mesh  
+  //  //std::string sur_file_top("./top_vol.vtp");
+  //  //std::string sur_file_bot("./bot_vol.vtp");
+  //  //std::string sur_file_lef("./lef_vol.vtp");
+  //  //std::string sur_file_rig("./rig_vol.vtp");
+  //  //std::string sur_file_fro("./fro_vol.vtp");
+  //  //std::string sur_file_bac("./bac_vol.vtp");
+  //
   const std::string part_file("part");
 
   int cpu_size = 1; 
@@ -133,7 +133,7 @@ int main( int argc, char * argv[] )
   SYS_T::file_check(geo_file_pur); std::cout<<geo_file_pur<<" found. \n";
   //SYS_T::file_check(sur_file_tip0); std::cout<<sur_file_tip0<<" found. \n";
 
-// ----- Write the input argument into a HDF5 file
+  // ----- Write the input argument into a HDF5 file
   hid_t cmd_file_id = H5Fcreate("preprocessor_cmd.h5",
 				H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
   HDF5_Writer * cmdh5w = new HDF5_Writer(cmd_file_id);
@@ -257,11 +257,11 @@ int main( int argc, char * argv[] )
 				       //elemType_combined,
 				       ctrlPts_combined);
   
-//  std::cout << "ctrlpts combined:" << std::endl;
-//  VEC_T::print( ctrlPts_combined );
-//  
-//  VEC_T::clean( vecIEN_myo );
-//  VEC_T::clean( vecIEN_pur );
+  //  std::cout << "ctrlpts combined:" << std::endl;
+  //  VEC_T::print( ctrlPts_combined );
+  //  
+  //  VEC_T::clean( vecIEN_myo );
+  //  VEC_T::clean( vecIEN_pur );
   
   //IMesh * mesh_combined = new Mesh_Mixed(nFunc_tot, nElem_tot);
   IMesh * mesh_combined = new Mesh_Mixed(mesh_list, elemType_list, IEN_combined);
@@ -414,12 +414,21 @@ int main( int argc, char * argv[] )
   cout<<(double) maxpart_nlocalnode / (double) minpart_nlocalnode<<endl;
 
   // Free memory
-  delete ebc; delete InFBC;
+  delete ebc;
+  delete InFBC;
   std::vector<INodalBC *>::iterator it_nbc;
   for(it_nbc=NBC_list.begin(); it_nbc != NBC_list.end(); ++it_nbc) delete *it_nbc;
 
-  delete mnindex; delete global_part; delete mesh_combined; delete IEN_combined; 
+  delete mnindex;
+  delete global_part;
+  delete mesh_combined;
+  delete mesh_myo;
+  delete mesh_pur;
+  delete IEN_combined;
+  delete IEN_myo;
+  delete IEN_pur; 
   delete mytimer;
+
   PetscFinalize();
   return EXIT_SUCCESS;
 }

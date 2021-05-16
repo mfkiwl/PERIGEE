@@ -46,8 +46,8 @@ int main(int argc, char *argv[])
   //warning: check that the first node of purkinje is not in the endnodes list.
   std::string endnodes_file
     ("/home/oguz/PERIGEE/examples/electrophysiology_tet/mesh/LV-line_endnodes-picked.txt");
-//  std::string endnodes_file
-//    ("/home/oguz/PERIGEE/examples/electrophysiology_tet/mesh/endnodes.txt");
+  //std::string endnodes_file
+  //  ("/home/oguz/PERIGEE/examples/electrophysiology_tet/mesh/endnodes.txt");
   
   int sysret = system("rm -rf postpart_p*.h5");
   SYS_T::print_fatal_if(sysret != 0, "Error: system call failed. \n");

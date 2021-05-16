@@ -23,6 +23,28 @@ void IonicModel_Purkinje::print_info () const
   PetscPrintf(PETSC_COMM_WORLD, "\t  ap_3 = %e \n", ap_3);
 };
 
+void IonicModel_Purkinje::get_Istim(double &Istim,
+				    const double &t,
+				    const double &x,
+				    const double &y,
+				    const double &z ) const
+{
+  //excite 1st node of purkinje network:
+  if ( std::sqrt(  std::pow(x-(-107.110), 2.0)
+		   + std::pow(y-(-301.313), 2.0)
+		   + std::pow(z-( 248.233), 2.0)  ) <= 10 ) {
+    //if ( std::sqrt(  std::pow(x-(3), 2.0)              
+    //		   + std::pow(y-(5), 2.0)                
+    //		   + std::pow(z-(0), 2.0)  ) <= 0.3 ) { 
+    if(t <= 10.0){
+      Istim = -100.0;
+    }
+  }
+  else {
+    Istim = 0.0 ;
+  }
+};
+
 //double IonicModel_Purkinje::get_diso() const
 //{
 //  return d_iso;

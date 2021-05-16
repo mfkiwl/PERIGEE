@@ -52,11 +52,11 @@ public:
 		     double &r_new,
 		     double &V_new) const ;
 
-  void get_Istim(double &Istim,
-		 const double &t,
-		 const double &x,
-		 const double &y,
-		 const double &z ) const;
+  virtual void get_Istim(double &Istim,
+			 const double &t,
+			 const double &x,
+			 const double &y,
+			 const double &z ) const;
 
 protected:
   virtual void get_Iion(const double &r_old_in,
