@@ -234,6 +234,18 @@ class IPLocAssem
         const IQuadPts * const &quad )
     {SYS_T::commPrint("Warning: this Assem_Residual(...) is not implemented. \n");}
 
+  //this version is for anisotropic material. it communicates the fiber orientation.
+    virtual void Assem_Residual(
+			      const double &time, const double &dt,
+			      const double * const &vec_a,
+			      const double * const &vec_b,
+			      FEAElement * const &element,
+			      const double * const &eleCtrlPts_x,
+			      const double * const &eleCtrlPts_y,
+			      const double * const &eleCtrlPts_z,
+			      const std::vector<double> &fiber_ori_e,
+			      const IQuadPts * const &quad )
+    {SYS_T::commPrint("Warning: this Assem_Residual(...) is not implemented. \n");}
 
     // ! Assembly element residual vector and tangent matrix
     // \para vec_a: input vector a -- displacement / current solution
@@ -273,28 +285,6 @@ class IPLocAssem
         const double * const &eleCtrlPts_z,
         const AInt_Weight * const &weight )
     {SYS_T::commPrint("Warning: this Assem_Tangent_Residual(...) for electrophysiology is not implemented. \n");}
-
-
-  // \para vec_c: ionic currents calculated in electrophysiology
-  //              problem.
-  // \para vec_d: tangent of ionic currents wrt solution variable
-  //              transmembrane potential(Phi)
-  // note:        These are passed from global assembly routine if
-  //              ionic equations are evaluated at the nodes (state
-  //              variables at the nodes too), instead of Gauss pts.
-  
-      virtual void Assem_Residual(
-        double time, double dt,
-        const double * const &vec_a,
-        const double * const &vec_b,
-	const double * const &vec_c,
-        const double * const &vec_d,
-        const FEAElement * const &element,
-        const double * const &eleCtrlPts_x,
-        const double * const &eleCtrlPts_y,
-        const double * const &eleCtrlPts_z,
-        const AInt_Weight * const &weight )
-    {SYS_T::commPrint("Warning: this Assem_Residual(...) for electrophysiology is not implemented. \n");}
 
 
     // ! Assembly element residual vector and tengent matrix without cached
@@ -407,6 +397,18 @@ class IPLocAssem
         const IQuadPts * const &quad )
     {SYS_T::commPrint("Warning: this Assem_Tangent_Residual(...) is not implemented. \n");}
 
+  //this version is for anisotropic material. it communicates the fiber orientation.
+      virtual void Assem_Tangent_Residual(
+        const double &time, const double &dt,
+        const double * const &vec_a,
+        const double * const &vec_b,
+        FEAElement * const &element,
+        const double * const &eleCtrlPts_x,
+        const double * const &eleCtrlPts_y,
+        const double * const &eleCtrlPts_z,
+	const std::vector<double> &fiber_ori_e,
+        const IQuadPts * const &quad )
+  {SYS_T::commPrint("Warning: this Assem_Tangent_Residual(...) is not implemented. \n");}
 
     // -------------------------------------------------------------------
     // ! Assembly the element residual vector resulting from the boundary
@@ -677,24 +679,6 @@ class IPLocAssem
         const AInt_Weight * const &weight )
     {SYS_T::commPrint("Warning: this Assem_Mass_Residual(...) is not implemented. \n");}
 
-  // suitable for electrophysiology equation
-  // \para vec_a: input vector a -- disp/curr soln/elect. pot.
-  // \para vec_b: input vector b -- hist variable.
-  // \para vec_c: input vector c -- hist var derivative wrt soln var.
-  // \para element: the element quadrature info
-  // \para eleCtrlPts: this element's control points
-  // \para wight: the corresponding quadrature weights    
-  virtual void Assem_Mass_Residual(
-				   const double * const &vec_a,
-				   const double * const &vec_b,
-				   const double * const &vec_c,		   
-				   const FEAElement * const &element,
-				   const double * const &eleCtrlPts_x,
-				   const double * const &eleCtrlPts_y,
-				   const double * const &eleCtrlPts_z,
-				   const AInt_Weight * const &weight )
-  {SYS_T::commPrint("Warning: this Assem_Mass_Residual(...) is not implemented. \n");}
-
 
     // ! Assembly the mass matrix and residual vector without cached quadrature
     //   info for 3D element.
@@ -792,6 +776,18 @@ class IPLocAssem
         const double * const &eleCtrlPts_z,
         const IQuadPts * const &quad )
     {SYS_T::commPrint("Warning: this Assem_Mass_Residual(...) is not implemented. \n");}
+
+
+  //this version is for anisotropic material. it communicates the fiber orientation.
+  virtual void Assem_Mass_Residual(
+				   const double * const &vec_a,
+				   FEAElement * const &element,
+				   const double * const &eleCtrlPts_x,
+				   const double * const &eleCtrlPts_y,
+				   const double * const &eleCtrlPts_z,
+				   const std::vector<double> &fiber_ori_e,	
+				   const IQuadPts * const &quad )
+  {SYS_T::commPrint("Warning: this Assem_Mass_Residual(...) is not implemented. \n");}
 
 
     // Perform Elemental BC surface integration for elemental BC id ebc_id.

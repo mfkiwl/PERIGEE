@@ -48,21 +48,26 @@ int main( int argc, char * argv[] )
   const int dofNum = 1; // degree-of-freedom for the physical problem
   const int dofMat = 1; // degree-of-freedom in the matrix problem
   const int elemType_myo = 501; //first order (4 node) tet element.
-  const int elemType_pur = 512; //2-node line element in 3d. check if this
+  const int elemType_LVpur = 512; //2-node line element in 3d. check if this
+  const int elemType_RVpur = 512; //2-node line element in 3d. check if this  
   //element type number 512 coincides with another element type number.
   //because I gave this number to this element.
   //WARNING:append myo and pur with same order everytime
-  std::vector< int > elemType_list {elemType_myo, elemType_pur};
+  std::vector< int > elemType_list {elemType_myo, elemType_LVpur, elemType_RVpur};
   //std::vector< int > elemType_combined;
 
   // Input files
-  std::string geo_file_myo("./myo.vtu");
+  //std::string geo_file_myo("./myo.vtu");
   //std::string geo_file_pur("./purkinje.vtu");
-  std::string geo_file_pur("/home/oguz/PERIGEE/examples/electrophysiology_tet/mesh/LV-line.vtu");
+  std::string geo_file_myo("/home/oguz/PERIGEE/examples/electrophysiology_tet/mesh/HLHS_fibers.vtu");
+  std::string geo_file_LVpur("/home/oguz/PERIGEE/examples/electrophysiology_tet/mesh/LV-line.vtu");
+  std::string geo_file_RVpur("/home/oguz/PERIGEE/examples/electrophysiology_tet/mesh/RV-line.vtu");
 
   //warning: check that the first node of purkinje is not in the endnodes list.
-  std::string endnodes_file
-    ("/home/oguz/PERIGEE/examples/electrophysiology_tet/mesh/LV-line_endnodes-picked.txt");
+  std::string LVendnodes_file
+    ("/home/oguz/PERIGEE/examples/electrophysiology_tet/mesh/LV-line_endnodes.txt");
+  std::string RVendnodes_file
+    ("/home/oguz/PERIGEE/examples/electrophysiology_tet/mesh/RV-line_endnodes.txt");
   //std::string endnodes_file
   //  ("/home/oguz/PERIGEE/examples/electrophysiology_tet/mesh/endnodes.txt");
 
@@ -88,7 +93,7 @@ int main( int argc, char * argv[] )
   //
   const std::string part_file("part");
 
-  int cpu_size = 1; 
+  int cpu_size = 6; 
   int in_ncommon = 1;
   const bool isDualGraph = true;
 
@@ -108,12 +113,14 @@ int main( int argc, char * argv[] )
   SYS_T::GetOptionInt("-cpu_size", cpu_size);
   SYS_T::GetOptionInt("-in_ncommon", in_ncommon);
   SYS_T::GetOptionString("-geo_file_myo", geo_file_myo);  
-  SYS_T::GetOptionString("-geo_file_pur", geo_file_pur);
+  SYS_T::GetOptionString("-geo_file_LVpur", geo_file_LVpur);
+  SYS_T::GetOptionString("-geo_file_RVpur", geo_file_RVpur);
   //SYS_T::GetOptionString("-sur_file_tip0", sur_file_tip0);
 
   std::cout<<"==== /Command Line Arguments ===="<<std::endl;
   std::cout<<" -geo_file_myo: "<<geo_file_myo<<std::endl;
-  std::cout<<" -geo_file_pur: "<<geo_file_pur<<std::endl;
+  std::cout<<" -geo_file_LVpur: "<<geo_file_LVpur<<std::endl;
+  std::cout<<" -geo_file_RVpur: "<<geo_file_RVpur<<std::endl;
   //std::cout<<" -sur_file_tip0" <<sur_file_tip0<<std::endl;
 
 
@@ -125,12 +132,14 @@ int main( int argc, char * argv[] )
   std::cout<<" dofNum: "<<dofNum<<std::endl;
   std::cout<<" dofMat: "<<dofMat<<std::endl;
   std::cout<<" elemType_myo: "<<elemType_myo<<std::endl;
-  std::cout<<" elemType_pur: "<<elemType_pur<<std::endl;
+  std::cout<<" elemType_LVpur: "<<elemType_LVpur<<std::endl;
+  std::cout<<" elemType_RVpur: "<<elemType_RVpur<<std::endl;
   std::cout<<"====  Command Line Arguments/ ===="<<std::endl;
 
   // Check if the geometrical file exist on disk
   SYS_T::file_check(geo_file_myo); std::cout<<geo_file_myo<<" found. \n";
-  SYS_T::file_check(geo_file_pur); std::cout<<geo_file_pur<<" found. \n";
+  SYS_T::file_check(geo_file_LVpur); std::cout<<geo_file_LVpur<<" found. \n";
+  SYS_T::file_check(geo_file_RVpur); std::cout<<geo_file_RVpur<<" found. \n";
   //SYS_T::file_check(sur_file_tip0); std::cout<<sur_file_tip0<<" found. \n";
 
   // ----- Write the input argument into a HDF5 file
@@ -143,10 +152,13 @@ int main( int argc, char * argv[] )
   cmdh5w->write_intScalar("dofNum", dofNum);
   cmdh5w->write_intScalar("dofMat", dofMat);
   cmdh5w->write_intScalar("elemType_myo", elemType_myo);
-  cmdh5w->write_intScalar("elemType_pur", elemType_pur);
+  cmdh5w->write_intScalar("elemType_LVpur", elemType_LVpur);
+  cmdh5w->write_intScalar("elemType_RVpur", elemType_RVpur);  
   cmdh5w->write_string("geo_file_myo", geo_file_myo);
-  cmdh5w->write_string("geo_file_pur", geo_file_pur);
+  cmdh5w->write_string("geo_file_LVpur", geo_file_LVpur);
+  cmdh5w->write_string("geo_file_RVpur", geo_file_RVpur);  
   //  cmdh5w->write_string("sur_file_tip0", sur_file_tip0);
+
   
   cmdh5w->write_string("part_file", part_file);
 
@@ -154,16 +166,19 @@ int main( int argc, char * argv[] )
   std::cout<< "// ----- Finish writing" << std::endl;
 
   // Read the geometry file for the whole FSI domain
-  int nFunc_pur, nElem_pur, nFunc_myo, nElem_myo;
-  std::vector<int> vecIEN_pur, vecIEN_myo;
-  std::vector<int> phy_tag_pur, phy_tag_myo;
-  std::vector<double> ctrlPts_pur, ctrlPts_myo, ctrlPts_combined;
-
+  int nFunc_LVpur, nElem_LVpur, nFunc_RVpur, nElem_RVpur, nFunc_myo, nElem_myo;
+  std::vector<int> vecIEN_LVpur, vecIEN_RVpur, vecIEN_myo;
+  std::vector<int> phy_tag_LVpur, phy_tag_RVpur, phy_tag_myo;
+  std::vector<double> ctrlPts_LVpur, ctrlPts_RVpur, ctrlPts_myo, ctrlPts_combined;
+  std::vector< std::vector< double > > myo_fiber;
+  
   // Warning: this function returns phy_tag as 1 only, for now.
   TET_T::read_vtu_grid(geo_file_myo.c_str(), nFunc_myo, nElem_myo,
-		       ctrlPts_myo, vecIEN_myo);
-  TET_T::read_purkinje_lines(geo_file_pur.c_str(),nFunc_pur, nElem_pur, 
-			     ctrlPts_pur, vecIEN_pur, phy_tag_pur);
+		       ctrlPts_myo, vecIEN_myo, myo_fiber);
+  TET_T::read_purkinje_lines(geo_file_LVpur.c_str(),nFunc_LVpur, nElem_LVpur, 
+			     ctrlPts_LVpur, vecIEN_LVpur, phy_tag_LVpur);
+  TET_T::read_purkinje_lines(geo_file_RVpur.c_str(),nFunc_RVpur, nElem_RVpur, 
+			       ctrlPts_RVpur, vecIEN_RVpur, phy_tag_RVpur);
 
   //*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
   //std::cout << "nelem myo" << nElem_myo <<"\n"
@@ -176,15 +191,15 @@ int main( int argc, char * argv[] )
   //  std::cout << *i << ' ';
   //std::cout << "\n" << std::endl;
   //
-  //std::cout << "nelem pur" << nElem_pur <<"\n"
-  //	    << "nFunc pur" << nFunc_pur <<"\n"
-  //	    << "ctrl pts pur" ;
-  //for (auto i = ctrlPts_pur.begin(); i != ctrlPts_pur.end(); ++i)
-  //  std::cout << *i << ' ';
-  //std::cout << "\n" << "vec IEN pur" ;
-  //for (auto i = vecIEN_pur.begin(); i != vecIEN_pur.end(); ++i)
-  //  std::cout << *i << ' ';
-  //std::cout << "\n" << std::endl;
+  //  std::cout << "nelem RVpur" << nElem_RVpur <<"\n"
+  //  	    << "nFunc RVpur" << nFunc_RVpur <<"\n"
+  //  	    << "ctrl pts RVpur" ;
+  //  for (auto i = ctrlPts_RVpur.begin(); i != ctrlPts_RVpur.end(); ++i)
+  //    std::cout << *i << ' ';
+  //  std::cout << "\n" << "vec IEN RVpur" ;
+  //  for (auto i = vecIEN_RVpur.begin(); i != vecIEN_RVpur.end(); ++i)
+  //    std::cout << *i << ' ';
+  //  std::cout << "\n" << std::endl;
 
   //*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
   
@@ -198,9 +213,12 @@ int main( int argc, char * argv[] )
   //std::cout << "IEN myo" << std::endl;
   //IEN_myo->print_IEN();
 
-  IIEN * IEN_pur = new IEN_Line_P1(nElem_pur, vecIEN_pur);
-  //std::cout << "IEN pur" << std::endl;
-  //IEN_pur->print_IEN();
+  IIEN * IEN_LVpur = new IEN_Line_P1(nElem_LVpur, vecIEN_LVpur);
+  IIEN * IEN_RVpur = new IEN_Line_P1(nElem_RVpur, vecIEN_RVpur);  
+  //std::cout << "IEN LVpur" << std::endl;
+  //IEN_LVpur->print_IEN();
+  //std::cout << "IEN RVpur" << std::endl;
+  //IEN_RVpur->print_IEN();  
 
   if(elemType_myo == 501)
   {
@@ -211,9 +229,18 @@ int main( int argc, char * argv[] )
     SYS_T::print_fatal_if(1, "Error: this script doesn't support this element type. \n");
   }
 
-  if(elemType_pur == 512)
+  if(elemType_LVpur == 512)
   {
-    SYS_T::print_fatal_if(vecIEN_pur.size() / nElem_pur != 2, "Error: the mesh connectivity array size does not match with the element type 512. \n");
+    SYS_T::print_fatal_if(vecIEN_LVpur.size() / nElem_LVpur != 2, "Error: the mesh connectivity array size does not match with the element type 512. \n");
+  }
+  else
+  {
+    SYS_T::print_fatal_if(1, "Error: this script doesn't support this element type. \n");
+  }
+  
+  if(elemType_RVpur == 512)
+  {
+    SYS_T::print_fatal_if(vecIEN_RVpur.size() / nElem_RVpur != 2, "Error: the mesh connectivity array size does not match with the element type 512. \n");
   }
   else
   {
@@ -224,37 +251,44 @@ int main( int argc, char * argv[] )
   // because aspect ratios are not critical 
   TET_T::tetmesh_check(ctrlPts_myo, IEN_myo, nElem_myo, 3.5);
 
-
   // Generate the mesh
   IMesh * mesh_myo = new Mesh_Tet4(nFunc_myo, nElem_myo);
   std::cout << "mesh myo:" << std::endl;
   mesh_myo -> print_mesh_info();
 
-  IMesh * mesh_pur = new Mesh_Line_3D(nFunc_pur, nElem_pur);
-  std::cout << "mesh pur:" << std::endl;
-  mesh_pur -> print_mesh_info();
+  IMesh * mesh_LVpur = new Mesh_Line_3D(nFunc_LVpur, nElem_LVpur);
+  std::cout << "mesh LVpur:" << std::endl;
+  mesh_LVpur -> print_mesh_info();
+
+  IMesh * mesh_RVpur = new Mesh_Line_3D(nFunc_RVpur, nElem_RVpur);
+  std::cout << "mesh RVpur:" << std::endl;
+  mesh_RVpur -> print_mesh_info();
 
   //WARNING:append myo and pur with same order everytime
   std::vector<IMesh *> mesh_list;
   mesh_list.clear();
   mesh_list.push_back(mesh_myo);
-  mesh_list.push_back(mesh_pur);
+  mesh_list.push_back(mesh_LVpur);
+  mesh_list.push_back(mesh_RVpur);  
 
   //std::vector<IIEN *> IEN_list;
   std::vector< std::vector< int > > IEN_list;
   IEN_list.clear();
   IEN_list.push_back(vecIEN_myo);
-  IEN_list.push_back(vecIEN_pur);
+  IEN_list.push_back(vecIEN_LVpur);
+  IEN_list.push_back(vecIEN_RVpur);  
 
   std::vector< std::vector<double> > ctrlPts_list;
   ctrlPts_list.clear();
   ctrlPts_list.push_back(ctrlPts_myo);
-  ctrlPts_list.push_back(ctrlPts_pur);
+  ctrlPts_list.push_back(ctrlPts_LVpur);
+  ctrlPts_list.push_back(ctrlPts_RVpur);  
 
   
-  IIEN * IEN_combined= new IEN_Mixed ( IEN_list, mesh_list, //elemType_list,
-				       ctrlPts_list, endnodes_file.c_str(),
-				       //elemType_combined,
+  IIEN * IEN_combined= new IEN_Mixed ( IEN_list, mesh_list, 
+				       ctrlPts_list,
+				       LVendnodes_file.c_str(),
+				       RVendnodes_file.c_str(),
 				       ctrlPts_combined);
   
   //  std::cout << "ctrlpts combined:" << std::endl;
@@ -264,7 +298,8 @@ int main( int argc, char * argv[] )
   //  VEC_T::clean( vecIEN_pur );
   
   //IMesh * mesh_combined = new Mesh_Mixed(nFunc_tot, nElem_tot);
-  IMesh * mesh_combined = new Mesh_Mixed(mesh_list, elemType_list, IEN_combined);
+  IMesh * mesh_combined = new Mesh_Mixed(mesh_list, elemType_list,
+					 IEN_combined, myo_fiber);
   mesh_combined -> print_mesh_info();  
   
   // Partition
@@ -346,8 +381,8 @@ int main( int argc, char * argv[] )
     //				  ctrlPts, proc_rank, proc_size, dofNum,
     //				  dofMat, elemType, isPrintPartInfo );
     IPart * part = new Part_Mixed_Mesh( mesh_combined, global_part, mnindex,
-					IEN_combined, ctrlPts_combined, proc_rank,
-					proc_size, dofNum, dofMat, 
+					IEN_combined, ctrlPts_combined,
+					proc_rank, proc_size, dofNum, dofMat, 
 					isPrintPartInfo );       
     mytimer->Stop();
     //    if (proc_rank ==0) {
@@ -386,7 +421,7 @@ int main( int argc, char * argv[] )
 
     sum_nghostnode += part->get_nghostnode();
     delete part; delete nbcpart; delete ebcpart; delete infpart;
-  }
+}
 
   VEC_T::write_int_h5("NumLocalNode","nln", list_nlocalnode);
 
@@ -423,13 +458,18 @@ int main( int argc, char * argv[] )
   delete global_part;
   delete mesh_combined;
   delete mesh_myo;
-  delete mesh_pur;
+  delete mesh_LVpur;
+  delete mesh_RVpur;
   delete IEN_combined;
   delete IEN_myo;
-  delete IEN_pur; 
+  delete IEN_LVpur;
+  delete IEN_RVpur;   
   delete mytimer;
 
+
+  std::cout<<"==== /Good till here ===="<<std::endl;
   PetscFinalize();
+
   return EXIT_SUCCESS;
 }
 

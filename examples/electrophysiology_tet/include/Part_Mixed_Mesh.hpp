@@ -18,22 +18,16 @@
 class Part_Mixed_Mesh : public IPart
 {
   public:
-    Part_Mixed_Mesh( const IMesh * const &mesh,
-        const IGlobal_Part * const &gpart,
-        const Map_Node_Index * const &mnindex,
-        const IIEN * const &IEN,
-        const std::vector<double> &ctrlPts,
-        const int &in_cpu_rank, const int &in_cpu_size,
-        const int &in_dofNum, const bool isPrintInfo );
 
-    Part_Mixed_Mesh( const IMesh * const &mesh,
-        const IGlobal_Part * const &gpart,
-        const Map_Node_Index * const &mnindex,
-        const IIEN * const &IEN,
-        const std::vector<double> &ctrlPts,
-        const int &in_cpu_rank, const int &in_cpu_size,
-        const int &in_dofNum, const int &in_dofMat,
-        const bool isPrintInfo );
+  Part_Mixed_Mesh( const IMesh * const &mesh,
+		   const IGlobal_Part * const &gpart,
+		   const Map_Node_Index * const &mnindex,
+		   const IIEN * const &IEN,
+		   const std::vector<double> &ctrlPts,	
+		   //const std::vector<std::vector<double>> &myo_fiber,	     
+		   const int &in_cpu_rank, const int &in_cpu_size,
+		   const int &in_dofNum, const int &in_dofMat,
+		   const bool isPrintInfo );
 
     virtual ~Part_Mixed_Mesh();
 
@@ -99,46 +93,48 @@ class Part_Mixed_Mesh : public IPart
     virtual double get_ctrlPts_z_loc(int pos) const {return ctrlPts_z_loc[pos];}
 
   protected:
-    // 1. local element
-    std::vector<int> elem_loc;
-    int nlocalele;
+  // 1. local element
+  std::vector<int> elem_loc;
+  int nlocalele;
+  std::vector< std::vector< double > > fiber_ori_loc; 
 
-    // 2. local node
-    std::vector<int> node_loc;
-    std::vector<int> node_loc_original;
-    std::vector<int> node_ghost;
-    std::vector<int> local_to_global;
+  // 2. local node
+  std::vector<int> node_loc;
+  std::vector<int> node_loc_original;
+  std::vector<int> node_ghost;
+  std::vector<int> local_to_global;
 
-    int nlocalnode;
-    int nghostnode;
-    int ntotalnode;
-    int nbadnode;
-    int nlocghonode;
+  int nlocalnode;
+  int nghostnode;
+  int ntotalnode;
+  int nbadnode;
+  int nlocghonode;
 
-    // 3. CPU info and partition parameters
-    int cpu_rank, cpu_size;
-    bool isMETIS, part_isdual;
-    int dual_edge_ncommon;
+  // 3. CPU info and partition parameters
+  int cpu_rank, cpu_size;
+  bool isMETIS, part_isdual;
+  int dual_edge_ncommon;
 
-    // 4. global mesh info
-    const int nElem, nFunc;
-    std::vector< std::vector< int > >  stu_Degree; //stu_Degree_loc;
-    std::vector<int>  nLocBas, elemType, nLocBas_loc; // elemType_loc;
-    const int probDim, dofNum, dofMat;
+  // 4. global mesh info
+  const int nElem, nFunc;
+  std::vector< std::vector< int > >  stu_Degree; //stu_Degree_loc;
+  std::vector<int>  nLocBas, elemType, nLocBas_loc; // elemType_loc;
+  const int probDim, dofNum, dofMat;
 
-    // 5. LIEN
-    int ** LIEN;
-    //    std::vector< std::vector< int > > LIEN;
+  // 5. LIEN
+  int ** LIEN;
+  //    std::vector< std::vector< int > > LIEN;
 
-    // 6. local point coordinates (i.e. control point geometry)
-    std::vector<double> ctrlPts_x_loc, ctrlPts_y_loc, ctrlPts_z_loc;
+  // 6. local point coordinates (i.e. control point geometry)
+  std::vector<double> ctrlPts_x_loc, ctrlPts_y_loc, ctrlPts_z_loc;
 
-    void Generate_Partition( const IMesh * const &mesh,
-        const IGlobal_Part * const &gpart,
-        const Map_Node_Index * const &mnindex,
-        const IIEN * const &IEN,
-        const std::vector<double> &ctrlPts,
-        const bool &isPrintinfo );
+  void Generate_Partition( const IMesh * const &mesh,
+			   const IGlobal_Part * const &gpart,
+			   const Map_Node_Index * const &mnindex,
+			   const IIEN * const &IEN,
+			   const std::vector<double> &ctrlPts,
+			   //const std::vector<std::vector<double>> &myo_fiber,
+			   const bool &isPrintinfo );
 };
 
 #endif

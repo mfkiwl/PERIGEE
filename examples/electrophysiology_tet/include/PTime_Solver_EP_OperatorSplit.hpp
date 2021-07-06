@@ -29,27 +29,27 @@ class PTime_Solver_EP_OperatorSplit
     // ! print the key parameters of the time solver on screen
     void Info() const;
 
-   // ! Perform time marching with history variables
-    void TM_generalized_alpha(
-        const PDNSolution * const &init_velo,
-        const PDNSolution * const &init_disp,
-	const PDNSolution * const &init_hist,
-        PDNTimeStep * const &time_info,
-        const TimeMethod_GenAlpha * const &tmga_ptr,
-        const ALocal_Elem * const &alelem_ptr,
-        const ALocal_IEN * const &lien_ptr,
-        const APart_Node * const &anode_ptr,
-        const FEANode * const &feanode_ptr,
-        const ALocal_NodalBC * const &bc_part,
-	const IQuadPts * const &quad,
-        //const AInt_Weight * const &wei_ptr,
-	std::vector<FEAElement *> &ele_ptr,
-	const IonicModel * const &ionicmodel_ptr,	
-        IPLocAssem * const &lassem_ptr,
-	PGAssem_EP * const &gassem_ptr,
-        PLinear_Solver_PETSc * const &lsolver_ptr,
-        PNonlinear_Solver_EP * const &nsolver_ptr
-        ) const;
+//   // ! Perform time marching with history variables
+//    void TM_generalized_alpha(
+//        const PDNSolution * const &init_velo,
+//        const PDNSolution * const &init_disp,
+//	const PDNSolution * const &init_hist,
+//        PDNTimeStep * const &time_info,
+//        const TimeMethod_GenAlpha * const &tmga_ptr,
+//        const ALocal_Elem * const &alelem_ptr,
+//        const ALocal_IEN * const &lien_ptr,
+//        const APart_Node * const &anode_ptr,
+//        const FEANode * const &feanode_ptr,
+//        const ALocal_NodalBC * const &bc_part,
+//	const IQuadPts * const &quad,
+//        //const AInt_Weight * const &wei_ptr,
+//	std::vector<FEAElement *> &ele_ptr,
+//	const IonicModel * const &ionicmodel_ptr,	
+//        IPLocAssem * const &lassem_ptr,
+//	PGAssem_EP * const &gassem_ptr,
+//        PLinear_Solver_PETSc * const &lsolver_ptr,
+//        PNonlinear_Solver_EP * const &nsolver_ptr
+//        ) const;
 
    // ! This version is for mesh with nonuniform element type
     void TM_generalized_alpha(

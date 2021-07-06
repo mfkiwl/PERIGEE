@@ -75,6 +75,7 @@ void PLocAssem_EP_3D::Assem_Residual(
         const double * const &eleCtrlPts_x,
         const double * const &eleCtrlPts_y,
         const double * const &eleCtrlPts_z,
+	const std::vector<double> &fiber_ori_e,
         const IQuadPts * const &quad )
 {
   if (element->get_elemDim() ==3) {
@@ -121,7 +122,8 @@ void PLocAssem_EP_3D::Assem_Residual(
     
 	gwts = element->get_detJac(qua) * quad->get_qw(qua);
 
-	get_k(d, coor_x, coor_y, coor_z, k11, k12, k13, k21, k22, k23, k31, k32, k33);
+	get_k(d, coor_x, coor_y, coor_z, fiber_ori_e,
+	      k11, k12, k13, k21, k22, k23, k31, k32, k33);
     
 	for(ii=0; ii<nLocBas; ++ii)
 	  {
@@ -176,7 +178,8 @@ void PLocAssem_EP_3D::Assem_Residual(
     
 	gwts = element->get_detJac(qua) * quad->get_qw(qua);
 
-	get_k(d, coor_x, coor_y, coor_z, k11, k12, k13, k21, k22, k23, k31, k32, k33);
+	get_k(d, coor_x, coor_y, coor_z, fiber_ori_e,
+	      k11, k12, k13, k21, k22, k23, k31, k32, k33);
     
 	for(ii=0; ii<nLocBas; ++ii)
 	  {
@@ -199,6 +202,7 @@ void PLocAssem_EP_3D::Assem_Tangent_Residual(
         const double * const &eleCtrlPts_x,
         const double * const &eleCtrlPts_y,
         const double * const &eleCtrlPts_z,
+	const std::vector<double> &fiber_ori_e,
         const IQuadPts * const &quad )
 {
   if (element->get_elemDim() ==3) {
@@ -240,7 +244,8 @@ void PLocAssem_EP_3D::Assem_Tangent_Residual(
 
 	gwts = element->get_detJac(qua) * quad->get_qw(qua);
 
-	get_k(d, coor_x, coor_y, coor_z, k11, k12, k13, k21, k22, k23, k31, k32, k33);
+	get_k(d, coor_x, coor_y, coor_z, fiber_ori_e,
+	      k11, k12, k13, k21, k22, k23, k31, k32, k33);
 	get_dk_du(d, coor_x, coor_y, coor_z, dk11, dk12, dk13, dk21, dk22, dk23,
 		  dk31, dk32, dk33);
 
@@ -314,7 +319,8 @@ void PLocAssem_EP_3D::Assem_Tangent_Residual(
 
 	//this will change when I implement ionic model for only purkinje:
 	// because line elemetn will have a scalar conduction coeff.
-	get_k(d, coor_x, coor_y, coor_z, k11, k12, k13, k21, k22, k23, k31, k32, k33);
+	get_k(d, coor_x, coor_y, coor_z,  fiber_ori_e,
+	      k11, k12, k13, k21, k22, k23, k31, k32, k33);
 	get_dk_du(d, coor_x, coor_y, coor_z, dk11, dk12, dk13, dk21, dk22, dk23,
 		  dk31, dk32, dk33);
 
@@ -383,6 +389,7 @@ void PLocAssem_EP_3D::Assem_Mass_Residual(
     const double * const &eleCtrlPts_x,
     const double * const &eleCtrlPts_y,
     const double * const &eleCtrlPts_z,
+    const std::vector<double> &fiber_ori_e,
     const IQuadPts * const &quad )
 {
   if (element->get_elemDim() ==3){
@@ -421,7 +428,9 @@ void PLocAssem_EP_3D::Assem_Mass_Residual(
 
 	gwts = element->get_detJac(qua) * quad->get_qw(qua);
 
-	get_k(d, coor_x, coor_y, coor_z, k11, k12, k13, k21, k22, k23, k31, k32, k33);
+	get_k(d, coor_x, coor_y, coor_z, fiber_ori_e,
+	      k11, k12, k13, k21, k22, k23, k31, k32, k33);
+	
 	get_dk_du(d, coor_x, coor_y, coor_z, dk11, dk12, dk13, dk21, dk22, dk23,
 		  dk31, dk32, dk33);
 
@@ -481,7 +490,8 @@ void PLocAssem_EP_3D::Assem_Mass_Residual(
 
 	//this will change when I implement ionic model for only purkinje:
 	// because line elemetn will have a scalar conduction coeff.
-	get_k(d, coor_x, coor_y, coor_z, k11, k12, k13, k21, k22, k23, k31, k32, k33);
+	get_k(d, coor_x, coor_y, coor_z, fiber_ori_e,
+	      k11, k12, k13, k21, k22, k23, k31, k32, k33);
 	get_dk_du(d, coor_x, coor_y, coor_z, dk11, dk12, dk13, dk21, dk22, dk23,
 		  dk31, dk32, dk33);
 

@@ -31,7 +31,7 @@
 #include "FEAElement_Line2_3D_der1.hpp"
 #include "AGlobal_Mesh_Info_FEM_3D.hpp"
 #include "AGlobal_Mesh_Info_Mixed.hpp"
-#include "ALocal_Elem.hpp"
+#include "ALocal_Elem_Fiber.hpp"
 #include "ALocal_IEN.hpp"
 #include "ALocal_IEN_Mixed.hpp"
 #include "ALocal_NodalBC.hpp"
@@ -76,7 +76,7 @@ int main(int argc, char *argv[])
   double initial_time = 0.0;
   double initial_step = 1.0;
   int initial_index = 0;
-  double final_time = 10;
+  double final_time = 200;
 
   // Time solver parameters
   std::string sol_bName("SOL_");
@@ -166,7 +166,7 @@ int main(int argc, char *argv[])
   
   // 1.7 Get local element info
   SYS_T::commPrint("===> ALocal_Elem ... \n");
-  ALocal_Elem * locElem = new ALocal_Elem(part_file, rank);
+  ALocal_Elem * locElem = new ALocal_Elem_Fiber(part_file, rank);
   //  if (rank==1)
   //locElem->print_info();
 
@@ -417,9 +417,9 @@ int main(int argc, char *argv[])
   for(it_loca = locAssem_array.begin(); it_loca != locAssem_array.end(); ++it_loca) {
     delete *it_loca;
   }
-//  
-//  //---------------------------------------
-//  SYS_T::commPrint("===> Exit program. \n");
+  
+  //---------------------------------------
+  SYS_T::commPrint("===> Exit program. \n");
   PetscFinalize();
   return 0;
 }

@@ -6,44 +6,16 @@ Part_Mixed_Mesh::Part_Mixed_Mesh(
     const Map_Node_Index * const &mnindex,
     const IIEN * const &IEN,
     const std::vector<double> &ctrlPts,
-    const int &in_cpu_rank, const int &in_cpu_size,
-    const int &in_dofNum, const bool isPrintInfo )
-: nElem( mesh->get_nElem() ), nFunc( mesh->get_nFunc() ),
-  probDim(3), dofNum( in_dofNum ), dofMat(in_dofNum)
-{
-  mesh->get_nLocBas_vec(nLocBas);
-  mesh->get_stu_deg_vec(stu_Degree);
-  mesh->get_elemType_vec(elemType);
-
-  // Initialize group 3 data
-  cpu_rank = in_cpu_rank;
-  cpu_size = in_cpu_size;
-  isMETIS           = gpart->get_isMETIS();
-  part_isdual       = gpart->get_isDual();
-  dual_edge_ncommon = gpart->get_dual_edge_ncommon();
-
-  // Check the cpu info
-  SYS_T::print_exit_if(cpu_size < 1, "Error: Part_Mixed_Mesh input cpu_size is wrong! \n");
-  SYS_T::print_exit_if(cpu_rank >= cpu_size, "Error: Part_Mixed_Mesh input cpu_rank is wrong! \n");
-  SYS_T::print_exit_if(cpu_rank < 0, "Error: Part_Mixed_Mesh input cpu_rank is wrong! \n");
-
-  // Generate group 1, 2, 5, and 6.
-  Generate_Partition( mesh, gpart, mnindex, IEN, ctrlPts, isPrintInfo );
-}
-
-
-Part_Mixed_Mesh::Part_Mixed_Mesh(
-    const IMesh * const &mesh,
-    const IGlobal_Part * const &gpart,
-    const Map_Node_Index * const &mnindex,
-    const IIEN * const &IEN,
-    const std::vector<double> &ctrlPts,
+    //const std::vector<std::vector<double>> &myo_fiber,
     const int &in_cpu_rank, const int &in_cpu_size,
     const int &in_dofNum, const int &in_dofMat,
     const bool isPrintInfo )
 : nElem( mesh->get_nElem() ), nFunc( mesh->get_nFunc() ),
   probDim(3), dofNum( in_dofNum ), dofMat( in_dofMat )
 {
+
+  //do these need to be written to HDF5 in their global form or
+  // is the local form enough in the anaysis step?
   mesh->get_nLocBas_vec(nLocBas);
   mesh->get_stu_deg_vec(stu_Degree);
   mesh->get_elemType_vec(elemType);
@@ -77,6 +49,7 @@ void Part_Mixed_Mesh::Generate_Partition( const IMesh * const &mesh,
     const Map_Node_Index * const &mnindex,
     const IIEN * const &IEN,
     const std::vector<double> &ctrlPts,
+  //const std::vector<std::vector<double>> &myo_fiber,					  
     const bool &isPrintInfo )
 {
   // 1. Create local partition based on the epart & npart info
@@ -112,8 +85,9 @@ void Part_Mixed_Mesh::Generate_Partition( const IMesh * const &mesh,
   for( int ii=0; ii<nlocalnode; ++ii )
     node_loc[ii] = mnindex->get_old2new( node_loc[ii] );
 
-  //2.5 get local copies stu degree, nlocbas and elemtypes
+  //2.5 get local copies stu degree, nlocbas ,  elemtypes and local fiber_orientations
   nLocBas_loc.resize(nlocalele);
+  mesh->get_fiber_ori_loc(fiber_ori_loc, elem_loc);  
   //elemType_loc.resize(nlocalele);
   //stu_Degree_loc.resize(nlocalele);
   for( int e=0; e<nlocalele; ++e )  {
@@ -296,10 +270,19 @@ void Part_Mixed_Mesh::write( const char * inputFileName ) const
   hid_t group_id_1 = H5Gcreate(file_id, "/Local_Elem", H5P_DEFAULT, 
       H5P_DEFAULT, H5P_DEFAULT);
   
+  std::vector<double> fiber_ori_loc_vec;
+  fiber_ori_loc_vec.resize(nlocalele * probDim);
+  for(int e=0; e<nlocalele; ++e)  {
+    for(int ii=0; ii<probDim; ++ii)
+      fiber_ori_loc_vec.at(e*probDim + ii) = (fiber_ori_loc.at(e)).at(ii);
+  }
+  
   h5w->write_intScalar( group_id_1, "nlocalele", nlocalele );
   h5w->write_intVector( group_id_1, "elem_loc", elem_loc );
   h5w->write_intVector( group_id_1, "nLocBas_loc", nLocBas_loc );
-    
+  h5w->write_doubleMatrix( group_id_1, "fiber_ori_loc_vec", fiber_ori_loc_vec,
+			   nlocalele, probDim);
+  
   H5Gclose( group_id_1 );
   
   // group 2: local node

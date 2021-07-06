@@ -2,7 +2,8 @@
 
 Mesh_Mixed::Mesh_Mixed(const std::vector< IMesh * > &mesh_list,
 		       const std::vector< int > &elemType_list,
-		       const IIEN * const &ien_ptr)
+		       const IIEN * const &ien_ptr,
+		       const std::vector< std::vector<double> > &myo_fiber)
 {
   nFunc = ien_ptr->get_nFunc_tot();
   nElem = ien_ptr->get_nElem_tot();
@@ -26,6 +27,15 @@ Mesh_Mixed::Mesh_Mixed(const std::vector< IMesh * > &mesh_list,
 			std::vector<int> {(*it)->get_s_degree(),
 			    		  (*it)->get_t_degree(),
 			                  (*it)->get_u_degree() });
+
+    if(elemType_list.at(distance) == 501){
+      fiber_ori.insert( fiber_ori.end(), myo_fiber.begin(), myo_fiber.end());
+    }else if (elemType_list.at(distance) == 512){
+      fiber_ori.insert( fiber_ori.end(), (*it)->get_nElem(),
+			std::vector<double> {0.0, 0.0, 0.0} );
+    }else{
+      SYS_T::print_exit("Mesh Mixer constructor: element type is not implemented. \n");
+    }
   }
 }
 
@@ -37,6 +47,15 @@ Mesh_Mixed::Mesh_Mixed(const std::vector< IMesh * > &mesh_list,
 
 Mesh_Mixed::~Mesh_Mixed()
 {}
+
+void Mesh_Mixed::get_fiber_ori_loc(std::vector<std::vector<double>> &fiber_ori_loc,
+				   const std::vector<int> &elem_loc) const
+{
+  fiber_ori_loc.clear();
+  for (size_t i = 0; i < elem_loc.size(); ++i ) {
+    fiber_ori_loc.push_back(fiber_ori.at(elem_loc[i]));
+  }
+}
 
   
 void Mesh_Mixed::print_mesh_info() const

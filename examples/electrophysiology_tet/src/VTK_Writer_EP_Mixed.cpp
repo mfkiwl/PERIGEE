@@ -32,7 +32,6 @@ void VTK_Writer_EP_Mixed::writeOutput_compact(
     const std::string &outputName,
     const bool &isXML )
 {
-  std::cout << "yo" << std::endl;
   // Make sure to call element-type specific functions based on the elemType
   //int nqpts = quad->get_num_quadPts();
   int elemType;
@@ -56,6 +55,11 @@ void VTK_Writer_EP_Mixed::writeOutput_compact(
   vtkIntArray * anaprocId = vtkIntArray::New();
   anaprocId -> SetName("Analysis_Partition");
   anaprocId -> SetNumberOfComponents(1);
+
+  vtkDoubleArray * vtk_fiber_ori = vtkDoubleArray::New();
+  vtk_fiber_ori -> SetName("Fiber_Orientation");
+  vtk_fiber_ori -> SetNumberOfComponents(3);
+  vtk_fiber_ori -> SetNumberOfTuples(lelem_ptr->get_nlocalele());
   //
 
   for(int ee=0; ee<lelem_ptr->get_nlocalele(); ++ee)  {
@@ -100,7 +104,18 @@ void VTK_Writer_EP_Mixed::writeOutput_compact(
         
     // Analysis mesh partition 
     const int e_global = lelem_ptr->get_elem_loc(ee);
+    std::vector<double> temp;
+    lelem_ptr->get_fiber_ori_e(temp, ee);
+
+    //vorticity -> SetNumberOfComponents( 9 );
+    //vorticity -> SetName("Velocity Gradient");
+    //vorticity -> SetNumberOfTuples( num_of_nodes );
+    //vorticity -> InsertComponent(ii, 0, ux[ii] / num_adj_cell[ii] );
+    
     anaprocId->InsertNextValue( epart_map[e_global] );
+    vtk_fiber_ori->InsertComponent(ee, 0, temp.at(0) );
+    vtk_fiber_ori->InsertComponent(ee, 1, temp.at(1) );
+    vtk_fiber_ori->InsertComponent(ee, 2, temp.at(2) );
   }
   
     gridData -> SetPoints( points );
@@ -116,7 +131,9 @@ void VTK_Writer_EP_Mixed::writeOutput_compact(
 
   // Add cell data
   gridData->GetCellData()->AddArray(anaprocId);
-  anaprocId->Delete();
+  gridData->GetCellData()->AddArray(vtk_fiber_ori);
+  anaprocId->Delete(); 
+  vtk_fiber_ori->Delete();
 
   // If postprocess is parallel, record its partition
   if(size > 1)

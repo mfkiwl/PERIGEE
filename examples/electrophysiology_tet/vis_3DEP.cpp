@@ -34,7 +34,7 @@
 //#include "FEAElement_NURBS_3D_der1_v3.hpp"
 //#include "APart_Node.hpp"
 #include "AGlobal_Mesh_Info_Mixed.hpp"
-//#include "ALocal_Elem.hpp"
+#include "ALocal_Elem_Fiber.hpp"
 #include "ALocal_IEN_Mixed.hpp"
 //#include "ALocal_meshSize_3D_NURBS.hpp"
 //#include "APart_Basic_Info.hpp"
@@ -65,7 +65,7 @@ int main( int argc, char * argv[] )
 
   int time_start = 0;
   int time_step = 1;
-  int time_end = 10;
+  int time_end = 200;
   double dt = 1.0;
 
   bool isXML = true;
@@ -115,7 +115,7 @@ int main( int argc, char * argv[] )
   ALocal_IEN_Mixed * locIEN = new ALocal_IEN_Mixed(part_file, rank);
   IAGlobal_Mesh_Info * GMIptr = new AGlobal_Mesh_Info_Mixed(part_file,rank);
   APart_Basic_Info * PartBasic = new APart_Basic_Info(part_file, rank);
-  ALocal_Elem * locElem = new ALocal_Elem(part_file, rank);
+  ALocal_Elem * locElem = new ALocal_Elem_Fiber(part_file, rank);
   APart_Node * pNode = new APart_Node(part_file, rank);
   SYS_T::commPrint("Done! \n");
 

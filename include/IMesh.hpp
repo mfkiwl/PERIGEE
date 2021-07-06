@@ -40,10 +40,14 @@ class IMesh
 
     virtual int get_elemType(const int &ee) const
     {SYS_T::print_exit("Error: get_nLocBas(ee) is not implemented. \n"); return 0;}
-
+  
     virtual void get_elemType_vec(std::vector< int >  &elemType_vec_in) const
     {SYS_T::print_exit("Error: get_elemType_vec is not implemented. \n");}
 
+    virtual void get_fiber_ori_loc(std::vector< std::vector< double > > &fiber_ori_loc_in,
+				   const std::vector<int> &elem_loc) const 
+    {SYS_T::print_exit("Error IMesh.hpp: get_fiber_ori_loc is not implemented. \n");}
+  
     virtual void get_stu_degree(std::vector <int >  &stu_of_elem,
 				 const int &ee) const
     {SYS_T::print_exit("Error: get_stu_degree is not implemented. \n");}

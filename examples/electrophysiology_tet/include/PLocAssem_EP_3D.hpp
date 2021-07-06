@@ -42,6 +42,7 @@ class PLocAssem_EP_3D : public IPLocAssem
         const double * const &eleCtrlPts_x,
         const double * const &eleCtrlPts_y,
         const double * const &eleCtrlPts_z,
+	const std::vector<double> &fiber_ori_e,
         const IQuadPts * const &quad );
         //const class AInt_Weight * const &weight );
 
@@ -54,6 +55,7 @@ class PLocAssem_EP_3D : public IPLocAssem
         const double * const &eleCtrlPts_x,
         const double * const &eleCtrlPts_y,
         const double * const &eleCtrlPts_z,
+	const std::vector<double> &fiber_ori_e,
         const IQuadPts * const &quad );				
     
 //    virtual void Assem_Mass(
@@ -63,12 +65,11 @@ class PLocAssem_EP_3D : public IPLocAssem
 
     virtual void Assem_Mass_Residual(
         const double * const &vec_a,
-	//const double * const &vec_b,
-	//const double * const &vec_c,
 	FEAElement * const &element,
         const double * const &eleCtrlPts_x,
         const double * const &eleCtrlPts_y,
         const double * const &eleCtrlPts_z,
+	const std::vector<double> &fiber_ori_e,	
 	const IQuadPts * const &quad );
         //const class AInt_Weight * const &weight );
 
@@ -95,13 +96,18 @@ class PLocAssem_EP_3D : public IPLocAssem
     // ! Material properties and external functions:
     // ! define the (nonlinear) conductivity tensor
     void get_k( const double &u, const double &x, const double &y, const double &z,
-        double &k11, double &k12, double &k13, double &k21, double &k22,
-        double &k23, double &k31, double &k32, double &k33 ) const
+		const std::vector<double> &fiber_ori_e,
+		double &k11, double &k12, double &k13, double &k21, double &k22,
+		double &k23, double &k31, double &k32, double &k33 ) const
     {
-      //assume 1 fiber direction is x
-      k11 = d_ani + d_iso;    k12 = 0.0;      k13 = 0.0;
-      k21 = 0.0;    	      k22 = d_iso;    k23 = 0.0;
-      k31 = 0.0;    	      k32 = 0.0;      k33 = d_iso;
+      //assume only one fiber family -> transeverse Isotropy
+      const double f1 = fiber_ori_e.at(0);
+      const double f2 = fiber_ori_e.at(1);
+      const double f3 = fiber_ori_e.at(2);      
+      
+      k11 = d_ani*f1*f1 + d_iso;    k12 = d_ani*f1*f2;           k13 = d_ani*f1*f3;
+      k21 = d_ani*f2*f1;     	    k22 = d_ani*f2*f2+d_iso;     k23 = d_ani*f2*f3;
+      k31 = d_ani*f3*f1;    	    k32 = d_ani*f3*f2;           k33 = d_ani*f3*f3+d_iso;
     }
 
     // ! define the derivative the conductivity tensor w.r.t. u

@@ -102,7 +102,7 @@ void HDF5_Writer::write_doubleScalar( const hid_t &group_id,
 {
   hid_t dataspace, dataset;
   hsize_t dims[1]; dims[0] = 1;
-  herr_t status;
+  herr_t status{};
 
   dataspace = H5Screate_simple(1, dims, NULL);
   dataset   = H5Dcreate( group_id, data_name, H5T_NATIVE_DOUBLE,

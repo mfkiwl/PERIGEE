@@ -23,6 +23,9 @@ class ALocal_Elem
     
     virtual int get_nlocalele() const {return nlocalele;}
 
+  virtual void get_fiber_ori_e( std::vector<double> &fiber_ori_e, const int &ee)
+    const {SYS_T::print_fatal("Error: ALocal_Elem::get_fiber_ori_e is not implemented.\n");}
+
     virtual void print_info() const;
 
     // This is a virtual function for multiphysics simulations. A tag

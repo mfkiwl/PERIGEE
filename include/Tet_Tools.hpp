@@ -59,6 +59,30 @@ namespace TET_T
       int &numpts, int &numcels,
       std::vector<double> &pt, std::vector<int> &ien_array );
 
+  // ================================================================
+  // ===> 1. The first set of tools READ volumetric mesh from .vtu 
+  //         file and surface mesh from .vtp file.  
+  // ================================================================
+  // --------------------------------------------------------------
+  // ! read_vtu_grid: read the mesh generated from other software
+  //                  in the .vtu file. The mesh file is assumed to be a
+  //                  tetrahedral mesh with 4 or 10 nodes;
+  //                  or a triangle mesh with 6 nodes; 
+  //                  otherwise, an error message will be thrown.
+  //   Input:  \para filename : the filename ending with .vtu
+  //   Output: \para numpts: the number of grid points
+  //           \para numcels: the number of cells
+  //           \para pt: xyz coordinate of the grids, 
+  //                     length is 3 x numpts
+  //           \para ien_array: the connectivity array, 
+  //                            length is 4, 10, or 6 x numcels
+  //   Note: reload the function with output in int type instead
+  //         of the VTK builtin type vtkIdType by doing a static_cast.
+  // ----------------------------------------------------------------
+  void read_vtu_grid( const std::string &filename,
+		      int &numpts, int &numcels,
+		      std::vector<double> &pt, std::vector<int> &ien_array,
+		      std::vector< std::vector< double > > &myo_fiber);
 
   // ----------------------------------------------------------------
   // ! read_vtu_grid: read the mesh info just exactly the same way

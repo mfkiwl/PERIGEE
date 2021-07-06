@@ -1,6 +1,9 @@
 #ifndef PGASSEM_EP_HPP
 #define PGASSEM_EP_HPP
 // ==================================================================
+// TODO : if xdegree - sdegree is not used, then remove that info from
+// preprocessing, hdf files and analysis.
+
 // PGAssem_EP.hpp
 // Parallel Global Assembly routine.
 //
@@ -54,31 +57,31 @@ class PGAssem_EP
 	      const ALocal_NodalBC * const &part_bc ,
 	      const int cpu_rank_in );
 
-    //constructor that specifies petsc version 
-    PGAssem_EP( const IPLocAssem * const &locassem_ptr,
-        const IAGlobal_Mesh_Info * const &agmi_ptr,
-        const APart_Node * const &pnode_ptr,
-        const int &petsc_version_type );
-      
-    // ------------------------------------------------------------------------
-    // ! Constructor that does not need to specify the petsc version
-    // ! for matrix creation. 
-    // ------------------------------------------------------------------------
-    PGAssem_EP( const IPLocAssem * const &locassem_ptr,
-        const IAGlobal_Mesh_Info * const &agmi_ptr,
-        const APart_Node * const &pnode_ptr );
-
-
-    // ------------------------------------------------------------------------
-    // ! Constructor that calls Get_dnz_onz to get a more accurate estimate
-    //   nonzero structure of the sparse matrix.
-    // ------------------------------------------------------------------------
-    PGAssem_EP( const IPLocAssem * const &locassem_ptr,
-        const IAGlobal_Mesh_Info * const &agmi_ptr,
-        const ALocal_Elem * const &alelem_ptr,
-        const ALocal_IEN * const &aien_ptr,
-        const APart_Node * const &pnode_ptr,
-        const ALocal_NodalBC * const &part_bc );
+//    //constructor that specifies petsc version 
+//    PGAssem_EP( const IPLocAssem * const &locassem_ptr,
+//        const IAGlobal_Mesh_Info * const &agmi_ptr,
+//        const APart_Node * const &pnode_ptr,
+//        const int &petsc_version_type );
+//      
+//    // ------------------------------------------------------------------------
+//    // ! Constructor that does not need to specify the petsc version
+//    // ! for matrix creation. 
+//    // ------------------------------------------------------------------------
+//    PGAssem_EP( const IPLocAssem * const &locassem_ptr,
+//        const IAGlobal_Mesh_Info * const &agmi_ptr,
+//        const APart_Node * const &pnode_ptr );
+//
+//
+//    // ------------------------------------------------------------------------
+//    // ! Constructor that calls Get_dnz_onz to get a more accurate estimate
+//    //   nonzero structure of the sparse matrix.
+//    // ------------------------------------------------------------------------
+//    PGAssem_EP( const IPLocAssem * const &locassem_ptr,
+//        const IAGlobal_Mesh_Info * const &agmi_ptr,
+//        const ALocal_Elem * const &alelem_ptr,
+//        const ALocal_IEN * const &aien_ptr,
+//        const APart_Node * const &pnode_ptr,
+//        const ALocal_NodalBC * const &part_bc );
 
 
     // ------------------------------------------------------------------------
@@ -134,12 +137,12 @@ class PGAssem_EP
     // ------------------------------------------------------------------------
     // ! Assembly estimated nonzero structure
     // ------------------------------------------------------------------------
-    void Assem_nonzero_estimate(
-        const ALocal_Elem * const &alelem_ptr,
-        IPLocAssem * const &lassem_ptr, 
-        const ALocal_IEN * const &lien_ptr,
-        const APart_Node * const &node_ptr,
-        const ALocal_NodalBC * const &bc_part );
+//  void Assem_nonzero_estimate(
+//        const ALocal_Elem * const &alelem_ptr,
+//        IPLocAssem * const &lassem_ptr, 
+//        const ALocal_IEN * const &lien_ptr,
+//        const APart_Node * const &node_ptr,
+//        const ALocal_NodalBC * const &bc_part );
 
     void Assem_nonzero_estimate(
 	const ALocal_Elem * const &alelem_ptr,
@@ -157,24 +160,24 @@ class PGAssem_EP
     //       sol_c : hist
     //       sol_d : hist_dot
     // ------------------------------------------------------------------------
-    void Assem_tangent_residual(
-        const PDNSolution * const &sol_a,
-        const PDNSolution * const &sol_b,
-	//const PDNSolution * const &sol_c,//pre_hist
-	//PDNSolution * const &sol_d,//new hist
-        const double &t_n,
-        const double &dt,
-        //const double &dt_ion,
-	//const IonicModel * const &ionicmodel_ptr,
-        const ALocal_Elem * const &alelem_ptr,
-        IPLocAssem * const &lassem_ptr, 
-        const ALocal_IEN * const &lien_ptr,
-        const APart_Node * const &node_ptr,
-        const FEANode * const &fnode_ptr,
-	const IQuadPts * const &quad,
-        //const AInt_Weight * const &wei_ptr,
-	std::vector<FEAElement*> &eptr_array,
-        const ALocal_NodalBC * const &bc_part );
+//    void Assem_tangent_residual(
+//        const PDNSolution * const &sol_a,
+//        const PDNSolution * const &sol_b,
+//	//const PDNSolution * const &sol_c,//pre_hist
+//	//PDNSolution * const &sol_d,//new hist
+//        const double &t_n,
+//        const double &dt,
+//        //const double &dt_ion,
+//	//const IonicModel * const &ionicmodel_ptr,
+//        const ALocal_Elem * const &alelem_ptr,
+//        IPLocAssem * const &lassem_ptr, 
+//        const ALocal_IEN * const &lien_ptr,
+//        const APart_Node * const &node_ptr,
+//        const FEANode * const &fnode_ptr,
+//	const IQuadPts * const &quad,
+//        //const AInt_Weight * const &wei_ptr,
+//	std::vector<FEAElement*> &eptr_array,
+//        const ALocal_NodalBC * const &bc_part );
 
   // this version is for mixed mesh .
       void Assem_tangent_residual(const PDNSolution * const &sol_a,
@@ -214,24 +217,24 @@ class PGAssem_EP
     // ! Assembly residual vector when history variables are present
     //  sol_c is hist_dot, sol_d is hist
     // ------------------------------------------------------------------------
-    void Assem_residual(
-    const PDNSolution * const &sol_a, //velo
-    const PDNSolution * const &sol_b, //disp
-    //const PDNSolution * const &sol_c, //pre_hist
-    //PDNSolution * const &sol_d, //new hist
-    const double &t_n,
-    const double &dt,
-    //const double &dt_ion,
-    //const IonicModel * const &ionicmodel_ptr,
-    const ALocal_Elem * const &alelem_ptr,
-    IPLocAssem * const &lassem_ptr, 
-    const ALocal_IEN * const &lien_ptr,
-    const APart_Node * const &node_ptr,
-    const FEANode * const &fnode_ptr,
-    const IQuadPts * const &quad,
-    //const AInt_Weight * const &wei_ptr,
-    std::vector<FEAElement*> &eptr_array,
-    const ALocal_NodalBC * const &bc_part );
+//    void Assem_residual(
+//    const PDNSolution * const &sol_a, //velo
+//    const PDNSolution * const &sol_b, //disp
+//    //const PDNSolution * const &sol_c, //pre_hist
+//    //PDNSolution * const &sol_d, //new hist
+//    const double &t_n,
+//    const double &dt,
+//    //const double &dt_ion,
+//    //const IonicModel * const &ionicmodel_ptr,
+//    const ALocal_Elem * const &alelem_ptr,
+//    IPLocAssem * const &lassem_ptr, 
+//    const ALocal_IEN * const &lien_ptr,
+//    const APart_Node * const &node_ptr,
+//    const FEANode * const &fnode_ptr,
+//    const IQuadPts * const &quad,
+//    //const AInt_Weight * const &wei_ptr,
+//    std::vector<FEAElement*> &eptr_array,
+//    const ALocal_NodalBC * const &bc_part );
 
   //this version is for mixed mesh   
   void Assem_residual(const PDNSolution * const &sol_a, //velo
@@ -250,17 +253,17 @@ class PGAssem_EP
     // ------------------------------------------------------------------------
     // ! Assembly mass matrix and its residual vector
     // ------------------------------------------------------------------------
-    void Assem_mass_residual(
-        const PDNSolution * const &sol_a,
-	const PDNTimeStep * const &time_info,
-        const ALocal_Elem * const &alelem_ptr,
-        IPLocAssem * const &lassem_ptr, 
-        const ALocal_IEN * const &lien_ptr,
-        const APart_Node * const &node_ptr,
-        const FEANode * const &fnode_ptr,
-	const IQuadPts * const &quad,
-	std::vector<FEAElement*> &eptr_array,
-        const ALocal_NodalBC * const &bc_part );
+//    void Assem_mass_residual(
+//        const PDNSolution * const &sol_a,
+//	const PDNTimeStep * const &time_info,
+//        const ALocal_Elem * const &alelem_ptr,
+//        IPLocAssem * const &lassem_ptr, 
+//        const ALocal_IEN * const &lien_ptr,
+//        const APart_Node * const &node_ptr,
+//        const FEANode * const &fnode_ptr,
+//	const IQuadPts * const &quad,
+//	std::vector<FEAElement*> &eptr_array,
+//        const ALocal_NodalBC * const &bc_part );
 
   void Assem_mass_residual(
         const PDNSolution * const &sol_a,
