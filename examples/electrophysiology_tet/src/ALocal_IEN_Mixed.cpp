@@ -27,27 +27,42 @@ ALocal_IEN_Mixed::ALocal_IEN_Mixed( const std::string &fileBaseName, const int &
   const int nlocghonode = h5r -> read_intScalar("Local_Node", "nlocghonode");
   //std::vector<int> node_loc;
   //h5r -> read_intVector("Local_Node", "node_loc", node_loc);
-
-
-  //now find for each local node, which local elements it belongs
-  std::vector<int>::iterator location;
-  std::vector< std::vector<int> > node_locations;
-  node_locations.resize(nlocghonode);//resize the 1st dimension only
   
-  for (int ii=0; ii<nlocghonode ; ii++) {
-    location= std::find(LIEN.begin(), LIEN.end(), ii );
-    
-    while (location!=LIEN.end()){
-      (node_locations.at(ii)).push_back(std::distance(LIEN.begin(),location));
-      location= std::find(location+1, LIEN.end(), ii);
-    }
-  }
-
   node_to_element.resize(nlocghonode);
-  for( int ii=0; ii<nlocghonode ; ++ii) {
-    for( int jj=0; jj<((node_locations.at(ii)).size()); ++jj) {
-      location = std::upper_bound(stride.begin(), stride.end(), (node_locations.at(ii)).at(jj));
-      (node_to_element.at(ii)).push_back(std::distance(stride.begin(), location-1));
+
+  ////now find for each local node, which local elements it belongs
+  //// (only the first element, that is, myocardium preferred)
+
+  //// below with a loop on nodes. this is not very fast, I replaced it with
+  //// element based loop below.
+  //std::vector<int>::iterator location;
+  //std::vector< std::vector<int> > node_locations;
+  //node_locations.resize(nlocghonode);//resize the 1st dimension only
+  //
+  //for (int ii=0; ii<nlocghonode ; ii++) {
+  //  location= std::find(LIEN.begin(), LIEN.end(), ii );
+  //  
+  //  while (location!=LIEN.end()){
+  //    (node_locations.at(ii)).push_back(std::distance(LIEN.begin(),location));
+  //    location= std::find(location+1, LIEN.end(), ii);
+  //  }
+  //}
+  //
+  //for( int ii=0; ii<nlocghonode ; ++ii) {
+  //  for( int jj=0; jj<((node_locations.at(ii)).size()); ++jj) {
+  //    location = std::upper_bound(stride.begin(), stride.end(), (node_locations.at(ii)).at(jj));
+  //    (node_to_element.at(ii)).push_back(std::distance(stride.begin(), location-1));
+  //  }
+  //}
+
+  // below with a loop on elements
+  std::vector<int> nodes;
+  for (int ee=0; ee<nlocalele; ee++) {
+    nodes.clear();
+    nodes.assign(LIEN.begin()+stride.at(ee), LIEN.begin()+stride.at(ee+1));
+        
+    for (auto it=nodes.begin(); it!=nodes.end(); it++){
+      node_to_element.at(*it).push_back(ee);
     }
   }
 

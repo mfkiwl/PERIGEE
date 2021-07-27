@@ -15,22 +15,22 @@ VTK_Writer_EP_Mixed::~VTK_Writer_EP_Mixed()
 
 
 
-void VTK_Writer_EP_Mixed::writeOutput_compact(
-    const IAGlobal_Mesh_Info * const &GMIptr,
-    const FEANode * const &fnode_ptr,
-    const ALocal_IEN_Mixed * const &lien_ptr,
-    const ALocal_Elem * const &lelem_ptr,
-    const IVisDataPrep * const &vdata_ptr,
-    std::vector<FEAElement *>  &elemArray,
-    const std::vector< IQuadPts * >  &quadArray,
-    const double * const * const &pointArrays,
-    const int &rank, const int &size,
-    const int &num_of_nodes,
-    const double &sol_time,
-    const std::string &basename,
-    const std::string &outputBName,
-    const std::string &outputName,
-    const bool &isXML )
+void VTK_Writer_EP_Mixed::writeOutput_compact(const IAGlobal_Mesh_Info * const &GMIptr,
+					      const FEANode * const &fnode_ptr,
+					      const ALocal_IEN_Mixed * const &lien_ptr,
+					      const ALocal_Elem * const &lelem_ptr,
+					      const IVisDataPrep * const &vdata_ptr,
+					      std::vector<FEAElement *>  &elemArray,
+					      const std::vector< IQuadPts * >  &quadArray,
+					      const double * const * const &pointArrays,
+					      const int &rank, const int &size,
+					      const int &num_of_nodes,
+					      const double &sol_time,
+					      const std::string &basename,
+					      const std::string &outputBName,
+					      const std::string &outputName,
+					      const bool &isXML,
+					      const bool &is_write_fibers)
 {
   // Make sure to call element-type specific functions based on the elemType
   //int nqpts = quad->get_num_quadPts();
@@ -57,9 +57,11 @@ void VTK_Writer_EP_Mixed::writeOutput_compact(
   anaprocId -> SetNumberOfComponents(1);
 
   vtkDoubleArray * vtk_fiber_ori = vtkDoubleArray::New();
-  vtk_fiber_ori -> SetName("Fiber_Orientation");
-  vtk_fiber_ori -> SetNumberOfComponents(3);
-  vtk_fiber_ori -> SetNumberOfTuples(lelem_ptr->get_nlocalele());
+  if(is_write_fibers == 1){
+    vtk_fiber_ori -> SetName("Fiber_Orientation");
+    vtk_fiber_ori -> SetNumberOfComponents(3);
+    vtk_fiber_ori -> SetNumberOfTuples(lelem_ptr->get_nlocalele());
+  }
   //
 
   for(int ee=0; ee<lelem_ptr->get_nlocalele(); ++ee)  {
@@ -104,18 +106,21 @@ void VTK_Writer_EP_Mixed::writeOutput_compact(
         
     // Analysis mesh partition 
     const int e_global = lelem_ptr->get_elem_loc(ee);
-    std::vector<double> temp;
-    lelem_ptr->get_fiber_ori_e(temp, ee);
+    anaprocId->InsertNextValue( epart_map[e_global] );
 
     //vorticity -> SetNumberOfComponents( 9 );
     //vorticity -> SetName("Velocity Gradient");
     //vorticity -> SetNumberOfTuples( num_of_nodes );
     //vorticity -> InsertComponent(ii, 0, ux[ii] / num_adj_cell[ii] );
-    
-    anaprocId->InsertNextValue( epart_map[e_global] );
-    vtk_fiber_ori->InsertComponent(ee, 0, temp.at(0) );
-    vtk_fiber_ori->InsertComponent(ee, 1, temp.at(1) );
-    vtk_fiber_ori->InsertComponent(ee, 2, temp.at(2) );
+
+
+    if(is_write_fibers == 1){     
+      std::vector<double> temp;
+      lelem_ptr->get_fiber_ori_e(temp, ee);
+      vtk_fiber_ori->InsertComponent(ee, 0, temp.at(0) );
+      vtk_fiber_ori->InsertComponent(ee, 1, temp.at(1) );
+      vtk_fiber_ori->InsertComponent(ee, 2, temp.at(2) );
+    }
   }
   
     gridData -> SetPoints( points );
@@ -131,8 +136,11 @@ void VTK_Writer_EP_Mixed::writeOutput_compact(
 
   // Add cell data
   gridData->GetCellData()->AddArray(anaprocId);
-  gridData->GetCellData()->AddArray(vtk_fiber_ori);
   anaprocId->Delete(); 
+  //
+  if(is_write_fibers == 1){
+    gridData->GetCellData()->AddArray(vtk_fiber_ori);
+  }
   vtk_fiber_ori->Delete();
 
   // If postprocess is parallel, record its partition

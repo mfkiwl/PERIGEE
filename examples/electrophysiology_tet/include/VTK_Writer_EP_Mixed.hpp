@@ -73,7 +73,8 @@ public:
 			   const std::string &basename,
 			   const std::string &outputBName,
 			   const std::string &outputName,
-			   const bool &isXML );
+			   const bool &isXML,
+			   const bool &is_write_fibers);
 
 private:
   int nLocBas;

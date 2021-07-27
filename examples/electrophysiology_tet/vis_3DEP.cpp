@@ -69,6 +69,7 @@ int main( int argc, char * argv[] )
   double dt = 1.0;
 
   bool isXML = true;
+  bool is_write_fibers = false;
   bool isRestart = false;
 
   PetscMPIInt rank, size;
@@ -85,6 +86,7 @@ int main( int argc, char * argv[] )
   SYS_T::GetOptionString("-sol_bname", sol_bname);
   SYS_T::GetOptionString("-out_bname", out_bname);
   SYS_T::GetOptionBool("-xml", isXML);
+  SYS_T::GetOptionBool("-write_fibers", is_write_fibers);
   SYS_T::GetOptionBool("-restart", isRestart);
 
   SYS_T::cmdPrint("-sol_bname:", sol_bname);
@@ -93,8 +95,11 @@ int main( int argc, char * argv[] )
   SYS_T::cmdPrint("-time_step:", time_step);
   SYS_T::cmdPrint("-time_end:", time_end);
   SYS_T::cmdPrint("-dt:",dt);
+
   if(isXML) PetscPrintf(PETSC_COMM_WORLD, "-xml: true \n");
   else PetscPrintf(PETSC_COMM_WORLD, "-xml: false \n");
+  if(is_write_fibers) PetscPrintf(PETSC_COMM_WORLD, "-write_fibers: true \n");
+  else PetscPrintf(PETSC_COMM_WORLD, "-write_fibers: false \n");
 
   if(isRestart) PetscPrintf(PETSC_COMM_WORLD, "-restart: true \n");
   else PetscPrintf(PETSC_COMM_WORLD, "-restart: false \n");
@@ -203,8 +208,8 @@ int main( int argc, char * argv[] )
 		
     vtk_w->writeOutput_compact( GMIptr, fNode, locIEN, locElem,
 				visprep, elemArray, quadArray, pointArrays, rank, size, 
-				pNode -> get_ntotalnode(),
-				time * dt, sol_bname, out_bname, name_to_write, isXML );
+				pNode -> get_ntotalnode(),time * dt, sol_bname, 
+				out_bname, name_to_write, isXML, is_write_fibers);
   }
     //    
   MPI_Barrier(PETSC_COMM_WORLD);

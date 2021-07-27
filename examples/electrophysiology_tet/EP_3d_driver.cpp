@@ -184,11 +184,11 @@ int main(int argc, char *argv[])
   //  pNode->print_info();
     
   if(size != PartBasic->get_cpu_size())
-  {
-    PetscPrintf(PETSC_COMM_WORLD,
-        "Error: Assigned CPU number does not match the partition number. \n");
-    MPI_Abort(PETSC_COMM_WORLD,1);
-  }
+    {
+      PetscPrintf(PETSC_COMM_WORLD,
+		  "Error: Assigned CPU number does not match the partition number. \n");
+      MPI_Abort(PETSC_COMM_WORLD,1);
+    }
 
   PetscPrintf(PETSC_COMM_WORLD, "\n===> %d processor(s) are assigned for FEM analysis. ", size);
   
@@ -233,27 +233,50 @@ int main(int argc, char *argv[])
 
   for(int ee=0; ee<locElem->get_nlocalele(); ++ee)
     {
-     //FEAElement * elementv	= nullptr; 
-     //FEAElement * elements	= nullptr;
+      //FEAElement * elementv	= nullptr; 
+      //FEAElement * elements	= nullptr;
      
-     local_elemType = GMIptr->get_elemType(locElem->get_elem_loc(ee));
+      local_elemType = GMIptr->get_elemType(locElem->get_elem_loc(ee));
      
-     if ( local_elemType == 512 ){
-       elemArray[ee] = new FEAElement_Line2_3D_der1( nqp_line ); // elem type 512
-       feaelement_memsize += elemArray[ee]->get_memory_usage(); 
+      if ( local_elemType == 512 ){
+	elemArray[ee] = new FEAElement_Line2_3D_der1( nqp_line ); // elem type 512
+	feaelement_memsize += elemArray[ee]->get_memory_usage(); 
 
-     } else if( local_elemType == 501 ){
+      } else if( local_elemType == 501 ){
 	elemArray[ee] = new FEAElement_Tet4( nqp_tet ); // elem type 501
 	feaelement_memsize += elemArray[ee]->get_memory_usage(); 
 
-     }
-     else std::cout<<"Error: Element type not supported.\n";
-   }
-  
+      }
+      else std::cout<<"Error: Element type not supported.\n";
+    }
+
+
+  //check if fiber orientations are nonzero for tet, zero for purkinje mesh
+  std::vector<double> fiber_ori_e;
+  int nElem = locElem->get_nlocalele();
+  for(int ee=0; ee<nElem; ++ee) {
+    
+    locElem->get_fiber_ori_e(fiber_ori_e, ee);
+	  
+    if (((elemArray.at(ee))->get_elemDim() ==3) &&
+	(std::accumulate(fiber_ori_e.begin(), fiber_ori_e.end(), 0.0)==0.0)){
+      std::cout << "element no: " << ee << std::endl;
+      std::cout << "element fiber ori: " <<  std::endl;
+      VEC_T::print(fiber_ori_e);
+      SYS_T::print_exit("Error: myocardium element received a zero fiber orientation \n");
+      
+    } else if (((elemArray.at(ee))->get_elemDim() ==1) &&
+	       (std::accumulate(fiber_ori_e.begin(), fiber_ori_e.end(), 0.0)!=0.0)){
+      SYS_T::print_exit("Error: purkinje element received a non-zero fiber orientation \n");
+    }
+  }
+  //end of check 
+
+
   elem_timer = clock() - elem_timer;
   MPI_Barrier(PETSC_COMM_WORLD);
   SYS_T::synPrintElementInfo(locElem->get_nlocalele(), feaelement_memsize,
-      (double)elem_timer/(double)CLOCKS_PER_SEC, rank);
+			     (double)elem_timer/(double)CLOCKS_PER_SEC, rank);
   // ---------------------------------------
 
   // ===== Generate Generalized-alpha method
@@ -343,16 +366,16 @@ int main(int argc, char *argv[])
   SYS_T::commPrint("----------------------------------------------------------- \n");
   lsolver->Info();
   SYS_T::commPrint("----------------------------------------------------------- \n");
+
   //PC preproc; lsolver->GetPC(&preproc);
   //PCSetType( preproc, PCASM );
 
   // 2.6 Assembly mass matrix and solve for consistent initial solution
+  SYS_T::commPrint("Mass residual: \n"); 
   gloAssem_ptr->Clear_KG();
   gloAssem_ptr->Assem_mass_residual( disp, timeinfo,
 				     locElem, locAssem_array, locIEN, pNode,
 				     fNode, quadArray, elemArray, locbc );
-
-  //SYS_T::commPrint("Mass residual: \n"); 
   //gloAssem_ptr->Print_G();
   //SYS_T::commPrint("Mass tangent: \n"); 
   //MatView(gloAssem_ptr->K, PETSC_VIEWER_STDOUT_WORLD);
@@ -375,16 +398,16 @@ int main(int argc, char *argv[])
   // 2.8 Setup time marching context
   PTime_Solver_EP_OperatorSplit * tsolver =
     new PTime_Solver_EP_OperatorSplit( sol_bName, sol_record_freq,
-				      ttan_renew_freq, final_time );
+				       ttan_renew_freq, final_time );
 
   SYS_T::commPrint("===> Time marching solver setted up:\n");
   tsolver->Info();
 
   SYS_T::commPrint("===> Start Finite Element Analysis:\n");
   tsolver->TM_generalized_alpha(
-      velo, disp, hist, timeinfo, tm_galpha_ptr, locElem, locIEN, pNode,
-      fNode, locbc, quadArray, elemArray, ionicmodel_array, locAssem_array,
-      gloAssem_ptr, lsolver, nsolver );
+				velo, disp, hist, timeinfo, tm_galpha_ptr, locElem, locIEN, pNode,
+				fNode, locbc, quadArray, elemArray, ionicmodel_array, locAssem_array,
+				gloAssem_ptr, lsolver, nsolver );
 
   // ======= PETSc Finalize =======
   SYS_T::commPrint("\n===> Clean memory ... \n");

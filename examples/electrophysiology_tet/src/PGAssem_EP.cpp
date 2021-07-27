@@ -1364,16 +1364,6 @@ void PGAssem_EP::Assem_mass_residual(const PDNSolution * const &sol_a,
      
   for(int ee=0; ee<nElem; ++ee)
   {
-    //check if fiber orientations are nonzero for tet elements and zero for
-    //lien elements
-    //if (((eptr_array.at(ee))->get_elemDim() ==3) &&
-    //	  (std::accumulate(fiber_ori_e.begin(), fiber_ori_e.begin(), 0.0)==0.0)){
-    //  SYS_T::print_exit("Error: myocardium element received a zero fiber orientation \n");
-    //} else if (((eptr_array.at(ee))->get_elemDim() ==1) &&
-    //	       (std::accumulate(fiber_ori_e.begin(), fiber_ori_e.begin(), 0.0)!=0.0)){
-    //  SYS_T::print_exit("Error: purkinje element received a non-zero fiber orientation \n");
-    //}
-    
     nlocbas_ee = lien_ptr->get_nLocBas_loc(ee);
     loc_dof= dof * nlocbas_ee;
     IEN_e = new int [nlocbas_ee];
