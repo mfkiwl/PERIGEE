@@ -1,16 +1,18 @@
-# Configuration setup for the Linux machine of Ingrid's
+# Configuration setup for machine sherlock ingrid 
 
 # ========================================================
 # Specify the library locations
 # ========================================================
-set(VTK_DIR /home/ingridxlan/lib/VTK-7.1.1-shared/lib/cmake/vtk-7.1)
+set(VTK_DIR /home/ingridl/lib-perigee/VTK-7.1.1-shared/lib/cmake/vtk-7.1)
 
-set(PETSC_DIR /home/ingridxlan/lib/petsc-3.11.3)
-set(PETSC_ARCH arch-linux2-cxx-opt)
+set(PETSC_DIR /home/ingridl/lib-perigee/petsc-3.11.3)
 
-set(METIS_DIR /home/ingridxlan/lib/metis-5.0.3)
+set(PETSC_ARCH arch-linux-cxx-opt)
 
-set(HDF5_ROOT /home/ingridxlan/lib/hdf5-1.8.16)
+set(METIS_DIR /home/ingridl/lib-perigee/metis-5.0.3)
+
+# set(HDF5_ROOT /cm/shared/apps/spack/cpu/opt/spack/linux-centos8-zen2/gcc-9.2.0/hdf5-1.10.6-5q5q4alfsa4or6b25nofmfpixc2vvmg2)
+set(HDF5_ROOT /home/ingridl/lib-perigee/hdf5-1.8.16)
 
 # ========================================================
 # Setup the libraries
@@ -44,15 +46,16 @@ message(STATUS "External Libraries: " ${EXTRA_LINK_LIBS})
 # ========================================================
 # Compiler options 
 # ========================================================
-set(CMAKE_C_COMPILER  /home/ingridxlan/lib/petsc-3.11.3/arch-linux2-cxx-opt/bin/mpicc)
-set(CMAKE_CXX_COMPILER /home/ingridxlan/lib/petsc-3.11.3/arch-linux2-cxx-opt/bin/mpicxx)
+set(CMAKE_C_COMPILER  /home/ingridl/lib-perigee/petsc-3.11.3/arch-linux-cxx-opt/bin/mpicc)
+set(CMAKE_CXX_COMPILER /home/ingridl/lib-perigee/petsc-3.11.3/arch-linux-cxx-opt/bin/mpicxx)
+
 set(CMAKE_CXX_STANDARD 11)
 
-if( ${CMAKE_BUILD_TYPE} MATCHES "Release" )
+if(${CMAKE_BUILD_TYPE} MATCHES "Release")
   set(CMAKE_CXX_FLAGS "-O3 -Wall")
-else( ${CMAKE_BUILD_TYPE} MATCHES "Release" )
+else(${CMAKE_BUILD_TYPE} MATCHES "Release")
   set(CMAKE_CXX_FLAGS "-O0 -Wall")
-endif( ${CMAKE_BUILD_TYPE} MATCHES "Release" )
+endif(${CMAKE_BUILD_TYPE} MATCHES "Release")
 
 set(CMAKE_VERBOSE_MAKEFILE OFF)
 

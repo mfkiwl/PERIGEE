@@ -18,6 +18,8 @@
 // ==================================================================
 #include <cmath>
 #include <iomanip>
+#include <numeric>
+
 #include "Vec_Tools.hpp"
 #include "QuadPts_Gauss_Tet.hpp"
 #include "QuadPts_Gauss.hpp"

@@ -57,20 +57,18 @@ int main( int argc, char * argv[] )
   //std::vector< int > elemType_combined;
 
   // Input files
+  char * char_home_dir = getenv("HOME");
+  std::string home_dir (char_home_dir);
   //std::string geo_file_myo("./myo.vtu");
   //std::string geo_file_pur("./purkinje.vtu");
-  std::string geo_file_myo("/home/oguz/PERIGEE/examples/electrophysiology_tet/mesh/HLHS_fibers.vtu");
-  std::string geo_file_LVpur("/home/oguz/PERIGEE/examples/electrophysiology_tet/mesh/LV-line.vtu");
-  std::string geo_file_RVpur("/home/oguz/PERIGEE/examples/electrophysiology_tet/mesh/RV-line.vtu");
-
+  std::string geo_file_myo(home_dir+"/PERIGEE/examples/electrophysiology_tet/mesh/HLHS_fibers.vtu");
+  std::string geo_file_LVpur(home_dir+"/PERIGEE/examples/electrophysiology_tet/mesh/LV-line.vtu");
+  std::string geo_file_RVpur(home_dir+"/PERIGEE/examples/electrophysiology_tet/mesh/RV-line.vtu");
   //warning: check that the first node of purkinje is not in the endnodes list.
   std::string LVendnodes_file
-    ("/home/oguz/PERIGEE/examples/electrophysiology_tet/mesh/LV-line_endnodes.txt");
+    (home_dir+"/PERIGEE-master/examples/electrophysiology_tet/mesh/LV-line_endnodes.txt");
   std::string RVendnodes_file
-    ("/home/oguz/PERIGEE/examples/electrophysiology_tet/mesh/RV-line_endnodes.txt");
-  //std::string endnodes_file
-  //  ("/home/oguz/PERIGEE/examples/electrophysiology_tet/mesh/endnodes.txt");
-
+    (home_dir+"/PERIGEE-master/examples/electrophysiology_tet/mesh/RV-line_endnodes.txt");
 
   //  // volume & faces purkinje mesh  
   //  std::string geo_file("./purkinje.vtu");
@@ -102,27 +100,20 @@ int main( int argc, char * argv[] )
   MPI_Comm_size(PETSC_COMM_WORLD, &size);
   MPI_Comm_rank(PETSC_COMM_WORLD, &rank);
 
-  // Enforce parallel run.
-  //if(size == 1)
-  //{
-  //  cout<<"ERROR: Given processor number is greater than 1."; 
-  //  cout<<"Preprocess code has to be serial!"<<endl;
-  //  MPI_Abort(PETSC_COMM_WORLD, 1);
-  //}
-
   SYS_T::GetOptionInt("-cpu_size", cpu_size);
   SYS_T::GetOptionInt("-in_ncommon", in_ncommon);
   SYS_T::GetOptionString("-geo_file_myo", geo_file_myo);  
   SYS_T::GetOptionString("-geo_file_LVpur", geo_file_LVpur);
   SYS_T::GetOptionString("-geo_file_RVpur", geo_file_RVpur);
-  //SYS_T::GetOptionString("-sur_file_tip0", sur_file_tip0);
+  SYS_T::GetOptionString("-LVendnodes_file", LVendnodes_file);
+  SYS_T::GetOptionString("-RVendnodes_file", RVendnodes_file);
 
   std::cout<<"==== /Command Line Arguments ===="<<std::endl;
   std::cout<<" -geo_file_myo: "<<geo_file_myo<<std::endl;
   std::cout<<" -geo_file_LVpur: "<<geo_file_LVpur<<std::endl;
   std::cout<<" -geo_file_RVpur: "<<geo_file_RVpur<<std::endl;
-  //std::cout<<" -sur_file_tip0" <<sur_file_tip0<<std::endl;
-
+  std::cout<<" -LVendnodes_file: "<<LVendnodes_file<<std::endl;
+  std::cout<<" -RVendnodes_file: "<<RVendnodes_file<<std::endl;
 
   std::cout<<" -part_file: "<<part_file<<std::endl;
   std::cout<<" -cpu_size: "<<cpu_size<<std::endl;
@@ -140,9 +131,12 @@ int main( int argc, char * argv[] )
   SYS_T::file_check(geo_file_myo); std::cout<<geo_file_myo<<" found. \n";
   SYS_T::file_check(geo_file_LVpur); std::cout<<geo_file_LVpur<<" found. \n";
   SYS_T::file_check(geo_file_RVpur); std::cout<<geo_file_RVpur<<" found. \n";
-  //SYS_T::file_check(sur_file_tip0); std::cout<<sur_file_tip0<<" found. \n";
+  SYS_T::file_check(LVendnodes_file); std::cout<<LVendnodes_file<<" found. \n";
+  SYS_T::file_check(RVendnodes_file); std::cout<<RVendnodes_file<<" found. \n";
+
 
   // ----- Write the input argument into a HDF5 file
+  std::cout<< "// ----- Write the input argument into a HDF5 file" << std::endl;
   hid_t cmd_file_id = H5Fcreate("preprocessor_cmd.h5",
 				H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
   HDF5_Writer * cmdh5w = new HDF5_Writer(cmd_file_id);
@@ -157,22 +151,19 @@ int main( int argc, char * argv[] )
   cmdh5w->write_string("geo_file_myo", geo_file_myo);
   cmdh5w->write_string("geo_file_LVpur", geo_file_LVpur);
   cmdh5w->write_string("geo_file_RVpur", geo_file_RVpur);  
-  //  cmdh5w->write_string("sur_file_tip0", sur_file_tip0);
-
-  
   cmdh5w->write_string("part_file", part_file);
 
   delete cmdh5w; H5Fclose(cmd_file_id);
   std::cout<< "// ----- Finish writing" << std::endl;
 
-  // Read the geometry file for the whole FSI domain
+  // Read the geometry files
   int nFunc_LVpur, nElem_LVpur, nFunc_RVpur, nElem_RVpur, nFunc_myo, nElem_myo;
   std::vector<int> vecIEN_LVpur, vecIEN_RVpur, vecIEN_myo;
   std::vector<int> phy_tag_LVpur, phy_tag_RVpur, phy_tag_myo;
   std::vector<double> ctrlPts_LVpur, ctrlPts_RVpur, ctrlPts_myo, ctrlPts_combined;
   std::vector< std::vector< double > > myo_fiber;
   
-  // Warning: this function returns phy_tag as 1 only, for now.
+  // Warning: this function returns phy_tag as 1 only.
   TET_T::read_vtu_grid(geo_file_myo.c_str(), nFunc_myo, nElem_myo,
 		       ctrlPts_myo, vecIEN_myo, myo_fiber);
   TET_T::read_purkinje_lines(geo_file_LVpur.c_str(),nFunc_LVpur, nElem_LVpur, 
@@ -200,14 +191,8 @@ int main( int argc, char * argv[] )
   //  for (auto i = vecIEN_RVpur.begin(); i != vecIEN_RVpur.end(); ++i)
   //    std::cout << *i << ' ';
   //  std::cout << "\n" << std::endl;
-
   //*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
   
-  //for(unsigned int ii=0; ii<phy_tag.size(); ++ii)
-  //{
-  //  if(phy_tag[ii] != 0 && phy_tag[ii] != 1) SYS_T::print_fatal("Error: FSI problem, the physical tag for element should be 0 (fluid domain) or 1 (solid domain).\n");
-  //}
-
   // Generate IEN
   IIEN * IEN_myo = new IEN_Tetra_P1(nElem_myo, vecIEN_myo);
   //std::cout << "IEN myo" << std::endl;
@@ -220,35 +205,28 @@ int main( int argc, char * argv[] )
   //std::cout << "IEN RVpur" << std::endl;
   //IEN_RVpur->print_IEN();  
 
-  if(elemType_myo == 501)
-  {
+  if(elemType_myo == 501)  {
     SYS_T::print_fatal_if(vecIEN_myo.size() / nElem_myo != 4, "Error: the mesh connectivity array size does not match with the element type 501. \n");
   }
-  else
-  {
+  else  {
     SYS_T::print_fatal_if(1, "Error: this script doesn't support this element type. \n");
   }
 
-  if(elemType_LVpur == 512)
-  {
+  if(elemType_LVpur == 512)  {
     SYS_T::print_fatal_if(vecIEN_LVpur.size() / nElem_LVpur != 2, "Error: the mesh connectivity array size does not match with the element type 512. \n");
   }
-  else
-  {
+  else  {
     SYS_T::print_fatal_if(1, "Error: this script doesn't support this element type. \n");
   }
   
-  if(elemType_RVpur == 512)
-  {
+  if(elemType_RVpur == 512)  {
     SYS_T::print_fatal_if(vecIEN_RVpur.size() / nElem_RVpur != 2, "Error: the mesh connectivity array size does not match with the element type 512. \n");
   }
-  else
-  {
+  else  {
     SYS_T::print_fatal_if(1, "Error: this script doesn't support this element type. \n");
   }
   
-  // Check the mesh: I don't check line elements like tet elements
-  // because aspect ratios are not critical 
+  // Check the tet mesh for aspect ratio
   TET_T::tetmesh_check(ctrlPts_myo, IEN_myo, nElem_myo, 3.5);
 
   // Generate the mesh
@@ -264,7 +242,7 @@ int main( int argc, char * argv[] )
   std::cout << "mesh RVpur:" << std::endl;
   mesh_RVpur -> print_mesh_info();
 
-  //WARNING:append myo and pur with same order everytime
+  //WARNING:APPEND MYO AND PUR WITH SAME ORDER EVERYTIME
   std::vector<IMesh *> mesh_list;
   mesh_list.clear();
   mesh_list.push_back(mesh_myo);
@@ -305,9 +283,6 @@ int main( int argc, char * argv[] )
   // Partition
   IGlobal_Part * global_part;
   if(cpu_size > 1) {
-    //global_part = new Global_Part_METIS( cpu_size, in_ncommon,
-    //					 isDualGraph, mesh, IEN,
-    //					 "epart", "npart" );
     global_part = new Global_Part_METIS_Mixed( cpu_size, in_ncommon,
 					       isDualGraph, mesh_combined,
 					       IEN_combined,"epart", "npart");
@@ -315,13 +290,11 @@ int main( int argc, char * argv[] )
   
   else if(cpu_size == 1) {
     global_part = new Global_Part_Serial( mesh_combined, "epart", "npart" );
-    //std::cerr<<"ERROR: complete serial parting: "<<cpu_size<<std::endl;
   }
-  else
-    {
-      std::cerr<<"ERROR: wrong cpu_size: "<<cpu_size<<std::endl;
-      exit(EXIT_FAILURE);
-    }
+  else  {
+    std::cerr<<"ERROR: wrong cpu_size: "<<cpu_size<<std::endl;
+    exit(EXIT_FAILURE);
+  }
 
   Map_Node_Index * mnindex =
     new Map_Node_Index(global_part, cpu_size, mesh_combined->get_nFunc());
@@ -329,8 +302,8 @@ int main( int argc, char * argv[] )
   mnindex->write_hdf5("node_mapping");
 
   
-  //WARNING: need re-implementation of boundary conditions implementation
-  // if there will be any present. 
+  //WARNING: need re-implementation of boundary conditions 
+  // if there will be any present
   // ----------------------------------------------------------------
   // Setup boundary condition
   std::vector<INodalBC *> NBC_list;
@@ -466,8 +439,6 @@ int main( int argc, char * argv[] )
   delete IEN_RVpur;   
   delete mytimer;
 
-
-  std::cout<<"==== /Good till here ===="<<std::endl;
   PetscFinalize();
 
   return EXIT_SUCCESS;

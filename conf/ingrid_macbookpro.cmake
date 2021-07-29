@@ -1,16 +1,16 @@
-# Configuration setup for the Linux machine of Ingrid's
+# Configuration setup for Ingrid's MacBookPro
 
 # ========================================================
 # Specify the library locations
 # ========================================================
-set(VTK_DIR /home/ingridxlan/lib/VTK-7.1.1-shared/lib/cmake/vtk-7.1)
+SET(VTK_DIR /Users/ingridlan/lib/VTK-7.1.1-shared/lib/cmake/vtk-7.1)
 
-set(PETSC_DIR /home/ingridxlan/lib/petsc-3.11.3)
-set(PETSC_ARCH arch-linux2-cxx-opt)
+SET(PETSC_DIR /Users/ingridlan/lib/petsc-3.11.3)
+SET(PETSC_ARCH arch-darwin-cxx-opt)
 
-set(METIS_DIR /home/ingridxlan/lib/metis-5.0.3)
+set(METIS_DIR /Users/ingridlan/lib/metis-5.0.3)
 
-set(HDF5_ROOT /home/ingridxlan/lib/hdf5-1.8.16)
+set(HDF5_ROOT /Users/ingridlan/lib/hdf5-1.8.16)
 
 # ========================================================
 # Setup the libraries
@@ -44,8 +44,8 @@ message(STATUS "External Libraries: " ${EXTRA_LINK_LIBS})
 # ========================================================
 # Compiler options 
 # ========================================================
-set(CMAKE_C_COMPILER  /home/ingridxlan/lib/petsc-3.11.3/arch-linux2-cxx-opt/bin/mpicc)
-set(CMAKE_CXX_COMPILER /home/ingridxlan/lib/petsc-3.11.3/arch-linux2-cxx-opt/bin/mpicxx)
+SET(CMAKE_C_COMPILER  /Users/ingridlan/lib/petsc-3.11.3/arch-darwin-cxx-opt/bin/mpicc)
+SET(CMAKE_CXX_COMPILER /Users/ingridlan/lib/petsc-3.11.3/arch-darwin-cxx-opt/bin/mpicxx)
 set(CMAKE_CXX_STANDARD 11)
 
 if( ${CMAKE_BUILD_TYPE} MATCHES "Release" )

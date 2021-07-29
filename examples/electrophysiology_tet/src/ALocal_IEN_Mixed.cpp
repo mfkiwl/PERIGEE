@@ -1,4 +1,5 @@
 #include "ALocal_IEN_Mixed.hpp"
+#include <numeric>
 
 ALocal_IEN_Mixed::ALocal_IEN_Mixed( const std::string &fileBaseName, const int &cpu_rank )
 {

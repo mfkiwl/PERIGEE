@@ -1,57 +1,56 @@
-# Configuration setup for the Linux machine of Ingrid's
+# Configuration setup for machine ladyzhenskaya Linux desktop
+set(HOME_DIR /home/juliu)
 
 # ========================================================
 # Specify the library locations
 # ========================================================
-set(VTK_DIR /home/ingridxlan/lib/VTK-7.1.1-shared/lib/cmake/vtk-7.1)
+set(VTK_DIR ${HOME_DIR}/lib/VTK-8.2.0-SHARED/lib/cmake/vtk-8.2)
 
-set(PETSC_DIR /home/ingridxlan/lib/petsc-3.11.3)
-set(PETSC_ARCH arch-linux2-cxx-opt)
+set(MPI_DIR ${HOME_DIR}/lib/mpich-3.3)
 
-set(METIS_DIR /home/ingridxlan/lib/metis-5.0.3)
+if( ${CMAKE_BUILD_TYPE} MATCHES "Release" )
+  set(PETSC_DIR ${HOME_DIR}/lib/petsc-3.14.5-opt)
+else( ${CMAKE_BUILD_TYPE} MATCHES "Release" )
+  set(PETSC_DIR ${HOME_DIR}/lib/petsc-3.14.5-debug)
+endif( ${CMAKE_BUILD_TYPE} MATCHES "Release" )
 
-set(HDF5_ROOT /home/ingridxlan/lib/hdf5-1.8.16)
+set(PETSC_ARCH .)
+
+set(HDF5_ROOT ${HOME_DIR}/lib/hdf5-1.12.0)
 
 # ========================================================
 # Setup the libraries
 # ========================================================
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}")
 
-find_package(VTK REQUIRED)
-find_package(PETSc REQUIRED)
+find_package(VTK COMPONENTS vtkCommonCore vtkCommonSystem
+  vtkCommonMisc vtkCommonMath vtkIOCore vtkIOLegacy vtkIOXML REQUIRED)
 find_package(HDF5 REQUIRED)
+find_package(PETSc REQUIRED)
 
 include_directories(${VTK_INCLUDE_DIRS})
+include_directories(${HDF5_INCLUDE_DIRS})
 include_directories(${PETSC_INC})
 
 set(EXTRA_LINK_LIBS ${EXTRA_LINK_LIBS} ${VTK_LIBRARIES})
-set(EXTRA_LINK_LIBS ${EXTRA_LINK_LIBS} ${PETSC_LIB})
-
-if(PETSC_METIS)
-  set(EXTRA_LINK_LIBS ${EXTRA_LINK_LIBS} ${PETSC_METIS_LIB})
-  message(STATUS "Use METIS in PETSc: " ${PETSC_METIS_LIB})
-else(PETSC_METIS)
-  find_package(METIS)
-  INCLUDE_DIRECTORIES(${METIS_INCLUDE_DIRS})
-  set(EXTRA_LINK_LIBS ${EXTRA_LINK_LIBS} ${METIS_LIBRARIES})
-endif(PETSC_METIS)
-
-include_directories(${HDF5_INCLUDE_DIRS})
 set(EXTRA_LINK_LIBS ${EXTRA_LINK_LIBS} ${HDF5_LIBRARIES})
+set(EXTRA_LINK_LIBS ${EXTRA_LINK_LIBS} ${PETSC_LIB})
+set(EXTRA_LINK_LIBS ${EXTRA_LINK_LIBS} ${PETSC_METIS_LIB})
+message(STATUS "Use METIS in PETSc: " ${PETSC_METIS_LIB})
 
 message(STATUS "External Libraries: " ${EXTRA_LINK_LIBS})
 
 # ========================================================
 # Compiler options 
 # ========================================================
-set(CMAKE_C_COMPILER  /home/ingridxlan/lib/petsc-3.11.3/arch-linux2-cxx-opt/bin/mpicc)
-set(CMAKE_CXX_COMPILER /home/ingridxlan/lib/petsc-3.11.3/arch-linux2-cxx-opt/bin/mpicxx)
+set(CMAKE_C_COMPILER  ${MPI_DIR}/bin/mpicc)
+set(CMAKE_CXX_COMPILER ${MPI_DIR}/bin/mpicxx)
 set(CMAKE_CXX_STANDARD 11)
 
 if( ${CMAKE_BUILD_TYPE} MATCHES "Release" )
   set(CMAKE_CXX_FLAGS "-O3 -Wall")
 else( ${CMAKE_BUILD_TYPE} MATCHES "Release" )
-  set(CMAKE_CXX_FLAGS "-O0 -Wall")
+  set(CMAKE_CXX_FLAGS "-DENABLE_TEST -O0 -Wall")
 endif( ${CMAKE_BUILD_TYPE} MATCHES "Release" )
 
 set(CMAKE_VERBOSE_MAKEFILE OFF)
