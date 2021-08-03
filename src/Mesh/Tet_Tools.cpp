@@ -1,4 +1,5 @@
 #include "Tet_Tools.hpp"
+#include <regex>
 
 void TET_T::read_vtu_grid( const std::string &filename,
     int &numpts, int &numcels,
@@ -81,13 +82,28 @@ void TET_T::read_vtu_grid( const std::string &filename,
   reader -> Update();
   vtkUnstructuredGrid * vtkugrid = reader -> GetOutput();
 
+  //check if fibers data is available and if so get it.
+  bool fibers_present=false;
   vtkCellData *cellData = vtkugrid->GetCellData();
-
-  //  for (int i = 0; i < cellData->GetNumberOfArrays(); i++)    {
-  vtkDataArray* data = cellData->GetArray(0);
-  //std::cout << "name " << data->GetName() << std::endl;
-  //  }
-      
+  vtkDataArray* data;
+  vtkDataArray* tmpdata;
+  std::regex reg_ex_fib ("(.*)(fib)(.*)",std::regex_constants::icase);
+  
+  for (int i = 0; i < cellData->GetNumberOfArrays(); i++)    {
+    tmpdata = cellData->GetArray(i);
+    if (std::regex_match(tmpdata->GetName(), reg_ex_fib)) {
+      fibers_present = true; 
+      data = tmpdata;
+      std::cout << "Found fibers orientations under the name :"
+		<< data->GetName() << std::endl;
+      break;
+    }
+  }
+  if(!fibers_present) {
+    std::cout << "WARNING: Fibers are not given in the input file, so default "
+      << "orientations  will be assigned" << std::endl;
+  }
+	 
   // Number of grid points in the mesh
   numpts  = static_cast<int>( vtkugrid -> GetNumberOfPoints() );
   
@@ -115,8 +131,14 @@ void TET_T::read_vtu_grid( const std::string &filename,
     
     vtkCell * cell = vtkugrid -> GetCell(ii);
 
-    double* array3 = data->GetTuple3(ii);  
-    (myo_fiber.at(ii)).insert((myo_fiber.at(ii)).begin(), array3, array3+3);
+    //if fibers are not present, then assign (1,0,0) as default orientation
+    if (fibers_present ) {
+      double* array3 = data->GetTuple3(ii);  
+      (myo_fiber.at(ii)).insert((myo_fiber.at(ii)).begin(), array3, array3+3);
+    } else {
+      double array3[]= {1, 0, 0};
+      (myo_fiber.at(ii)).insert((myo_fiber.at(ii)).begin(), array3, array3+3);
+    }
 
     if( cell->GetCellType() == 10 ) 
     {

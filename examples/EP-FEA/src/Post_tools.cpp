@@ -1,4 +1,4 @@
-#include "Post_error.hpp"
+#include "Post_tools.hpp"
 
 double POST_T::exact_scalar(const double &x, const double &y, const double &z,
 		const double &t)
@@ -240,6 +240,136 @@ double POST_T:: get_manu_scalar_h1_error(
   }
 
   return error;
+}
+
+double POST_T::calculate_ecg(const double * const &solu,
+			     const FEAElement * const &element,
+			     const IQuadPts * const &quadPtr,
+			     const double * const &ectrlPts_x,
+			     const double * const &ectrlPts_y,
+			     const double * const &ectrlPts_z,
+			     const std::vector<double> &xe,
+			     //double * const &R,
+			     //double * const &dR_dx,
+			     //double * const &dR_dy,
+			     //double * const &dR_dz,
+			     const int &nlocbas_ee,
+			     const double &curr ) {
+
+  int nqp = quadPtr->get_num_quadPts();
+  //std::cout << "nqp=" << nqp << std::endl;
+
+  double JxW;
+  double solQ;
+  double Integral;
+  double dsolQ_x=0;  double  dsolQ_y=0;   double dsolQ_z=0;
+  double coor_x =0;  double  coor_y =0;   double coor_z =0;
+  double R[nlocbas_ee];
+  double Rx[nlocbas_ee];
+  double Ry[nlocbas_ee];
+  double Rz[nlocbas_ee];
+  
+  for(int qua=0; qua<nqp; ++qua)    {
+
+    solQ=0;
+    dsolQ_x=0;    dsolQ_y=0;    dsolQ_z=0;
+    coor_x =0;    coor_y =0;    coor_z =0;
+
+    element->get_R_gradR(qua, R, Rx, Ry, Rz);
+
+    // Inner product with basis functions
+    // ! This loop may be speed up by calling the sdot function in cblas
+//    if (qua==0) {
+//      std::cout << "ectrlpts_x: \n" ;
+//      for (int ii=0; ii<nlocbas_ee; ++ii)	{
+//	std::cout << ectrlPts_x[ii] << "\t" ;
+//      }
+//      std::cout << std::endl;
+//
+//      std::cout << "ectrlpts_y: \n" ;
+//      for (int ii=0; ii<nlocbas_ee; ++ii)	{
+//	std::cout << ectrlPts_y[ii] << "\t" ;
+//      }
+//      std::cout << std::endl;
+//
+//      std::cout << "ectrlpts_z: \n" ;
+//      for (int ii=0; ii<nlocbas_ee; ++ii)	{
+//	std::cout << ectrlPts_z[ii] << "\t" ;
+//      }
+//      std::cout << std::endl;
+//
+//      std::cout << "R: \n" ;
+//      for (int ii=0; ii<nlocbas_ee; ++ii)	{
+//	std::cout << R[ii] << "\t" ;
+//      }
+//      std::cout << std::endl;
+//
+//      std::cout << "Rx: \n" ;
+//      for (int ii=0; ii<nlocbas_ee; ++ii)	{
+//	std::cout << Rx[ii] << "\t" ;
+//      }
+//      std::cout << std::endl;
+//
+//      std::cout << "Ry: \n" ;
+//      for (int ii=0; ii<nlocbas_ee; ++ii)	{
+//	std::cout << Ry[ii] << "\t" ;
+//      }
+//      std::cout << std::endl;
+//
+//      std::cout << "Rz: \n" ;
+//      for (int ii=0; ii<nlocbas_ee; ++ii)	{
+//	std::cout << Rz[ii] << "\t" ;
+//      }
+//      std::cout << std::endl;
+//    }
+    
+    for(int ii=0; ii<nlocbas_ee; ++ii)	{
+
+      solQ   += solu[ii] * R[ii];
+      
+      dsolQ_x += solu[ii] * Rx[ii];
+      dsolQ_y += solu[ii] * Ry[ii];
+      dsolQ_z += solu[ii] * Rz[ii];
+      coor_x += ectrlPts_x[ii] * R[ii];
+      coor_y += ectrlPts_y[ii] * R[ii];
+      coor_z += ectrlPts_z[ii] * R[ii];
+    }
+
+    double r_sq = (xe[0]*xe[0] + xe[1]*xe[1] + xe[2]*xe[2]
+		   - 2*(xe[0]*coor_x + xe[1]*coor_y + xe[2]*coor_z)
+		   + coor_x*coor_x + coor_y*coor_y + coor_z*coor_z ) ;
+
+    double drinv_x = -1./2.* std::pow(r_sq, -3./2.)
+      * (-2.0 * xe[0] + 2.0 * coor_x);
+    double drinv_y = -1./2.* std::pow(r_sq, -3./2.)
+      * (-2.0 * xe[1] + 2.0 * coor_y);
+    double drinv_z = -1./2.* std::pow(r_sq, -3./2.)
+      * (-2.0 * xe[2] + 2.0 * coor_z);
+	    
+    
+    JxW = element->get_detJac(qua) * quadPtr->get_qw(qua);
+
+    //    get_k(d, coor_x, coor_y, coor_z, fiber_ori_e,
+    //	  k11, k12, k13, k21, k22, k23, k31, k32, k33);
+
+
+    Integral = 0;
+    Integral += JxW * ( -dsolQ_x * drinv_x
+			-dsolQ_y * drinv_y
+			-dsolQ_z * drinv_z );
+      
+    //  //	*(chi * C_m * R[ii] * v + k11 * d_x * dR_dx[ii]
+    //  //	 + k12 * d_y * dR_dx[ii] + k13 * d_z * dR_dx[ii]
+    //  //	 + k21 * d_x * dR_dy[ii] + k22 * d_y * dR_dy[ii]
+    //  //	 + k23 * d_z * dR_dy[ii]
+    //  //	 + k31 * d_x * dR_dz[ii]
+    //  //	 + k32 * d_y * dR_dz[ii] + k33 * d_z * dR_dz[ii] );
+    //}
+
+    
+  }
+
+  return Integral;
 }
 
 // EOF

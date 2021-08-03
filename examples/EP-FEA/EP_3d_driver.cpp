@@ -12,6 +12,13 @@
 // Note:
 // This code relies on the PETSc library.
 //
+// IMPROVEMENT:
+// individual local assembly instantiation is not necessary for each element.
+// create one for each mesh type: line and tet elements.
+// later assign these to the corresponding entries in the locassem_array .
+// take the quadarray as an example. Elemarray needs to contain  individial
+// instatntiations for each element.
+//
 // Date: November 2020
 // Author: Ju Liu
 // Modified: Oguz Ziya Tikenogullari
@@ -39,7 +46,7 @@
 #include "ALocal_NodalBC.hpp"
 #include "ALocal_Inflow_NodalBC.hpp"
 #include "ALocal_BC_3D.hpp"
-#include "AInt_Weight.hpp"
+//#include "AInt_Weight.hpp"
 #include "APart_Node.hpp"
 #include "APart_Basic_Info.hpp"
 #include "PDNTimeStep.hpp"
@@ -78,7 +85,7 @@ int main(int argc, char *argv[])
   double initial_time = 0.0;
   double initial_step = 1.0;
   int initial_index = 0;
-  double final_time = 200;
+  double final_time = 400;
 
   // Time solver parameters
   std::string sol_bName("SOL_");
@@ -139,8 +146,7 @@ int main(int argc, char *argv[])
 
   // ======= Generate Main Data Structure =======
   SYS_T::commPrint("===> Reading mesh files ... \n");
-  //HDF5_PartReader * h5reader = new HDF5_PartReader(part_file, rank);
-  
+
   //// 1.1 Get points' coordinates
   SYS_T::commPrint("===> FEANode ... \n");
   FEANode * fNode = new FEANode(part_file, rank);
@@ -204,10 +210,10 @@ int main(int argc, char *argv[])
   //quadv->print_info();
   //quads->print_info();
 
-  SYS_T::commPrint("===> Build quadrature weight ... \n");
-  AInt_Weight * Int_w_line = new AInt_Weight(quad_line);
+  //SYS_T::commPrint("===> Build quadrature weight ... \n");
+  //AInt_Weight * Int_w_line = new AInt_Weight(quad_line);
   //Int_w_line->print_info();
-  AInt_Weight * Int_w_v = new AInt_Weight(quadv);
+  //AInt_Weight * Int_w_v = new AInt_Weight(quadv);
   //Int_w_v->print_info();
 
   std::vector<IQuadPts *> quadArray; 
@@ -421,8 +427,6 @@ int main(int argc, char *argv[])
   delete locbc;
   delete quad_line; delete quadv; delete quads;
   delete pNode;
-  delete Int_w_v;
-  delete Int_w_line;
   delete disp;
   delete velo;
   delete hist;  

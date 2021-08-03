@@ -3,7 +3,6 @@
 //
 // Code that handles the gmsh file and write data into vtk files.
 //
-// Date Created: Dec. 6 2017
 // Author: Ju Liu
 // Modified: Oguz Ziya Tikenogullari
 // ==================================================================
@@ -15,19 +14,26 @@ int main( int argc, char * argv[] )
   char * char_home_dir = getenv("HOME");
 
   std::string gmshVol (char_home_dir);
-  gmshVol.append("/PERIGEE/examples/electrophysiology_tet/mesh/HLHS-coarse.msh");
-  //gmshVol.append("/PERIGEE/examples/electrophysiology_tet/mesh/tets_cube.msh");
+  //gmshVol.append("/PERIGEE/examples/EP-FEA/mesh/HLHS-coarse.msh");
+  gmshVol.append("/PERIGEE/examples/EP-FEA/mesh/tets_cube.msh");
   SYS_T::GetOptionString("-gmsh_Vol", gmshVol);
   std::cout<<" -gmsh_Vol: "<<gmshVol<<std::endl;
   Gmsh_FileIO * GIOVol = new Gmsh_FileIO( gmshVol );
   GIOVol -> print_info();
   
-  //std::string gmshPur (char_home_dir);
-  //gmshPur.append("/PERIGEE/examples/electrophysiology_tet/mesh/3lines.msh");
-  //SYS_T::GetOptionString("-gmsh_Pur", gmshPur);
-  //std::cout<<" -gmsh_Pur: "<<gmshPur<<std::endl;
-  //Gmsh_FileIO * GIOPur = new Gmsh_FileIO( gmshPur );
-  //GIOPur -> print_info();
+  std::string gmshPur1 (char_home_dir);
+  gmshPur1.append("/PERIGEE/examples/EP-FEA/mesh/threelines.msh");
+  SYS_T::GetOptionString("-gmsh_Pur1", gmshPur1);
+  std::cout<<" -gmsh_Pur1: "<<gmshPur1<<std::endl;
+  Gmsh_FileIO * GIOPur1 = new Gmsh_FileIO( gmshPur1 );
+  GIOPur1 -> print_info();
+
+  std::string gmshPur2 (char_home_dir);
+  gmshPur2.append("/PERIGEE/examples/EP-FEA/mesh/twolines.msh");
+  SYS_T::GetOptionString("-gmsh_Pur2", gmshPur2);
+  std::cout<<" -gmsh_Pur2: "<<gmshPur2<<std::endl;
+  Gmsh_FileIO * GIOPur2 = new Gmsh_FileIO( gmshPur2 );
+  GIOPur2 -> print_info();
 
   ////three lines
   //GIO -> write_vtp_purkinje(0,0,true);//tip0
@@ -65,9 +71,12 @@ int main( int argc, char * argv[] )
   GIOVol -> write_vtu( wmname_vol, isXML );
   delete GIOVol;
   
-  //const std::string wmname_pur("purkinje");
-  //GIOPur -> write_vtu_purkinje( wmname_pur, isXML );
-  //delete GIOPur;
+  const std::string wmname_pur1("pur1");
+  GIOPur1 -> write_vtu_purkinje( wmname_pur1, isXML );
+  delete GIOPur1;
+  const std::string wmname_pur2("pur2");
+  GIOPur2 -> write_vtu_purkinje( wmname_pur2, isXML );
+  delete GIOPur2;
 
   PetscFinalize();
   return 0;

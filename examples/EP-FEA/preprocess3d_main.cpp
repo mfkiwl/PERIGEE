@@ -59,16 +59,29 @@ int main( int argc, char * argv[] )
   // Input files
   char * char_home_dir = getenv("HOME");
   std::string home_dir (char_home_dir);
-  //std::string geo_file_myo("./myo.vtu");
-  //std::string geo_file_pur("./purkinje.vtu");
-  std::string geo_file_myo(home_dir+"/PERIGEE/examples/electrophysiology_tet/mesh/HLHS_fibers.vtu");
-  std::string geo_file_LVpur(home_dir+"/PERIGEE/examples/electrophysiology_tet/mesh/LV-line.vtu");
-  std::string geo_file_RVpur(home_dir+"/PERIGEE/examples/electrophysiology_tet/mesh/RV-line.vtu");
-  //warning: check that the first node of purkinje is not in the endnodes list.
+  
+  //test mesh 
+  std::string geo_file_myo("./myo.vtu");
+  std::string geo_file_LVpur("./pur1.vtu");
+  std::string geo_file_RVpur("./pur2.vtu");
   std::string LVendnodes_file
-    (home_dir+"/PERIGEE-master/examples/electrophysiology_tet/mesh/LV-line_endnodes.txt");
+    (home_dir+"/PERIGEE/examples/EP-FEA/mesh/threelines_endnode.txt");
   std::string RVendnodes_file
-    (home_dir+"/PERIGEE-master/examples/electrophysiology_tet/mesh/RV-line_endnodes.txt");
+    (home_dir+"/PERIGEE/examples/EP-FEA/mesh/twolines_endnode.txt");
+  
+
+//  //heart mesh 
+//  std::string geo_file_myo
+//    (home_dir+"/PERIGEE/examples/EP-FEA/mesh/HLHS_fibers.vtu");
+//  std::string geo_file_LVpur
+//    (home_dir+"/PERIGEE/examples/EP-FEA/mesh/LV-line.vtu");
+//  std::string geo_file_RVpur
+//    (home_dir+"/PERIGEE/examples/EP-FEA/mesh/RV-line.vtu");
+//  //warning: check that the first node of purkinje is not in the endnodes list.
+//  std::string LVendnodes_file
+//    (home_dir+"/PERIGEE/examples/EP-FEA/mesh/LV-line_endnodes.txt");
+//  std::string RVendnodes_file
+//    (home_dir+"/PERIGEE/examples/EP-FEA/mesh/RV-line_endnodes.txt");
 
   //  // volume & faces purkinje mesh  
   //  std::string geo_file("./purkinje.vtu");
@@ -91,7 +104,7 @@ int main( int argc, char * argv[] )
   //
   const std::string part_file("part");
 
-  int cpu_size = 6; 
+  int cpu_size = 1; 
   int in_ncommon = 1;
   const bool isDualGraph = true;
 

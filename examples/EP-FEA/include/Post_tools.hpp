@@ -1,7 +1,7 @@
-#ifndef POST_ERROR_HPP
-#define POST_ERROR_HPP
+#ifndef POST_TOOLS_HPP
+#define POST_TOOLS_HPP
 // ==================================================================
-// Post_error.hpp
+// Post_tools.hpp
 // ------------------------------------------------------------------
 // This is the header file for a collection of postprocessing
 // routines: calculating errors of solutions at element level
@@ -19,6 +19,7 @@
 #include "FEAElement.hpp"
 #include "AInt_Weight.hpp"
 #include "Math_Tools.hpp"
+#include "Vec_Tools.hpp"
 
 namespace POST_T
 {
@@ -127,6 +128,21 @@ namespace POST_T
       double * const &dR_dx,
       double * const &dR_dy,
       const double &curr );
+
+  double calculate_ecg(const double * const &solu,
+		       const FEAElement * const &element,
+		       const IQuadPts * const &quadPtr,
+		       const double * const &ectrlPts_x,
+		       const double * const &ectrlPts_y,
+		       const double * const &ectrlPts_z,
+		       const std::vector<double> &xe,
+		       //double * const &R,
+		       //double * const &dR_dx,
+		       //double * const &dR_dy,
+		       //double * const &dR_dz,
+		       const int &nlocbas_ee,
+		       const double &curr );
+  
 }
 
 #endif

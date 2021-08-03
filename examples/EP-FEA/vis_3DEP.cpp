@@ -65,11 +65,11 @@ int main( int argc, char * argv[] )
 
   int time_start = 0;
   int time_step = 1;
-  int time_end = 200;
+  int time_end = 400;
   double dt = 1.0;
 
   bool isXML = true;
-  bool is_write_fibers = false;
+  bool is_write_fibers = true;
   bool isRestart = false;
 
   PetscMPIInt rank, size;
