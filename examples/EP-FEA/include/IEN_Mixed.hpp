@@ -33,7 +33,9 @@ class IEN_Mixed : public IIEN
 	    const std::string &LVendnodes_filename,
 	    const std::string &RVendnodes_filename,
 	    //std::vector< int > &elemType_combined,
-	    std::vector<double> &ctrlPts_combined);
+	    std::vector<double> &ctrlPts_combined,
+	    const double &LV_tol,
+	    const double &RV_tol);
     
   ~IEN_Mixed();
 

@@ -56,16 +56,24 @@ int main( int argc, char * argv[] )
   const int dof = 1;
 
   int time_start = 0;
-  int time_step = 1;
-  int time_end = 400;
-  double dt = 1.0;
+  int time_step = 20;
+  int time_end = 2000;
+  double dt = 0.5;
 
   bool isXML = true;
 
   // electrode location for ECG computation.
-  double electrode_x = -0.75;
-  double electrode_y = 0.75;
-  double electrode_z = 0.375;
+  //3cm away from the left ventricle. 
+  double electrode_x = -152.2731;
+  double electrode_y = -327.1169;  
+  double electrode_z =  248.9918;
+  //opposite direction
+  //double electrode_x = -96.99;
+  //double electrode_y = -303.80;  
+  //double electrode_z =  248.30;
+  //double electrode_x = -0.75;
+  //double electrode_y =  0.75;
+  //double electrode_z =  0.375;
   
   PetscMPIInt rank, size;
   // ====== PETSc Initialize =====
@@ -203,6 +211,10 @@ int main( int argc, char * argv[] )
 				       electrode_coors, nlocbas_ee, time);
       }
 
+      //if(ecg_el > 1e-10) {
+      //std::cout << "ecg_el= " << ecg_el <<std::endl;
+      //}
+
       ecg_tn = ecg_tn + ecg_el;
       
       delete [] IEN_e    ; IEN_e    =nullptr;
@@ -213,7 +225,7 @@ int main( int argc, char * argv[] )
     }
 
     //write the ecg signal at the current time point.
-    //std::cout << "ecg_tn= " << ecg_tn <<std::endl;
+    std::cout << "ecg_tn= " << ecg_tn <<std::endl;
     out_str << time << "\t" << ecg_tn  << '\n';
 
   }

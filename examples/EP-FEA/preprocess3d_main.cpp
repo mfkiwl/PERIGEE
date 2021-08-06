@@ -61,27 +61,31 @@ int main( int argc, char * argv[] )
   std::string home_dir (char_home_dir);
   
   //test mesh 
-  std::string geo_file_myo("./myo.vtu");
-  std::string geo_file_LVpur("./pur1.vtu");
-  std::string geo_file_RVpur("./pur2.vtu");
-  std::string LVendnodes_file
-    (home_dir+"/PERIGEE/examples/EP-FEA/mesh/threelines_endnode.txt");
-  std::string RVendnodes_file
-    (home_dir+"/PERIGEE/examples/EP-FEA/mesh/twolines_endnode.txt");
+  //std::string geo_file_myo("./myo.vtu");
+  //std::string geo_file_LVpur("./pur1.vtu");
+  //std::string geo_file_RVpur("./pur2.vtu");
+  //std::string LVendnodes_file
+  //  (home_dir+"/PERIGEE/examples/EP-FEA/mesh/threelines_endnode.txt");
+  //std::string RVendnodes_file
+  //  (home_dir+"/PERIGEE/examples/EP-FEA/mesh/twolines_endnode.txt");
   
 
-//  //heart mesh 
-//  std::string geo_file_myo
-//    (home_dir+"/PERIGEE/examples/EP-FEA/mesh/HLHS_fibers.vtu");
-//  std::string geo_file_LVpur
-//    (home_dir+"/PERIGEE/examples/EP-FEA/mesh/LV-line.vtu");
-//  std::string geo_file_RVpur
-//    (home_dir+"/PERIGEE/examples/EP-FEA/mesh/RV-line.vtu");
-//  //warning: check that the first node of purkinje is not in the endnodes list.
-//  std::string LVendnodes_file
-//    (home_dir+"/PERIGEE/examples/EP-FEA/mesh/LV-line_endnodes.txt");
-//  std::string RVendnodes_file
-//    (home_dir+"/PERIGEE/examples/EP-FEA/mesh/RV-line_endnodes.txt");
+  //heart mesh 
+  std::string geo_file_myo
+    (home_dir+"/PERIGEE/examples/EP-FEA/mesh/HLHS_fibers.vtu");
+  std::string geo_file_LVpur
+    (home_dir+"/PERIGEE/examples/EP-FEA/mesh/LV-line.vtu");
+  std::string geo_file_RVpur
+    (home_dir+"/PERIGEE/examples/EP-FEA/mesh/RV-line.vtu");
+  //warning: check that the first node of purkinje is not in the endnodes list.
+  std::string LVendnodes_file
+    (home_dir+"/PERIGEE/examples/EP-FEA/mesh/LV-line_endnodes.txt");
+  std::string RVendnodes_file
+    (home_dir+"/PERIGEE/examples/EP-FEA/mesh/RV-line_endnodes.txt");
+
+  //criteria (distance) for matching purkinje junction nodes to myocardium 
+  const double LV_tol= 1.7;
+  const double RV_tol= 1.7;
 
   //  // volume & faces purkinje mesh  
   //  std::string geo_file("./purkinje.vtu");
@@ -104,7 +108,7 @@ int main( int argc, char * argv[] )
   //
   const std::string part_file("part");
 
-  int cpu_size = 1; 
+  int cpu_size = 4; 
   int in_ncommon = 1;
   const bool isDualGraph = true;
 
@@ -275,12 +279,11 @@ int main( int argc, char * argv[] )
   ctrlPts_list.push_back(ctrlPts_LVpur);
   ctrlPts_list.push_back(ctrlPts_RVpur);  
 
-  
   IIEN * IEN_combined= new IEN_Mixed ( IEN_list, mesh_list, 
 				       ctrlPts_list,
 				       LVendnodes_file.c_str(),
 				       RVendnodes_file.c_str(),
-				       ctrlPts_combined);
+				       ctrlPts_combined, LV_tol, RV_tol);
   
   //  std::cout << "ctrlpts combined:" << std::endl;
   //  VEC_T::print( ctrlPts_combined );

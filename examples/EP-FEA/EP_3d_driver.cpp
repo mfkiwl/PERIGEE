@@ -83,14 +83,14 @@ int main(int argc, char *argv[])
   
   // Time step initailization
   double initial_time = 0.0;
-  double initial_step = 1.0;
+  double initial_step = 0.5;
   int initial_index = 0;
-  double final_time = 400;
+  double final_time = 1000;
 
   // Time solver parameters
   std::string sol_bName("SOL_");
   int ttan_renew_freq = 1;
-  int sol_record_freq = 1;
+  int sol_record_freq = 20;
 
   //// Restart options
   //bool is_restart = false;

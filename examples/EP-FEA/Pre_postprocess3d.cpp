@@ -47,17 +47,20 @@ int main(int argc, char *argv[])
   char * char_home_dir = getenv("HOME");
   std::string home_dir (char_home_dir);
   
-  ////heart mesh endnodes.
+  //heart mesh endnodes.
+  std::string LVendnodes_file
+    (home_dir+"/PERIGEE/examples/EP-FEA/mesh/LV-line_endnodes.txt");
+  std::string RVendnodes_file
+    (home_dir+"/PERIGEE/examples/EP-FEA/mesh/RV-line_endnodes.txt");
+  
+  ////test mesh endnodes
   //std::string LVendnodes_file
   //  (home_dir+"/PERIGEE/examples/EP-FEA/mesh/threelines_endnode.txt");
   //std::string RVendnodes_file
   //  (home_dir+"/PERIGEE/examples/EP-FEA/mesh/twolines_endnode.txt");
-  
-  //test mesh endnodes
-  std::string LVendnodes_file
-    (home_dir+"/PERIGEE/examples/EP-FEA/mesh/threelines_endnode.txt");
-  std::string RVendnodes_file
-    (home_dir+"/PERIGEE/examples/EP-FEA/mesh/twolines_endnode.txt");
+  //criteria (distance) for matching purkinje junction nodes to myocardium 
+  const double LV_tol= 1.7;
+  const double RV_tol= 1.7;
   
   int sysret = system("rm -rf postpart_p*.h5");
   SYS_T::print_fatal_if(sysret != 0, "Error: system call failed. \n");
@@ -66,7 +69,7 @@ int main(int argc, char *argv[])
   int dofNum, dofMat, elemType_myo, elemType_LVpur, elemType_RVpur, in_ncommon, probDim;
 
   std::string part_file("postpart");
-  int cpu_size = 1;
+  int cpu_size = 4;
   bool isDualGraph = true;
   bool isread_part = true;
 
@@ -147,30 +150,24 @@ int main(int argc, char *argv[])
 			     ctrlPts_RVpur, vecIEN_RVpur, phy_tag_RVpur);  
 
   //std::cout<<"elemType_myo: "<<elemType_myo<<std::endl;
-  if(elemType_myo == 501)
-  {
+  if(elemType_myo == 501)  {
     SYS_T::print_fatal_if(vecIEN_myo.size() / nElem_myo != 4, "Error: the mesh connectivity array size does not match with the element type 501. \n");
   }
-  else
-  {
+  else  {
     SYS_T::print_fatal_if(1, "Error: this script doesn't support this element type. \n");
   }
 
-  if(elemType_LVpur == 512)
-  {
+  if(elemType_LVpur == 512)  {
     SYS_T::print_fatal_if(vecIEN_LVpur.size() / nElem_LVpur != 2, "Error: the mesh connectivity array size does not match with the element type 512. \n");
   }
-  else
-  {
+  else  {
     SYS_T::print_fatal_if(1, "Error: this script doesn't support this element type. \n");
   }
   
-  if(elemType_RVpur == 512)
-  {
+  if(elemType_RVpur == 512)  {
     SYS_T::print_fatal_if(vecIEN_RVpur.size() / nElem_RVpur != 2, "Error: the mesh connectivity array size does not match with the element type 512. \n");
   }
-  else
-  {
+  else  {
     SYS_T::print_fatal_if(1, "Error: this script doesn't support this element type. \n");
   }
 
@@ -238,7 +235,7 @@ int main(int argc, char *argv[])
 				       ctrlPts_list,
 				       LVendnodes_file.c_str(),
 				       RVendnodes_file.c_str(),
-				       ctrlPts_combined);
+				       ctrlPts_combined, LV_tol, RV_tol);
 
   
   //std::cout << "ctrlpts combined:" << std::endl;

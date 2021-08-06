@@ -8,9 +8,9 @@ IEN_Mixed::IEN_Mixed(const std::vector< std::vector<int> > &IEN_list,
 		     const std::string &LVendnodes_filename,
 		     const std::string &RVendnodes_filename,
 		     //std::vector< int > &elemType_combined,
-		     std::vector<double> &ctrlPts_combined)
-		     //int &nFunc_tot,
-		     //int &nElem_tot)
+		     std::vector<double> &ctrlPts_combined,
+		     const double &LV_tol,
+		     const double &RV_tol)
 {
   if(mesh_list.size() != IEN_list.size())
     {
@@ -103,7 +103,7 @@ IEN_Mixed::IEN_Mixed(const std::vector< std::vector<int> > &IEN_list,
       //	       << z1 <<std::endl;
       distance = sqrt((x1-x2)*(x1-x2)+(y1-y2)*(y1-y2)+(z1-z2)*(z1-z2));
       //std::cout<< "distance:" << distance <<std::endl;
-      if (distance < 0.1) { // turn this tolerance value into a user param
+      if (distance < LV_tol) { // turn this tolerance value into a user param
       	node12= ii;
 	//std::cout<< "node 1 coords" <<std::endl;
 	//std::cout<< x1 <<","
@@ -111,7 +111,7 @@ IEN_Mixed::IEN_Mixed(const std::vector< std::vector<int> > &IEN_list,
 	//	 << z1 <<std::endl;
       	break; 
       } else if((ii+1)==nnode1) { //is this else robust? 
-	std::cerr<<"ERROR: couldn't find a matching node for purkinje node: "
+	std::cerr<<"ERROR: couldn't find an LV matching node for purkinje node: "
 		 << node2 << " \n";
 	exit(1);
       }
@@ -143,7 +143,7 @@ IEN_Mixed::IEN_Mixed(const std::vector< std::vector<int> > &IEN_list,
       //	       << z1 <<std::endl;
       distance = sqrt((x1-x3)*(x1-x3)+(y1-y3)*(y1-y3)+(z1-z3)*(z1-z3));
       //std::cout<< "distance:" << distance <<std::endl;
-      if (distance < 1.7) { // turn this tolerance value into a user param
+      if (distance < RV_tol) {
       	node13= ii;
 	//std::cout<< "node 1 coords" <<std::endl;
 	//std::cout<< x1 <<","
@@ -151,7 +151,7 @@ IEN_Mixed::IEN_Mixed(const std::vector< std::vector<int> > &IEN_list,
 	//	 << z1 <<std::endl;
       	break; 
       } else if((ii+1)==nnode1) { //is this else robust? 
-	std::cerr<<"ERROR: couldn't find a matching node for purkinje node: "
+	std::cerr<<"ERROR: couldn't find a matching RV node for purkinje node: "
 		 << node3 << " \n";
 	exit(1);
       }
