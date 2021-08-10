@@ -160,6 +160,7 @@ int main( int argc, char * argv[] )
   double * ectrl_x; double * ectrl_y; double * ectrl_z;
   double * esol;
   double ecg_tn, ecg_el;
+  PostVectSolution * pSolu;
   
   std::ofstream out_str{ ecg_out_file };
   std::ostringstream time_index;
@@ -179,7 +180,7 @@ int main( int argc, char * argv[] )
     //		time, name_to_read.c_str() );
     
     // ===== Manage Solution for postprocessing
-    PostVectSolution * pSolu =
+    pSolu =
       new PostVectSolution( name_to_read, anode_mapping_file,
 			    pnode_mapping_file , pNode, GMIptr, dof );    
     
@@ -228,6 +229,7 @@ int main( int argc, char * argv[] )
     std::cout << "ecg_tn= " << ecg_tn <<std::endl;
     out_str << time*dt << "\t" << ecg_tn  << '\n';
 
+    delete pSolu;
   }
 
   // ===== PETSc Finalize =====
@@ -238,6 +240,8 @@ int main( int argc, char * argv[] )
   delete locElem;
   delete PartBasic;
   delete quad_line; delete quadv; 
+
+
 
   std::vector<FEAElement *>::iterator it_elema;
   for(it_elema = elemArray.begin(); it_elema != elemArray.end(); ++it_elema) {
