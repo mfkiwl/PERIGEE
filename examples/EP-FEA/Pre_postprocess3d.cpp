@@ -49,9 +49,9 @@ int main(int argc, char *argv[])
   
   //heart mesh endnodes.
   std::string LVendnodes_file
-    (home_dir+"/PERIGEE/examples/EP-FEA/mesh/LV-line_endnodes.txt");
+    (home_dir+"/PERIGEE/examples/EP-FEA/mesh/LV_endnodes-picked.txt");
   std::string RVendnodes_file
-    (home_dir+"/PERIGEE/examples/EP-FEA/mesh/RV-line_endnodes.txt");
+    (home_dir+"/PERIGEE/examples/EP-FEA/mesh/RV_endnodes-picked.txt");
   
   ////test mesh endnodes
   //std::string LVendnodes_file
@@ -59,8 +59,8 @@ int main(int argc, char *argv[])
   //std::string RVendnodes_file
   //  (home_dir+"/PERIGEE/examples/EP-FEA/mesh/twolines_endnode.txt");
   //criteria (distance) for matching purkinje junction nodes to myocardium 
-  const double LV_tol= 1.7;
-  const double RV_tol= 1.7;
+  const double LV_tol= 1.0;
+  const double RV_tol= 1.0;
   
   int sysret = system("rm -rf postpart_p*.h5");
   SYS_T::print_fatal_if(sysret != 0, "Error: system call failed. \n");

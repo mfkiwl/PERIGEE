@@ -3,7 +3,7 @@
 IonicModel_Purkinje::IonicModel_Purkinje()
   //           d_iso, d_ani, chi,  C_m
   //: IonicModel(1.0,   0.0,   1.0,  1.0),
-  : IonicModel(0.2, 0.0, 140.0, 0.1),
+  : IonicModel(5.0, 0.0, 140.0, 0.1),
     ap_1{100}, ap_2{80}, ap_3{12.9}, m1{0.2},
     m2{0.3}, alpha{0.01}, gamma{0.002}, b{0.15}, c{8.0}
 {
@@ -30,12 +30,12 @@ void IonicModel_Purkinje::get_Istim(double &Istim,
 				    const double &z ) const
 {
   //excite 1st node of purkinje network:
-  if (( std::sqrt(  std::pow(x-(-107.110), 2.0)
-		    + std::pow(y-(-301.313), 2.0)
-		    + std::pow(z-( 248.233), 2.0)  ) <= 3.0 )
-      || ( std::sqrt( std::pow(x-(-102.355), 2.0)
-		      + std::pow(y-(-302.409), 2.0)
-		      + std::pow(z-( 240.436), 2.0)  ) <= 3.0 ) ){
+  if (( std::sqrt(  std::pow(x-(-106.7), 2.0)
+		    + std::pow(y-(-301.9), 2.0)
+		    + std::pow(z-( 248.2), 2.0)  ) <= 1.0 )
+      || ( std::sqrt( std::pow(x-(-104.9), 2.0)
+		      + std::pow(y-(-304.0), 2.0)
+		      + std::pow(z-( 234.0), 2.0)  ) <= 1.0 ) ){
 //  if (( std::sqrt(  std::pow(x-(4.0), 2.0)
 //		    + std::pow(y-(2.0), 2.0)
 //		    + std::pow(z-(0.0), 2.0)  ) <= 0.1 )

@@ -64,13 +64,13 @@ int main( int argc, char * argv[] )
 
   // electrode location for ECG computation.
   //3cm away from the left ventricle. 
-  double electrode_x = -152.2731;
-  double electrode_y = -327.1169;  
-  double electrode_z =  248.9918;
+  //double electrode_x = -152.2731;
+  //double electrode_y = -327.1169;  
+  //double electrode_z =  248.9918;
   //opposite direction
-  //double electrode_x = -96.99;
-  //double electrode_y = -303.80;  
-  //double electrode_z =  248.30;
+  double electrode_x = -96.99;
+  double electrode_y = -303.80;  
+  double electrode_z =  248.30;
   //double electrode_x = -0.75;
   //double electrode_y =  0.75;
   //double electrode_z =  0.375;
@@ -226,7 +226,7 @@ int main( int argc, char * argv[] )
 
     //write the ecg signal at the current time point.
     std::cout << "ecg_tn= " << ecg_tn <<std::endl;
-    out_str << time << "\t" << ecg_tn  << '\n';
+    out_str << time*dt << "\t" << ecg_tn  << '\n';
 
   }
 

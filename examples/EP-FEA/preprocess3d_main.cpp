@@ -74,18 +74,18 @@ int main( int argc, char * argv[] )
   std::string geo_file_myo
     (home_dir+"/PERIGEE/examples/EP-FEA/mesh/HLHS_fibers.vtu");
   std::string geo_file_LVpur
-    (home_dir+"/PERIGEE/examples/EP-FEA/mesh/LV-line.vtu");
+    (home_dir+"/PERIGEE/examples/EP-FEA/mesh/LV-purkinje.vtu");
   std::string geo_file_RVpur
-    (home_dir+"/PERIGEE/examples/EP-FEA/mesh/RV-line.vtu");
+    (home_dir+"/PERIGEE/examples/EP-FEA/mesh/RV-purkinje.vtu");
   //warning: check that the first node of purkinje is not in the endnodes list.
   std::string LVendnodes_file
-    (home_dir+"/PERIGEE/examples/EP-FEA/mesh/LV-line_endnodes.txt");
+    (home_dir+"/PERIGEE/examples/EP-FEA/mesh/LV_endnodes-picked.txt");
   std::string RVendnodes_file
-    (home_dir+"/PERIGEE/examples/EP-FEA/mesh/RV-line_endnodes.txt");
+    (home_dir+"/PERIGEE/examples/EP-FEA/mesh/RV_endnodes-picked.txt");
 
   //criteria (distance) for matching purkinje junction nodes to myocardium 
-  const double LV_tol= 1.7;
-  const double RV_tol= 1.7;
+  const double LV_tol= 1.0;
+  const double RV_tol= 1.0;
 
   //  // volume & faces purkinje mesh  
   //  std::string geo_file("./purkinje.vtu");
