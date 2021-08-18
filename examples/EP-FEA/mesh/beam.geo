@@ -3,8 +3,8 @@ Mesh.Optimize=1;
 Mesh.CharacteristicLengthFactor=1.0;
 
 
-ee=5;
-height=10.0;
+ee=1;
+height=100.0;
 
 Point(1) = {0.0,0.0,0.0};
 Point(2) = {0.0,1.0,0.0};

@@ -15,21 +15,24 @@ int main( int argc, char * argv[] )
 
   std::string gmshVol (char_home_dir);
   //gmshVol.append("/PERIGEE/examples/EP-FEA/mesh/HLHS-coarse.msh");
-  gmshVol.append("/PERIGEE/examples/EP-FEA/mesh/tets_cube.msh");
+  //gmshVol.append("/PERIGEE/examples/EP-FEA/mesh/tets_cube.msh");
+  gmshVol.append("/PERIGEE/examples/EP-FEA/mesh/beam.msh");
   SYS_T::GetOptionString("-gmsh_Vol", gmshVol);
   std::cout<<" -gmsh_Vol: "<<gmshVol<<std::endl;
   Gmsh_FileIO * GIOVol = new Gmsh_FileIO( gmshVol );
   GIOVol -> print_info();
   
   std::string gmshPur1 (char_home_dir);
-  gmshPur1.append("/PERIGEE/examples/EP-FEA/mesh/threelines.msh");
+  //gmshPur1.append("/PERIGEE/examples/EP-FEA/mesh/longline1.msh");
+  gmshPur1.append("/PERIGEE/examples/EP-FEA/mesh/twolines1.msh");
   SYS_T::GetOptionString("-gmsh_Pur1", gmshPur1);
   std::cout<<" -gmsh_Pur1: "<<gmshPur1<<std::endl;
   Gmsh_FileIO * GIOPur1 = new Gmsh_FileIO( gmshPur1 );
   GIOPur1 -> print_info();
 
   std::string gmshPur2 (char_home_dir);
-  gmshPur2.append("/PERIGEE/examples/EP-FEA/mesh/twolines.msh");
+  //  gmshPur2.append("/PERIGEE/examples/EP-FEA/mesh/longline2.msh");
+  gmshPur2.append("/PERIGEE/examples/EP-FEA/mesh/twolines2.msh");
   SYS_T::GetOptionString("-gmsh_Pur2", gmshPur2);
   std::cout<<" -gmsh_Pur2: "<<gmshPur2<<std::endl;
   Gmsh_FileIO * GIOPur2 = new Gmsh_FileIO( gmshPur2 );

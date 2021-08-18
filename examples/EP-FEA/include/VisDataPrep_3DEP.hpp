@@ -13,17 +13,17 @@
 
 class VisDataPrep_3DEP : public IVisDataPrep
 {
-  public:
-    VisDataPrep_3DEP();
-    virtual ~VisDataPrep_3DEP();
+public:
+  VisDataPrep_3DEP();
+  VisDataPrep_3DEP(const std::string array_name);
+  virtual ~VisDataPrep_3DEP();
 
-    virtual void get_pointArray(
-        const std::string solution_file_name,
-        const std::string analysis_node_mapping_file,
-        const std::string post_node_mapping_file,
-        const APart_Node * const &nNode_ptr,
-        const IAGlobal_Mesh_Info * const &gInfo_ptr,
-        const int &input_dof,
+  virtual void get_pointArray(const std::string solution_file_name,
+			      const std::string analysis_node_mapping_file,
+			      const std::string post_node_mapping_file,
+			      const APart_Node * const &nNode_ptr,
+			      const IAGlobal_Mesh_Info * const &gInfo_ptr,
+			      const int &input_dof,
         double ** &pointArrays ) const;
 };
 #endif

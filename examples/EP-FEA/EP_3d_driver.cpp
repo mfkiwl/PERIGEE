@@ -90,7 +90,7 @@ int main(int argc, char *argv[])
   // Time solver parameters
   std::string sol_bName("SOL_");
   int ttan_renew_freq = 1;
-  int sol_record_freq = 20;
+  int sol_record_freq = 10;
 
   //// Restart options
   //bool is_restart = false;

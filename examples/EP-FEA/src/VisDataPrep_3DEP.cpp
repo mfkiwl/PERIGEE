@@ -7,6 +7,13 @@ VisDataPrep_3DEP::VisDataPrep_3DEP()
   arraySizes.push_back(1);
 }
 
+VisDataPrep_3DEP::VisDataPrep_3DEP( const std::string array_name)
+{
+  arrayCompSize = 1;
+  arrayNames.push_back(array_name);
+  arraySizes.push_back(1);
+}
+
 
 VisDataPrep_3DEP::~VisDataPrep_3DEP()
 {}

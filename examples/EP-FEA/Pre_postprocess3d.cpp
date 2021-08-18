@@ -52,15 +52,18 @@ int main(int argc, char *argv[])
     (home_dir+"/PERIGEE/examples/EP-FEA/mesh/LV_endnodes-picked.txt");
   std::string RVendnodes_file
     (home_dir+"/PERIGEE/examples/EP-FEA/mesh/RV_endnodes-picked.txt");
+  //  criteria (distance) for matching purkinje junction nodes to myocardium 
+  const double LV_tol= 1.0;
+  const double RV_tol= 1.0;
   
   ////test mesh endnodes
   //std::string LVendnodes_file
-  //  (home_dir+"/PERIGEE/examples/EP-FEA/mesh/threelines_endnode.txt");
+  //  (home_dir+"/PERIGEE/examples/EP-FEA/mesh/twolines_endnode.txt");
   //std::string RVendnodes_file
   //  (home_dir+"/PERIGEE/examples/EP-FEA/mesh/twolines_endnode.txt");
-  //criteria (distance) for matching purkinje junction nodes to myocardium 
-  const double LV_tol= 1.0;
-  const double RV_tol= 1.0;
+  ////criteria (distance) for matching purkinje junction nodes to myocardium 
+  //const double LV_tol= 0.1;
+  //const double RV_tol= 0.1;
   
   int sysret = system("rm -rf postpart_p*.h5");
   SYS_T::print_fatal_if(sysret != 0, "Error: system call failed. \n");
@@ -69,7 +72,7 @@ int main(int argc, char *argv[])
   int dofNum, dofMat, elemType_myo, elemType_LVpur, elemType_RVpur, in_ncommon, probDim;
 
   std::string part_file("postpart");
-  int cpu_size = 6;
+  int cpu_size = 1;
   bool isDualGraph = true;
   bool isread_part = true;
 

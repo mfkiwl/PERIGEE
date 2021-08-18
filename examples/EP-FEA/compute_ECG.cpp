@@ -72,9 +72,9 @@ int main( int argc, char * argv[] )
   //double electrode_y = -303.80;  
   //double electrode_z =  248.30;
   //v2 lead 
-  double electrode_x = -67.10;
-  double electrode_y = -281.47;  
-  double electrode_z =  211.64;
+  double electrode_x = -86.20;
+  double electrode_y = -280.17;  
+  double electrode_z =  229.31;
   //double electrode_x = -0.75;
   //double electrode_y =  0.75;
   //double electrode_z =  0.375;

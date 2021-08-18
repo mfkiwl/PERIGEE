@@ -187,6 +187,7 @@ ADD_EXECUTABLE( prepostproc3d Pre_postprocess3d.cpp)
 #ADD_EXECUTABLE( post_compare_manu_3d post_compare_manu_3d.cpp)
 ADD_EXECUTABLE( vis_3d_EP vis_3DEP.cpp)
 ADD_EXECUTABLE( compute_ECG compute_ECG.cpp)
+ADD_EXECUTABLE( activation_times activation_times.cpp)
 #
 ## -------------------------------------------------------------------
 # 2. Link libraries
@@ -208,6 +209,9 @@ TARGET_LINK_LIBRARIES( vis_3d_EP ${EXTRA_LINK_LIBS}
   perigee_preprocess perigee_analysis perigee_postprocess )
 
 TARGET_LINK_LIBRARIES( compute_ECG ${EXTRA_LINK_LIBS}
+  perigee_preprocess perigee_analysis perigee_postprocess )
+
+TARGET_LINK_LIBRARIES( activation_times ${EXTRA_LINK_LIBS}
   perigee_preprocess perigee_analysis perigee_postprocess )  
 
 
