@@ -1,11 +1,15 @@
-#ifndef IONICMODEL_PURKINJE_HPP
-#define IONICMODEL_PURKINJE_HPP
+#ifndef IONICMODEL_TTP_HPP
+#define IONICMODEL_TTP_HPP
 // ==================================================================
-// IonicModel_Purkinje.hpp
+// IonicModel_TTP.hpp
 // 
-// Aliev-Panfilov model from Goktepe&Kuhl,2009
+// TenTusscher-Panfilov model
 //
-// Date: May 25 2020
+// this model has 7 ionic currents and 12 gating variables. one of the
+// ionic currents is V and it's a field varible in FE analysis.
+// Therefore we have 18 internal variables in total (6+12)
+//
+// Date: Aug 2021
 // Author: Oguz Ziya Tikenogullari
 // Contact: o.z.tikenogullari@gmail.com
 // ==================================================================
@@ -14,20 +18,14 @@
 #include "Math_Tools.hpp"
 #include "IonicModel.hpp"
 
-class IonicModel_Purkinje : public IonicModel
+class IonicModel_TTP : public IonicModel
 {
 public:
-  IonicModel_Purkinje();
+  IonicModel_TTP();
   
-  virtual ~IonicModel_Purkinje();
+  virtual ~IonicModel_TTP();
   
   virtual void print_info() const; //const =0 ;
-
-  virtual void get_Istim(double &Istim,
-			 const double &t,
-			 const double &x,
-			 const double &y,
-			 const double &z ) const;
 
   //virtual double get_diso() const;
   //
@@ -46,7 +44,7 @@ protected:
 			double &f_r,
 			double &Iion) const;
 private:
-  const double ap_1, ap_2, ap_3, m1, m2, alpha, gamma, b, c;
+  //const double a;
 
 };
 

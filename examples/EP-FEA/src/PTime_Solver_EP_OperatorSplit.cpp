@@ -189,88 +189,91 @@ void PTime_Solver_EP_OperatorSplit::TM_generalized_alpha(
 
   bool conv_flag, renew_flag;
   int nl_counter;
-  while( time_info->get_time() < final_time )
-    {
-      if(time_info->get_index() % renew_tang_freq == 0)
-	renew_flag = true;
-      else
-	renew_flag = false;
+  while( time_info->get_time() < final_time ){
+    
+    if(time_info->get_index() % renew_tang_freq == 0)
+      renew_flag = true;
+    else
+      renew_flag = false;
 
-      dt        = time_info->get_step();
-      dt_half   = dt/2.0;
-      time      = time_info->get_time();
-      time_half =time+dt_half;
+    dt        = time_info->get_step();
+    dt_half   = dt/2.0;
+    time      = time_info->get_time();
+    time_half =time+dt_half;
 
-      ////debugging pupose - no diffusion
-      //gassem_ptr->Update_nodal_velo(pre_disp, pre_hist,
-      //				    time, dt,
-      //				    ionicmodel_array, alelem_ptr, lien_ptr,
-      //				    anode_ptr, feanode_ptr, bc_part,
-      //				    cur_disp, cur_hist);
+    ////debugging pupose - no diffusion
+    //gassem_ptr->Update_nodal_velo(pre_disp, pre_hist,
+    //				  time, dt,
+    //				  ionicmodel_array, alelem_ptr, lien_ptr,
+    //				  anode_ptr, feanode_ptr, bc_part,
+    //				  cur_disp, cur_hist);
 
-      ////debugging pupose - no ionic update
-      //nsolver_ptr
-      //	->Gen_alpha_solve(renew_flag, time, dt, 
-      //			  pre_velo, pre_disp,
-      //			  tmga_ptr, alelem_ptr, lien_ptr,
-      //			  anode_ptr, feanode_ptr, bc_part,
-      //			  quad_array, ele_array, 
-      //			  lassem_array, gassem_ptr, 
-      //			  lsolver_ptr, cur_velo, cur_disp,
-      //			  conv_flag, nl_counter);
-      //std::cout << "disp after single diffusion: " << std::endl;
-      //cur_disp->PrintNoGhost();
-      
-      //Step 1 - Update of ionic variables
-      gassem_ptr->Update_nodal_velo(pre_disp, pre_hist,
-      			    time, dt_half,
-      			    ionicmodel_array, alelem_ptr, lien_ptr,
-      			    anode_ptr, feanode_ptr, bc_part,
-      			    tmp_disp, tmp_hist );
-      //std::cout << "tmp disp after 1st ionic: " << std::endl;
-      //tmp_disp->PrintNoGhost();
-      //
-      //Step 2 - gen_alpha_solve  for the diffusion problem 
-      nsolver_ptr
-      	->Gen_alpha_solve(renew_flag, time, dt, 
-      			  pre_velo, tmp_disp,
-      			  tmga_ptr, alelem_ptr, lien_ptr,
-      			  anode_ptr, feanode_ptr, bc_part,
-      			  quad_array, ele_array, 
-      			  lassem_array, gassem_ptr, 
-      			  lsolver_ptr, cur_velo, tmp2_disp,
-      			  conv_flag, nl_counter);
-      //std::cout << "tmp2 disp after diffusion: " << std::endl;
-      //tmp2_disp->PrintNoGhost();
-      //
-      //Step 3 - Update of ionic variables
-      gassem_ptr->Update_nodal_velo(tmp2_disp, tmp_hist,
-      	         	    time_half, dt_half,
-      			    ionicmodel_array, alelem_ptr, lien_ptr,
-      			    anode_ptr, feanode_ptr, bc_part,
-      			    cur_disp, cur_hist   );
-      //std::cout << "cur disp after second ionic: " << std::endl;
-      //cur_disp->PrintNoGhost();
+    ////debugging pupose - no ionic update
+    //nsolver_ptr
+    //	->Gen_alpha_solve(renew_flag, time, dt, 
+    //			  pre_velo, pre_disp,
+    //			  tmga_ptr, alelem_ptr, lien_ptr,
+    //			  anode_ptr, feanode_ptr, bc_part,
+    //			  quad_array, ele_array, 
+    //			  lassem_array, gassem_ptr, 
+    //			  lsolver_ptr, cur_velo, cur_disp,
+    //			  conv_flag, nl_counter);
+    //std::cout << "disp after single diffusion: " << std::endl;
+    //cur_disp->PrintNoGhost();
+    
 
-      time_info->TimeIncrement();
+    //std::cout << "hist at the beginning: " << std::endl;
+    //pre_hist->PrintWithGhost();
+    //Step 1 - Update of ionic variables
+    gassem_ptr->Update_nodal_velo(pre_disp, pre_hist,
+				  time, dt_half,
+				  ionicmodel_array, alelem_ptr, lien_ptr,
+				  anode_ptr, feanode_ptr, bc_part,
+				  tmp_disp, tmp_hist );
+    //std::cout << "tmp hist after 1st ionic: " << std::endl;
+    //tmp_hist->PrintNoGhost();
+    //
+    //Step 2 - gen_alpha_solve  for the diffusion problem 
+    nsolver_ptr
+      ->Gen_alpha_solve(renew_flag, time, dt, 
+			pre_velo, tmp_disp,
+			tmga_ptr, alelem_ptr, lien_ptr,
+			anode_ptr, feanode_ptr, bc_part,
+			quad_array, ele_array, 
+			lassem_array, gassem_ptr, 
+			lsolver_ptr, cur_velo, tmp2_disp,
+			conv_flag, nl_counter);
+    //std::cout << "tmp2 disp after diffusion: " << std::endl;
+    //tmp2_disp->PrintNoGhost();
+    //
+    //Step 3 - Update of ionic variables
+    gassem_ptr->Update_nodal_velo(tmp2_disp, tmp_hist,
+				  time_half, dt_half,
+				  ionicmodel_array, alelem_ptr, lien_ptr,
+				  anode_ptr, feanode_ptr, bc_part,
+				  cur_disp, cur_hist   );
+    //std::cout << "cur hist after second ionic: " << std::endl;
+    //cur_hist->PrintWithGhost();
 
-      PetscPrintf(PETSC_COMM_WORLD, "Time = %e, dt = %e, index = %d \n",
-		  time_info->get_time(), time_info->get_step(),
-		  time_info->get_index());
+    time_info->TimeIncrement();
 
+    PetscPrintf(PETSC_COMM_WORLD, "Time = %e, dt = %e, index = %d \n",
+		time_info->get_time(), time_info->get_step(),
+		time_info->get_index());
 
-      if(time_info->get_index()%sol_record_freq == 0)
-	{
-	  sol_name = Name_Generator( time_info->get_index() );
-	  hist_sol_name = "hist_" + sol_name;
-	  cur_disp->WriteBinary(sol_name.c_str());
-	  cur_hist->WriteBinary(hist_sol_name.c_str()); // does it overwrite?
-	}
+    
+    if(time_info->get_index()%sol_record_freq == 0)
+      {
+	sol_name = Name_Generator( time_info->get_index() );
+	hist_sol_name = "hist_" + sol_name;
+	cur_disp->WriteBinary(sol_name.c_str());
+	cur_hist->WriteBinary(hist_sol_name.c_str()); // does it overwrite?
+      }
 
-      pre_disp->Copy(*cur_disp);
-      pre_velo->Copy(*cur_velo);
-      pre_hist->Copy(*cur_hist);//update history
-    }
+    pre_disp->Copy(*cur_disp);
+    pre_velo->Copy(*cur_velo);
+    pre_hist->Copy(*cur_hist);//update history
+  }
 
   delete pre_disp; delete cur_disp; delete tmp_disp; delete tmp2_disp;
   delete pre_velo; delete cur_velo; 

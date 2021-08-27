@@ -21,7 +21,8 @@ public:
   IonicModel(const double d_iso_in,
 	     const double d_ani_in,
 	     const double chi_in,
-	     const double C_m_in );
+	     const double C_m_in,
+	     const double n_int_vars_in);
   
   virtual ~IonicModel();
   
@@ -34,6 +35,10 @@ public:
   double get_chi() const;
 
   double get_C_m() const;
+
+  double get_n_int_vars() const;
+
+  virtual void get_int_vars( double* val) const;
 
   //only one I_stim at t_n
   void Forward_Euler(const double &r_old_in,
@@ -65,7 +70,7 @@ protected:
 			double &f_r,
 			double &Iion ) const;
 
-  const double d_iso, d_ani, chi, C_m;
+  const double d_iso, d_ani, chi, C_m, n_int_vars;
 
 };
 

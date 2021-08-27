@@ -56,6 +56,7 @@
 #include "PGAssem_EP.hpp"
 #include "PTime_Solver_EP_OperatorSplit.hpp"
 #include "IonicModel_AP.hpp"
+#include "IonicModel_TTP.hpp"
 #include "IonicModel_Purkinje.hpp"
 #include "IonicModel_Test.hpp"
 
@@ -85,12 +86,12 @@ int main(int argc, char *argv[])
   double initial_time = 0.0;
   double initial_step = 0.5;
   int initial_index = 0;
-  double final_time = 1000;
+  double final_time = 0.5;
 
   // Time solver parameters
   std::string sol_bName("SOL_");
   int ttan_renew_freq = 1;
-  int sol_record_freq = 10;
+  int sol_record_freq = 1;
 
   //// Restart options
   //bool is_restart = false;
@@ -156,8 +157,8 @@ int main(int argc, char *argv[])
   // 1.4 Get LIEN for each local elements
   SYS_T::commPrint("===> ALocal_IEN_Mixed ... \n");
   ALocal_IEN_Mixed * locIEN = new ALocal_IEN_Mixed(part_file, rank);
-  //if (rank==1)
-  //  locIEN->print_info();
+  if (rank==1)
+    locIEN->print_info();
   
   // 1.5 Get Global Mesh Info
   SYS_T::commPrint("===> AGlobal_Mesh_Info_Mixed ... \n");
@@ -294,13 +295,28 @@ int main(int argc, char *argv[])
   tm_galpha_ptr->print_info();
 
   //====== Ionic model setup
+  //warning: I allocate space in pdnsolution for the internal variables,
+  // using the largest number of internal variables required by the assigned
+  // ionic models. for example if you have ttp and ap assigned as ionic models,
+  // pdnsolution is allocated for
+  //       number_of_int_vars_for_ttp x number_of_total_nodes.
+  // for a more efficient memory use, take the nonuniformity in number of
+  // internal varibles into accout. but this will complicate retrieveing the
+  // values of local and element internal variables.
+  // (because a differing sized vectro will need to be retrieved each time and 
+  //  that size will need to be tracked.)
+  // Idea: implement stride vector in PDNsolution class. 
   SYS_T::commPrint("===> Generate Ionic Models of myocardium and purkinje ... \n");
-  IonicModel * ionicmodel_myo = new IonicModel_AP () ;
+  IonicModel * ionicmodel_myo = new IonicModel_TTP () ;
   IonicModel * ionicmodel_pur = new IonicModel_Purkinje () ;
   //IonicModel * ionicmodel_ptr = new IonicModel_Test () ;
+  int ionicmodel_dof ; 
+  ionicmodel_dof =   std::max( ionicmodel_myo->get_n_int_vars(),
+			       ionicmodel_pur->get_n_int_vars() );
+
   ionicmodel_myo -> print_info();
   ionicmodel_pur -> print_info();
-
+  
   //====== Local assembly pointer
   SYS_T::commPrint("===> Initialize local assembly routine ... \n");
 
@@ -332,12 +348,15 @@ int main(int argc, char *argv[])
   // ---------------------------------------
 
   // ======= Solution Initialization =======
-  PDNSolution * disp = new PDNSolution_EP(pNode, fNode, locbc, 3); 
-  PDNSolution * velo = new PDNSolution_EP(pNode, fNode, locbc, 0);
-  PDNSolution * hist = new PDNSolution_EP(pNode, fNode, locbc, 0);
+  PDNSolution * disp = new PDNSolution_EP(pNode, fNode, locbc,  3); 
+  PDNSolution * velo = new PDNSolution_EP(pNode, fNode, locbc,  0);
+  PDNSolution * hist = new PDNSolution_EP(pNode, ionicmodel_dof,
+					  fNode,  locbc, 0, locIEN, ionicmodel_array);
+
+  
 
   //std::cout << "initial solution: " << std::endl;
-  //disp->PrintNoGhost();
+  //hist->PrintNoGhost();
 
   //if( is_restart )
   //{
@@ -412,9 +431,10 @@ int main(int argc, char *argv[])
   tsolver->Info();
 
   SYS_T::commPrint("===> Start Finite Element Analysis:\n");
-  tsolver->TM_generalized_alpha(
-				velo, disp, hist, timeinfo, tm_galpha_ptr, locElem, locIEN, pNode,
-				fNode, locbc, quadArray, elemArray, ionicmodel_array, locAssem_array,
+  tsolver->TM_generalized_alpha(velo, disp, hist, timeinfo, tm_galpha_ptr,
+				locElem, locIEN, pNode,
+				fNode, locbc, quadArray, elemArray,
+				ionicmodel_array, locAssem_array,
 				gloAssem_ptr, lsolver, nsolver );
 
   // ======= PETSc Finalize =======

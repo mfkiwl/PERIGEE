@@ -3,8 +3,10 @@
 IonicModel::IonicModel(const double d_iso_in,
 		       const double d_ani_in,
 		       const double chi_in,
-		       const double C_m_in )
-  : d_iso(d_iso_in), d_ani(d_ani_in), chi(chi_in), C_m(C_m_in)
+		       const double C_m_in,
+		       const double n_int_vars_in)
+  : d_iso(d_iso_in), d_ani(d_ani_in), chi(chi_in),
+    C_m(C_m_in), n_int_vars(n_int_vars_in)
 {
   //SYS_T::commPrint("IonicModel constructor. \n");
 }
@@ -31,7 +33,7 @@ void IonicModel::get_Iion(const double &r_old_in,
 			  double &f_r,
 			  double &Iion) const
 {
-  SYS_T::commPrint("IonicModel get_Iion. \n");
+  SYS_T::print_exit("Error: get_Iion is not implemented. \n"); 
 }
 
 void IonicModel::get_Istim(double &Istim,
@@ -191,6 +193,34 @@ double IonicModel::get_C_m() const
 {
   //  SYS_T::commPrint("IonicModel C_m %e \n", C_m);
   return C_m;
+}
+
+double IonicModel::get_n_int_vars() const
+{
+  return n_int_vars;
+}
+
+void IonicModel::get_int_vars(double* val) const
+{
+  SYS_T::print_exit("Error: get_int_vars is not implemented. \n"); 
+//  val[ 0 ]=  0 ;
+//  val[ 1 ]=  1 ;
+//  val[ 2 ]=  2 ;
+//  val[ 3 ]=  3 ;
+//  val[ 4 ]=  4 ;
+//  val[ 5 ]=  5 ;
+//  val[ 6 ]=  6 ;
+//  val[ 7 ]=  7 ;
+//  val[ 8 ]=  8 ;
+//  val[ 9 ]=  9 ;
+//  val[10 ]= 10 ;
+//  val[11 ]= 11 ;
+//  val[12 ]= 12 ;
+//  val[13 ]= 13 ;
+//  val[14 ]= 14 ;
+//  val[15 ]= 15 ;
+//  val[16 ]= 16 ;
+//  val[17 ]= 17 ;
 }
 
 

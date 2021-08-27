@@ -59,162 +59,7 @@ PGAssem_EP::PGAssem_EP( const std::vector< IPLocAssem * > &locassem_array,
 //  
 }
 
-//PGAssem_EP::PGAssem_EP( const IPLocAssem * const &locassem_ptr,
-//    const IAGlobal_Mesh_Info * const &agmi_ptr,
-//    const APart_Node * const &pnode_ptr,
-//    const int &petsc_version_type )
-//{
-//  dof = locassem_ptr->get_dof();
-//  nLocBas = agmi_ptr->get_nLocBas();
 //
-//  row_index = new PetscInt [dof * nLocBas];
-//  col_index = new PetscInt [dof * nLocBas];
-//
-//  int sdegree = agmi_ptr->get_xdegree();
-//  int tdegree = agmi_ptr->get_ydegree();
-//  int udegree = agmi_ptr->get_zdegree();
-//  int nlocalnode = pnode_ptr->get_nlocalnode();
-//
-//  //std::cout << "PGAssem constructor \n"
-//  //	    << "sdegree" << sdegree <<"\n"
-//  //	    << "tdegree" << tdegree <<"\n"
-//  //	    << "udegree" << udegree <<"\n"
-//  //	    << std::endl;
-//
-//  int nz_prow;
-//  if((tdegree==0)&&(udegree==0)) {
-//    nz_prow = 2 * dof * (2*sdegree+1);
-//  }else if ((tdegree==0)&&(udegree==0)&&(sdegree==0)) {
-//    SYS_T::commPrint("element degrees in space are all zero");
-//  }else{
-//    nz_prow = dof * (2*sdegree+1) * (2*tdegree+1) * (2*udegree+1);
-//  }
-//  int nlocrow = dof * nlocalnode;
-//
-//  switch(petsc_version_type)
-//  {
-//    case 0:
-//      Init_petsc_32(nz_prow, nlocrow);
-//      SYS_T::commPrint("===> PETSc-3.5.3: MatCreateAIJ called. \n");
-//      break;
-//    default:
-//      SYS_T::commPrint("Error: given petsc_version_type not implemented. \n");
-//      MPI_Abort(PETSC_COMM_WORLD, 1);
-//      break;
-//  }
-//
-//  // allocate the frequently used arrays in global assembly
-//  int nlgn = pnode_ptr->get_nlocghonode(); //number of local ghost nodes
-//  array_a = new double [nlgn * dof];
-//  array_b = new double [nlgn * dof];
-//  array_c = new double [nlgn * dof];
-//  array_d = new double [nlgn * dof];  
-//
-//  local_a = new double [dof * nLocBas];
-//  local_b = new double [dof * nLocBas];
-//  local_c = new double [dof * nLocBas];
-//  local_d = new double [dof * nLocBas];  
-//
-//  IEN_e = new int [nLocBas];
-//
-//  ectrl_x = new double [nLocBas];
-//  ectrl_y = new double [nLocBas];
-//  ectrl_z = new double [nLocBas];
-//}
-//
-//
-//PGAssem_EP::PGAssem_EP( const IPLocAssem * const &locassem_ptr,
-//    const IAGlobal_Mesh_Info * const &agmi_ptr,
-//    const APart_Node * const &pnode_ptr )
-//{
-//  dof = locassem_ptr->get_dof();
-//  nLocBas = agmi_ptr->get_nLocBas();
-//
-//  row_index = new PetscInt [dof * nLocBas];
-//  col_index = new PetscInt [dof * nLocBas];
-//
-//  const int sdegree = agmi_ptr->get_xdegree();
-//  const int tdegree = agmi_ptr->get_ydegree();
-//  const int udegree = agmi_ptr->get_zdegree();
-//  const int nlocalnode = pnode_ptr->get_nlocalnode();
-//
-//  const int dnz = int ( 1.2 * dof * (2*sdegree+1) * (2*tdegree+1) * (2*udegree+1) );
-//  const int onz = int ( 1.2 * dof * (2*sdegree+1) * (2*tdegree+1) * (2*udegree+1) );
-//  const int nlocrow = dof * nlocalnode;
-//
-//  Init_petsc_35(dnz, onz, nlocrow);
-//  SYS_T::commPrint("===> PETSc-3.5.3: MatCreateAIJ called. \n");
-//
-//  Release_nonzero_err_str();
-//
-//  SYS_T::commPrint("===> MAT_NEW_NONZERO_ALLOCATION_ERR = FALSE. \n");
-//  
-//  // allocate the frequently used arrays in global assembly
-//  int nlgn = pnode_ptr->get_nlocghonode(); //number of local ghost nodes
-//  array_a = new double [nlgn * dof];
-//  array_b = new double [nlgn * dof];
-//
-//  local_a = new double [dof * nLocBas];
-//  local_b = new double [dof * nLocBas];
-//
-//  IEN_e = new int [nLocBas];
-//
-//  ectrl_x = new double [nLocBas];
-//  ectrl_y = new double [nLocBas];
-//  ectrl_z = new double [nLocBas];
-//}
-//
-//
-//PGAssem_EP::PGAssem_EP( const IPLocAssem * const &locassem_ptr,
-//    const IAGlobal_Mesh_Info * const &agmi_ptr,
-//    const ALocal_Elem * const &alelem_ptr,
-//    const ALocal_IEN * const &aien_ptr,
-//    const APart_Node * const &pnode_ptr,
-//    const ALocal_NodalBC * const &part_bc )
-//{
-//  dof = locassem_ptr->get_dof();
-//  nLocBas = agmi_ptr->get_nLocBas();
-//
-//  const int nlocalnode = pnode_ptr->get_nlocalnode();
-//  const int nlocrow = dof * nlocalnode;
-//  const int nElem = alelem_ptr->get_nlocalele();
-//
-//  int * dnnz = new int [nlocrow];
-//  int * onnz = new int [nlocrow];
-//
-//  SYS_T::commPrint("===> Estimate sparse nonzero structure. \n");
-//  Get_dnz_onz(nElem, aien_ptr, pnode_ptr, part_bc, dnnz, onnz);
-//  
-//  Init_petsc_35(dnnz, onnz, nlocrow);
-//
-//  delete [] dnnz; delete [] onnz;
-//
-//  // PETSc 3.5.3 and 3.6.0 use the same function call for creating Mat object  
-//  SYS_T::commPrint("===> PETSc-3.6.0: MatCreateAIJ called. \n");
-//
-//  Release_nonzero_err_str();
-//
-//  SYS_T::commPrint("===> MAT_NEW_NONZERO_ALLOCATION_ERR = FALSE. \n");
-//
-//  // allocate the frequently used arrays in global assembly
-//  int nlgn = pnode_ptr->get_nlocghonode();
-//  array_a = new double [nlgn * dof];
-//  array_b = new double [nlgn * dof];
-//
-//  row_index = new PetscInt [dof * nLocBas];
-//  col_index = new PetscInt [dof * nLocBas];
-//  
-//  local_a = new double [dof * nLocBas];
-//  local_b = new double [dof * nLocBas];
-//
-//  IEN_e = new int [nLocBas];
-//
-//  ectrl_x = new double [nLocBas];
-//  ectrl_y = new double [nLocBas];
-//  ectrl_z = new double [nLocBas];
-//}
-
-
 PGAssem_EP::~PGAssem_EP()
 {
   VecDestroy(&G);
@@ -692,8 +537,8 @@ void PGAssem_EP::Get_dnz_onz( const int &nElem,
   //SYS_T::commPrint("===> checkpoint 1 . \n");
   
   // loop for each row 
-  for( int ii=0; ii<nnode; ++ii )
-  {
+  //for( int ii=0; ii<nnode; ++ii )  {
+  for( int ii=0; ii<nlocalnode; ++ii )  {  
     elem4node.clear();
 
     //for(int ee=0; ee<nElem; ++ee)
@@ -1443,106 +1288,9 @@ void PGAssem_EP::Assem_mass_residual(const PDNSolution * const &sol_a,
 }
 
 
-//void PGAssem_EP::Update_nodal_velo(const PDNSolution * const &sol_a, //disp
-//				   const PDNSolution * const &sol_b, //pre_hist
-//				   const double &t_n,
-//				   const double &dt,
-//				   const IonicModel * const &ionicmodel_ptr,
-//				   const ALocal_Elem * const &alelem_ptr,
-//				   const ALocal_IEN * const &lien_ptr,
-//				   const APart_Node * const &node_ptr,
-//				   const FEANode * const &fnode_ptr,
-//				   const ALocal_NodalBC * const &bc_part,
-//				   PDNSolution * const &sol_c, //new hist
-//				   PDNSolution * const &sol_d //new hist
-//				   )
-//{
-//  //  std::cout << "curr time: " << t_n << std::endl;
-//  int nElem = alelem_ptr->get_nlocalele();
-//  int loc_dof = dof * nLocBas;
-//  int loc_index, lrow_index; // lcol_index;
-//
-////  //int node_num = sol_a->get_nlocal();
-//  int node_num = node_ptr->get_nlocghonode();
-////    
-//  sol_a->GetLocalArray( array_a, node_ptr );//V_in
-//  sol_b->GetLocalArray( array_b, node_ptr );//hist_old
-//  sol_c->GetLocalArray( array_c, node_ptr );//V_new
-//  sol_d->GetLocalArray( array_d, node_ptr );//hist_new
-////
-////  int node_locgho =node_ptr->get_nlocghonode();
-////  int dof=  lassem_ptr->get_dof();
-////  double *array_iion = new double [ dof * node_locgho ];
-////  double *array_dphi = new double [ dof * node_locgho ];
-////  
-//  double r_new, r_old, V_new, V_in;
-//  double ctrl_x, ctrl_y, ctrl_z;
-//  double t_n_half {t_n + dt/2.0};
-//  double t_n1 {t_n + dt};
-//  int num{1};
-//  std::vector<double> Istim;
-//  Istim.resize(3);
-//  
-//  for (int count{ 0 }; count < node_num; ++count)
-//    {
-//      V_in     = array_a[count];      
-//      r_old    = array_b[count];
-//
-//      //global_idx = node_ptr -> get_local_to_global(count);
-//      fnode_ptr->get_ctrlPts_xyz(num, &count,
-//				 &ctrl_x, &ctrl_y, &ctrl_z);
-//      ionicmodel_ptr-> get_Istim (Istim.at(0), t_n,
-//				  ctrl_x, ctrl_y, ctrl_z);
-//      ionicmodel_ptr-> get_Istim (Istim.at(1), t_n_half,
-//				  ctrl_x, ctrl_y, ctrl_z);
-//      ionicmodel_ptr-> get_Istim (Istim.at(2), t_n1,
-//				  ctrl_x, ctrl_y, ctrl_z);
-//
-//      //ionicmodel_ptr-> Forward_Euler(r_old, dt, V_in, Istim, r_new, V_new);
-//      ionicmodel_ptr-> Runge_Kutta_4(r_old, dt, V_in, Istim, r_new, V_new);
-//
-//      array_c   [count] = V_new;
-//      array_d   [count] = r_new;
-//    }
-//
-//  for( int ee=0; ee<nElem; ++ee )
-//  {
-//    if( 1 ) //eptr_array[ee]->is_sizeNonzero()
-//    {
-//      lien_ptr->get_LIEN_e(ee, IEN_e);
-////      GetLocal(array_a, IEN_e, local_a); //V_in    
-////      GetLocal(array_b, IEN_e, local_b); //hist_old
-//      GetLocal(array_c, IEN_e, local_c); //V_new   
-//      GetLocal(array_d, IEN_e, local_d); //hist_new
-//
-//      for(int i=0; i<nLocBas; ++i)
-//      {
-//        loc_index = IEN_e[i];
-//
-//        for(int m=0; m<dof; ++m)
-//        {
-//          lrow_index = bc_part->get_LID(m, loc_index);
-//  
-//          row_index[dof * i + m] = dof * lrow_index + m;
-//	}
-//      }
-//      
-//      VecSetValues(sol_c->solution, loc_dof, row_index, local_c, INSERT_VALUES);
-//      VecSetValues(sol_d->solution, loc_dof, row_index, local_d, INSERT_VALUES);
-//    }
-//  }
-//
-//  VecAssemblyBegin(sol_c->solution);
-//  VecAssemblyEnd(sol_c->solution);
-//  VecAssemblyBegin(sol_d->solution);
-//  VecAssemblyEnd(sol_d->solution);
-//  
-//}
-
-
 //this version is for the nonuniform element types
-void PGAssem_EP::Update_nodal_velo(const PDNSolution * const &sol_a, //disp
-				   const PDNSolution * const &sol_b, //pre_hist
+void PGAssem_EP::Update_nodal_velo(const PDNSolution * const &sol_a, //V_in    
+				   const PDNSolution * const &sol_b, //hist_old
 				   const double &t_n,
 				   const double &dt,
 				   const std::vector< IonicModel * > &ionicmodel_array,
@@ -1551,48 +1299,55 @@ void PGAssem_EP::Update_nodal_velo(const PDNSolution * const &sol_a, //disp
 				   const APart_Node * const &node_ptr,
 				   const FEANode * const &fnode_ptr,
 				   const ALocal_NodalBC * const &bc_part,
-				   PDNSolution * const &sol_c, //new hist
-				   PDNSolution * const &sol_d //new hist
+				   PDNSolution * const &sol_c, //V_new
+				   PDNSolution * const &sol_d  //hist_new
 				   )
 {
-  //member variables  that are not assigned before and should be assigned in
-  // element for loops :
-  // nLocBas , row_index, col_index, local_a b c d, IEN_e, ectrl_xyz
-  int nElem = alelem_ptr->get_nlocalele();
-  int loc_dof, nlocbas_ee;
-  int loc_index, lrow_index; // lcol_index;
-
-  int node_num = node_ptr->get_nlocghonode();
+  int node_num = node_ptr->get_nlocalnode();
 
   //std::ostringstream oss;
   //std::string out_str;
   //oss.clear(); out_str.clear();
+  //oss << "================BEGIN PGASSEM==============\n";
   
   sol_a->GetLocalArray( array_a, node_ptr );//V_in
-  sol_b->GetLocalArray( array_b, node_ptr );//hist_old
+  sol_b->GetLocalArray( vector_b );//hist_old
   sol_c->GetLocalArray( array_c, node_ptr );//V_new
-  sol_d->GetLocalArray( array_d, node_ptr );//hist_new
-
-  double r_new, r_old, V_new, V_in;
+  sol_d->GetLocalArray( vector_d );//hist_new
+  
+  //oss << "vector_b size : "<< vector_b.size()<< " \n";
+  //VEC_T::print(vector_b,oss);
+      
+  double V_new, V_in;
+  std::vector<double> r_new, r_old;
   double ctrl_x, ctrl_y, ctrl_z;
   double t_n_half {t_n + dt/2.0};
   double t_n1 {t_n + dt};
-  int num{1};
-  std::vector<int> node_to_elem;
+  int num{1}, n_int_vars_node, glo_node_idx;
+  std::vector<int> node_to_elem, vec_idx_c, vec_idx_d;
   std::vector<double> Istim;
   Istim.resize(3);
 
-  for (int count{ 0 }; count < node_num; ++count)
-    {
+  for (int n_count{ 0 }; n_count < node_num; ++n_count)  {
+    
       //GET LOCGHOST NODE TO ELEM 
-      lien_ptr->get_node_to_elem(count, node_to_elem);
-      //std::cout << "node : " << count << "is in elements \n";
-      //VEC_T::print(node_to_elem);
+      lien_ptr->get_node_to_elem(n_count, node_to_elem);
+      //oss << "node : " << n_count << " \n";
+      //oss << "node to elem : " <<  " \n";
+      //VEC_T::print(node_to_elem, oss);
+      //
+      n_int_vars_node = sol_b->get_dof_num();
+      //oss << "n_int_vars_node : " << n_int_vars_node << " \n";
+      //
 
-      V_in     = array_a[count];      
-      r_old    = array_b[count];
+      V_in     = array_a[n_count];      
+      //r_old    = vector_b[n_count];//r_old    = array_b[n_count;
+      r_old    = std::vector<double> (vector_b.begin()+n_count*n_int_vars_node,
+				      vector_b.begin()+(n_count+1)*n_int_vars_node);
+      //oss << "r_old : size, "<< r_old.size()<< " \n";
+      //VEC_T::print(r_old);
 
-      fnode_ptr->get_ctrlPts_xyz(num, &count,
+      fnode_ptr->get_ctrlPts_xyz(num, &n_count,
 				 &ctrl_x, &ctrl_y, &ctrl_z);
       ionicmodel_array[node_to_elem[0]]-> get_Istim (Istim.at(0), t_n,
 				  ctrl_x, ctrl_y, ctrl_z);
@@ -1601,52 +1356,67 @@ void PGAssem_EP::Update_nodal_velo(const PDNSolution * const &sol_a, //disp
       ionicmodel_array[node_to_elem[0]]-> get_Istim (Istim.at(2), t_n1,
 				  ctrl_x, ctrl_y, ctrl_z);
 
-      //ionicmodel_ptr-> Forward_Euler(r_old, dt, V_in, Istim, r_new, V_new);
-      ionicmodel_array[node_to_elem[0]]-> Runge_Kutta_4(r_old, dt, V_in, Istim, r_new, V_new);
-
-      array_c   [count] = V_new;
-      array_d   [count] = r_new;
+      //oss << "ctrlpts of this node: " <<  ctrl_x << " , "
+      //	  <<  ctrl_y << " , "  <<  ctrl_z << " \n "  ;
       
-    }
+      //ionicmodel_array[node_to_elem[0]]-> Forward_Euler(r_old, dt, V_in, Istim, r_new, V_new);
+      r_new= r_old; V_new= V_in;
+      //ionicmodel_array[node_to_elem[0]]-> Runge_Kutta_4(r_old, dt, V_in, Istim, r_new, V_new);
 
-  for( int ee=0; ee<nElem; ++ee )
-  {
-    if( 1 ) //eptr_array[ee]->is_sizeNonzero()
-    {
-      nlocbas_ee = lien_ptr->get_nLocBas_loc(ee);
-      loc_dof= dof * nlocbas_ee;
+      //oss << "r_new : size, "<< r_new.size()<< " \n";
+      //VEC_T::print(r_new);
+
+      array_c [n_count] = V_new;
+      //vector_d[n_count] = r_new;  //array_d   [n_count] = r_new;
+      std::copy( r_new.begin(), r_new.end(), vector_d.begin() + n_count*n_int_vars_node);
+
+      glo_node_idx= node_ptr->get_local_to_global(n_count);
+      //oss <<"glo_node_idx " << glo_node_idx << "\n";
       
-      row_index = new PetscInt [dof * nlocbas_ee];
-      local_c =     new double [dof * nlocbas_ee];  
-      local_d =     new double [dof * nlocbas_ee];
-      IEN_e =                new int [nlocbas_ee];
-
-      lien_ptr->get_LIEN_e(ee, IEN_e);
-
-      GetLocal(array_c, IEN_e, local_c, nlocbas_ee); //V_new   
-      GetLocal(array_d, IEN_e, local_d, nlocbas_ee); //hist_new
-
-      for(int i=0; i<nlocbas_ee; ++i)
-      {
-        loc_index = IEN_e[i];
-
-        for(int m=0; m<dof; ++m)
-        {
-          lrow_index = bc_part->get_LID(m, loc_index);
-  
-          row_index[dof * i + m] = dof * lrow_index + m;
-	}
+      for(int m=0; m<dof; ++m)    {
+	//vec_idx_c[dof * count + m] = glo_node_idx + m;
+	vec_idx_c.push_back(glo_node_idx*dof + m);
+	//vec_idx_c.push_back(n_count*dof + m);
       }
-      
-      VecSetValues(sol_c->solution, loc_dof, row_index, local_c, INSERT_VALUES);
-      VecSetValues(sol_d->solution, loc_dof, row_index, local_d, INSERT_VALUES);
-  
-      delete [] row_index; row_index=nullptr;
-      delete [] local_c  ; local_c  =nullptr;
-      delete [] local_d  ; local_d  =nullptr;
-      delete [] IEN_e    ; IEN_e    =nullptr;
-    }
+
+      for(int m=0; m<n_int_vars_node; ++m)    {
+	//index_d[n_int_vars_node * count + m] = glo_node_idx + m;
+	vec_idx_d.push_back(glo_node_idx * n_int_vars_node + m);
+	//vec_idx_d.push_back(n_count * n_int_vars_node + m);
+      }
   }
+  
+  //oss << "vector_d size : "<< vector_d.size()<< " \n";
+  //VEC_T::print(vector_d);
+
+  PetscInt* index_c= &vec_idx_c[0];
+  PetscInt* index_d= &vec_idx_d[0];
+  
+  double* array_d2 = &vector_d[0];
+
+  //oss<< "print index c"  << std::endl; 
+  //for (int i = 0; i < dof*node_num; i++) 
+  //  oss<< index_c[i] << std::endl;
+  ////
+  //oss<< "print index d"  << std::endl; 
+  //for (int i = 0; i < n_int_vars_node*node_num; i++) 
+  //  oss<< index_d[i] << std::endl;
+  //
+  //oss<< "print array d2"  << std::endl; 
+  //for (int i = 0; i < n_int_vars_node*node_num; i++) 
+  //  oss<< array_d2[i] << std::endl;
+  
+  //double array_tmp[n_int_vars_node*nlocghonode];
+  //std::copy(vector_d.begin(), vector_d.end(), array_tmp);
+  ////PetscInt* index_c, index_d;
+  ////index_c = new PetscInt [dof * nlocghonode];
+  ////index_d = new PetscInt [n_int_vars_node * nlocghonode];
+
+  VecSetValues(sol_c->solution, dof*node_num,
+  	       index_c, array_c, INSERT_VALUES);
+  VecSetValues(sol_d->solution, n_int_vars_node*node_num,
+  	       index_d, array_d2, INSERT_VALUES);
+  
 
   //oss << "================END PGASSEM==============\n";
   //out_str = oss.str();

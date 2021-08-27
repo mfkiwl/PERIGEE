@@ -26,37 +26,21 @@ ALocal_IEN_Mixed::ALocal_IEN_Mixed( const std::string &fileBaseName, const int &
 
   //const int nlocalnode = h5r -> read_intScalar("Local_Node", "nlocalnode");
   const int nlocghonode = h5r -> read_intScalar("Local_Node", "nlocghonode");
+  const int nlocalnode = h5r -> read_intScalar("Local_Node", "nlocalnode");
   //std::vector<int> node_loc;
   //h5r -> read_intVector("Local_Node", "node_loc", node_loc);
   
-  node_to_element.resize(nlocghonode);
-
   ////now find for each local node, which local elements it belongs
   //// (only the first element, that is, myocardium preferred)
-
-  //// below with a loop on nodes. this is not very fast, I replaced it with
-  //// element based loop below.
-  //std::vector<int>::iterator location;
-  //std::vector< std::vector<int> > node_locations;
-  //node_locations.resize(nlocghonode);//resize the 1st dimension only
-  //
-  //for (int ii=0; ii<nlocghonode ; ii++) {
-  //  location= std::find(LIEN.begin(), LIEN.end(), ii );
-  //  
-  //  while (location!=LIEN.end()){
-  //    (node_locations.at(ii)).push_back(std::distance(LIEN.begin(),location));
-  //    location= std::find(location+1, LIEN.end(), ii);
-  //  }
-  //}
-  //
-  //for( int ii=0; ii<nlocghonode ; ++ii) {
-  //  for( int jj=0; jj<((node_locations.at(ii)).size()); ++jj) {
-  //    location = std::upper_bound(stride.begin(), stride.end(), (node_locations.at(ii)).at(jj));
-  //    (node_to_element.at(ii)).push_back(std::distance(stride.begin(), location-1));
-  //  }
-  //}
-
   // below with a loop on elements
+
+  // modify this in future: below code piece check node neighborhood only with local
+  // elements. for a more robust implementation it should check global elements.
+  // for example when a purkinje-myocardium junction node is a ghost node,  then
+  // this check will see only purkinje (or myocardium) element.
+  // alternatively,: node_to_elemet should be in nlocalnode instead of nlocghonode.
+  node_to_element.resize(nlocghonode);
+
   std::vector<int> nodes;
   for (int ee=0; ee<nlocalele; ee++) {
     nodes.clear();
@@ -66,6 +50,9 @@ ALocal_IEN_Mixed::ALocal_IEN_Mixed( const std::string &fileBaseName, const int &
       node_to_element.at(*it).push_back(ee);
     }
   }
+  node_to_element.erase(node_to_element.begin()+nlocalnode,
+			node_to_element.end() );
+  //std::cout << "node_to_element size:" << node_to_element.size() << std::endl;
 
   delete h5r; H5Fclose( file_id );
 }

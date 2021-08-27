@@ -45,6 +45,16 @@ namespace VEC_T
     efile.close();
   }
 
+  // Print the vector into a out stream , so that we can use syncronized
+  // printing between multiple processors
+  template<typename T> void print( const std::vector<T> &vec,
+				   std::ostringstream &oss )
+  {
+    for( auto it = vec.begin(); it != vec.end(); ++it )
+      oss<<std::setprecision(16)<<*it<<'\t';
+    oss<<'\n';
+  }
+
 
   // trim the capacity of vector
   template<typename T> void shrink2fit( std::vector<T> &vec )

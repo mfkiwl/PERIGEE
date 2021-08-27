@@ -1,9 +1,8 @@
 #include "IonicModel_Purkinje.hpp"
 
 IonicModel_Purkinje::IonicModel_Purkinje()
-  //           d_iso, d_ani, chi,  C_m
-  //: IonicModel(1.0,   0.0,   1.0,  1.0),
-  : IonicModel(5.0*4.0, 0.0, 140.0, 0.1),
+  //           d_iso,   d_ani, chi,   C_m  n_int_var
+  : IonicModel(5.0*4.0, 0.0,   140.0, 0.1, 1),
     ap_1{100}, ap_2{80}, ap_3{12.9}, m1{0.2},
     m2{0.3}, alpha{0.01}, gamma{0.002}, b{0.15}, c{8.0}
 {
@@ -85,6 +84,12 @@ void IonicModel_Purkinje::get_Iion(const double &r_old_in,
   //redimensionalize to be multiplied with dt
   Iion = Iion*ap_1/ap_3 + I_stim/chi;;
   f_r  = f_r/ap_3;
+}
+
+void IonicModel_Purkinje::get_int_vars(double* val) const
+{
+  SYS_T::commPrint("Purkinje ionic,  get int vars. \n"); 
+  val[ 0 ]=  -1 ;
 }
 
 

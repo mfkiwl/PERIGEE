@@ -1,7 +1,7 @@
 #include "IonicModel_Test.hpp"
 
 IonicModel_Test::IonicModel_Test()
-  : IonicModel(1.0, 0.0, 1.0, 1.0)
+  : IonicModel(1.0, 0.0, 1.0, 1.0, 1)
 {
   //SYS_T::commPrint("Test constructor. \n");
 };
