@@ -27,13 +27,23 @@ void IonicModel::print_info () const
 }
 
 
-void IonicModel::get_Iion(const double &r_old_in,
-			  const double &V_in,
-			  const double &I_stim,
-			  double &f_r,
-			  double &Iion) const
+//void IonicModel::get_Iion(const std::vector<double> &r_old_in,
+//			  const double &V_in,
+//			  const double &I_stim,
+//			  std::vector<double> &f_r,
+//			  double &Iion) const
+//{
+//  SYS_T::print_exit("Error: get_Iion is not implemented. \n"); 
+//}
+
+void IonicModel::run_ionic(const std::vector<double> &r_old_in,
+			   const double &V_old_in,
+			   const double &I_stim,
+			   const double &dt_in,
+			   std::vector<double> &r_new,
+			   double &V_new) const
 {
-  SYS_T::print_exit("Error: get_Iion is not implemented. \n"); 
+  SYS_T::print_exit("Error: run_ionic is not implemented. \n"); 
 }
 
 void IonicModel::get_Istim(double &Istim,
@@ -94,81 +104,81 @@ void IonicModel::get_Istim(double &Istim,
 }
 
 
-void IonicModel::Forward_Euler(const double &r_old_in,
+void IonicModel::Forward_Euler(const std::vector<double> &r_old_in,
 			       const double &dt_in,
 			       const double &V_in,
 			       const std::vector<double> &I_stim,
-			       double &r_new,
+			       std::vector<double> &r_new,
 			       double &V_new) const
 {
   double V_old = V_in;
-  double r_old   = r_old_in;
-  int time_steps = 2;
-  double dt_i    = dt_in / time_steps;
-  double Iion, f_r;
+  std::vector<double> r_old=r_old_in;
+  int time_steps = 1;
+  const double dt = dt_in / time_steps;
 
-  //std::cout << "begin forw euelr" <<std::endl; 
-  for(int i=0; i<time_steps; ++i)
-    {
-      //I stim is sent to ionic model and included
-      // in Iion and state variable evolution.
-      get_Iion( r_old, V_old, I_stim.at(0), f_r, Iion);
-      
-      V_new   = V_old - dt_i/C_m * Iion;
-      r_new   = r_old   + dt_i * f_r;
-
-      V_old=V_new; 
-      r_old=r_new;
-    }
+  for(int i=0; i<time_steps; ++i)    {
+    
+    //I stim is sent to ionic model and included
+    // in Iion and state variable evolution.
+    
+    run_ionic( r_old, V_old, I_stim.at(0), dt, r_new, V_new);
+    
+    V_old=V_new; 
+    r_old=r_new;
+  }
 }
 
 
-void IonicModel::Runge_Kutta_4(const double &r_old_in,
+void IonicModel::Runge_Kutta_4(const std::vector<double> &r_old_in,
 			       const double &dt_in,
 			       const double &V_in,
 			       const std::vector<double> &I_stim,
-			       double &r_new,
+			       std::vector<double> &r_new,
 			       double &V_new) const
 {
-  double V_old = V_in;
-  double r_old   = r_old_in;
-  int time_steps = 2;
-  double dt_i    = dt_in / time_steps;
-  double Iion, f_r, K1r, K2r, K3r, K4r, K1V, K2V, K3V, K4V;
+  SYS_T::print_exit("Error: RK4 is not implemented. \n");
   
-  for(int i=0; i<time_steps; ++i)
-    {
-      //1st pass
-      get_Iion( r_old, V_old, I_stim.at(0), f_r, Iion);
-      K1V   = - dt_i/C_m * Iion;
-      K1r   =   dt_i * f_r;
-
-      //2nd pass
-      get_Iion( r_old+0.5*K1r, V_old+0.5*K1V,
-		I_stim.at(1), f_r, Iion);
-      K2V   = - dt_i/C_m * Iion;
-      K2r   =   dt_i * f_r;
-
-      //3rd pass
-      get_Iion( r_old+0.5*K2r, V_old+0.5*K2V,
-		I_stim.at(1), f_r, Iion);
-      K3V   = - dt_i/C_m * Iion;
-      K3r   =   dt_i * f_r;
-	
-
-      //4th pass
-      get_Iion( r_old+K3r, V_old+K3V,
-		I_stim.at(2),  f_r, Iion);
-      K4V   = - dt_i/C_m * Iion;
-      K4r   =   dt_i * f_r;
-
-      V_new = V_old + (1.0/6.0)*(K1V + 2.0*K2V + 2.0*K3V + K4V);
-      r_new = r_old + (1.0/6.0)*(K1r + 2.0*K2r + 2.0*K3r + K4r);
-
-      //update before the next time step 
-      V_old=V_new; 
-      r_old=r_new;
-    }
+  //  double V_old = V_in;
+  //  std::vector<double> r_old=r_old_in;
+  //  int time_steps = 2;
+  //  const double dt    = dt_in / time_steps;
+  //  double Iion, K1V, K2V, K3V, K4V;
+  //  std::vector<double> f_r, K1r, K2r, K3r, K4r;
+  
+  //for(int i=0; i<time_steps; ++i)
+  //  {
+  //    //1st pass
+  //    get_Iion( r_old, V_old, I_stim.at(0), f_r, Iion);
+  //    K1V   = - dt_i/C_m * Iion;
+  //    K1r   =   dt_i * f_r;
+  //
+  //    //2nd pass
+  //    get_Iion( r_old+0.5*K1r, V_old+0.5*K1V,
+  //		I_stim.at(1), f_r, Iion);
+  //    K2V   = - dt_i/C_m * Iion;
+  //    K2r   =   dt_i * f_r;
+  //
+  //    //3rd pass
+  //    get_Iion( r_old+0.5*K2r, V_old+0.5*K2V,
+  //		I_stim.at(1), f_r, Iion);
+  //    K3V   = - dt_i/C_m * Iion;
+  //    K3r   =   dt_i * f_r;
+  //	
+  //
+  //    //4th pass
+  //    get_Iion( r_old+K3r, V_old+K3V,
+  //		I_stim.at(2),  f_r, Iion);
+  //    K4V   = - dt_i/C_m * Iion;
+  //    K4r   =   dt_i * f_r;
+  //
+  //    V_new = V_old + (1.0/6.0)*(K1V + 2.0*K2V + 2.0*K3V + K4V);
+  //    r_new = r_old + (1.0/6.0)*(K1r + 2.0*K2r + 2.0*K3r + K4r);
+  //
+  //    //update before the next time step 
+  //    V_old=V_new; 
+  //    r_old=r_new;
+  //  }
+  
 }
 
 double IonicModel::get_diso() const
@@ -203,24 +213,6 @@ double IonicModel::get_n_int_vars() const
 void IonicModel::get_int_vars(double* val) const
 {
   SYS_T::print_exit("Error: get_int_vars is not implemented. \n"); 
-//  val[ 0 ]=  0 ;
-//  val[ 1 ]=  1 ;
-//  val[ 2 ]=  2 ;
-//  val[ 3 ]=  3 ;
-//  val[ 4 ]=  4 ;
-//  val[ 5 ]=  5 ;
-//  val[ 6 ]=  6 ;
-//  val[ 7 ]=  7 ;
-//  val[ 8 ]=  8 ;
-//  val[ 9 ]=  9 ;
-//  val[10 ]= 10 ;
-//  val[11 ]= 11 ;
-//  val[12 ]= 12 ;
-//  val[13 ]= 13 ;
-//  val[14 ]= 14 ;
-//  val[15 ]= 15 ;
-//  val[16 ]= 16 ;
-//  val[17 ]= 17 ;
 }
 
 

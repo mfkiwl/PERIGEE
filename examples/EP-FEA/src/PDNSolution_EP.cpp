@@ -175,7 +175,7 @@ void PDNSolution_EP::Init_Partial( const class APart_Node * const &pNode,
 
 void PDNSolution_EP::Init_Rest( const class ALocal_NodalBC * const &LBC )
 {
-  VecSet(solution, -80.0);
+  VecSet(solution, -85.23);
   GhostUpdate();
 }
 

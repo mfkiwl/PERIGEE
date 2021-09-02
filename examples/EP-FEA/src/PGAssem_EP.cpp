@@ -1330,60 +1330,64 @@ void PGAssem_EP::Update_nodal_velo(const PDNSolution * const &sol_a, //V_in
 
   for (int n_count{ 0 }; n_count < node_num; ++n_count)  {
     
-      //GET LOCGHOST NODE TO ELEM 
-      lien_ptr->get_node_to_elem(n_count, node_to_elem);
-      //oss << "node : " << n_count << " \n";
-      //oss << "node to elem : " <<  " \n";
-      //VEC_T::print(node_to_elem, oss);
-      //
-      n_int_vars_node = sol_b->get_dof_num();
-      //oss << "n_int_vars_node : " << n_int_vars_node << " \n";
-      //
+    //GET LOCGHOST NODE TO ELEM 
+    lien_ptr->get_node_to_elem(n_count, node_to_elem);
+    //oss << "node : " << n_count << " \n";
+    //oss << "node to elem : " <<  " \n";
+    //VEC_T::print(node_to_elem, oss);
+    //
+    n_int_vars_node = sol_b->get_dof_num();
+    //oss << "n_int_vars_node : " << n_int_vars_node << " \n";
+    //
 
-      V_in     = array_a[n_count];      
-      //r_old    = vector_b[n_count];//r_old    = array_b[n_count;
-      r_old    = std::vector<double> (vector_b.begin()+n_count*n_int_vars_node,
-				      vector_b.begin()+(n_count+1)*n_int_vars_node);
-      //oss << "r_old : size, "<< r_old.size()<< " \n";
-      //VEC_T::print(r_old);
-
-      fnode_ptr->get_ctrlPts_xyz(num, &n_count,
-				 &ctrl_x, &ctrl_y, &ctrl_z);
-      ionicmodel_array[node_to_elem[0]]-> get_Istim (Istim.at(0), t_n,
-				  ctrl_x, ctrl_y, ctrl_z);
-      ionicmodel_array[node_to_elem[0]]-> get_Istim (Istim.at(1), t_n_half,
-				  ctrl_x, ctrl_y, ctrl_z);
-      ionicmodel_array[node_to_elem[0]]-> get_Istim (Istim.at(2), t_n1,
-				  ctrl_x, ctrl_y, ctrl_z);
-
-      //oss << "ctrlpts of this node: " <<  ctrl_x << " , "
-      //	  <<  ctrl_y << " , "  <<  ctrl_z << " \n "  ;
+    V_in     = array_a[n_count];      
+    //r_old    = vector_b[n_count];//r_old    = array_b[n_count;
+    r_old    = std::vector<double> (vector_b.begin()+n_count*n_int_vars_node,
+				    vector_b.begin()+(n_count+1)*n_int_vars_node);
+    r_new.resize(r_old.size());
       
-      //ionicmodel_array[node_to_elem[0]]-> Forward_Euler(r_old, dt, V_in, Istim, r_new, V_new);
-      r_new= r_old; V_new= V_in;
-      //ionicmodel_array[node_to_elem[0]]-> Runge_Kutta_4(r_old, dt, V_in, Istim, r_new, V_new);
+    //oss << "r_old : size, "<< r_old.size()<< " \n";
+    //VEC_T::print(r_old);
 
-      //oss << "r_new : size, "<< r_new.size()<< " \n";
-      //VEC_T::print(r_new);
+    fnode_ptr->get_ctrlPts_xyz(num, &n_count,
+			       &ctrl_x, &ctrl_y, &ctrl_z);
+    ionicmodel_array[node_to_elem[0]]-> get_Istim (Istim.at(0), t_n,
+						   ctrl_x, ctrl_y, ctrl_z);
+    ionicmodel_array[node_to_elem[0]]-> get_Istim (Istim.at(1), t_n_half,
+						   ctrl_x, ctrl_y, ctrl_z);
+    ionicmodel_array[node_to_elem[0]]-> get_Istim (Istim.at(2), t_n1,
+						   ctrl_x, ctrl_y, ctrl_z);
 
-      array_c [n_count] = V_new;
-      //vector_d[n_count] = r_new;  //array_d   [n_count] = r_new;
-      std::copy( r_new.begin(), r_new.end(), vector_d.begin() + n_count*n_int_vars_node);
-
-      glo_node_idx= node_ptr->get_local_to_global(n_count);
-      //oss <<"glo_node_idx " << glo_node_idx << "\n";
+    //oss << "ctrlpts of this node: " <<  ctrl_x << " , "
+    //	  <<  ctrl_y << " , "  <<  ctrl_z << " \n "  ;
       
-      for(int m=0; m<dof; ++m)    {
-	//vec_idx_c[dof * count + m] = glo_node_idx + m;
-	vec_idx_c.push_back(glo_node_idx*dof + m);
-	//vec_idx_c.push_back(n_count*dof + m);
-      }
+    ionicmodel_array[node_to_elem[0]]->
+      Forward_Euler(r_old, dt, V_in, Istim, r_new, V_new);
+    
+    //ionicmodel_array[node_to_elem[0]]->
+    //  Runge_Kutta_4(r_old, dt, V_in, Istim, r_new, V_new);
 
-      for(int m=0; m<n_int_vars_node; ++m)    {
-	//index_d[n_int_vars_node * count + m] = glo_node_idx + m;
-	vec_idx_d.push_back(glo_node_idx * n_int_vars_node + m);
-	//vec_idx_d.push_back(n_count * n_int_vars_node + m);
-      }
+    //oss << "r_new : size, "<< r_new.size()<< " \n";
+    //VEC_T::print(r_new);
+
+    array_c [n_count] = V_new;
+    //vector_d[n_count] = r_new;  //array_d   [n_count] = r_new;
+    std::copy( r_new.begin(), r_new.end(), vector_d.begin() + n_count*n_int_vars_node);
+
+    glo_node_idx= node_ptr->get_local_to_global(n_count);
+    //oss <<"glo_node_idx " << glo_node_idx << "\n";
+      
+    for(int m=0; m<dof; ++m)    {
+      //vec_idx_c[dof * count + m] = glo_node_idx + m;
+      vec_idx_c.push_back(glo_node_idx*dof + m);
+      //vec_idx_c.push_back(n_count*dof + m);
+    }
+
+    for(int m=0; m<n_int_vars_node; ++m)    {
+      //index_d[n_int_vars_node * count + m] = glo_node_idx + m;
+      vec_idx_d.push_back(glo_node_idx * n_int_vars_node + m);
+      //vec_idx_d.push_back(n_count * n_int_vars_node + m);
+    }
   }
   
   //oss << "vector_d size : "<< vector_d.size()<< " \n";

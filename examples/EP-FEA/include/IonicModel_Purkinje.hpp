@@ -29,22 +29,17 @@ public:
 			 const double &y,
 			 const double &z ) const;
 
-  //virtual double get_diso() const;
-  //
-  //virtual double get_dani() const;
-  //
-  //virtual double get_chi() const;
-  //
-  //virtual double get_C_m() const;
-
   virtual void get_int_vars( double* val) const;
 
 protected:
-  virtual void get_Iion(const double &r_old_in,
-			const double &Phi_in,
-			const double &I_stim,
-			double &f_r,
-			double &Iion) const;
+
+  virtual void run_ionic(const std::vector<double> &r_old_in,
+			 const double &V_old_in,
+			 const double &I_stim,
+			 const double &dt_in,
+			 std::vector<double> &r_new,
+			 double &V_new) const;
+
 private:
   const double ap_1, ap_2, ap_3, m1, m2, alpha, gamma, b, c;
 

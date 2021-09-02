@@ -114,7 +114,6 @@ SET( perigee_analysis_lib_src
   ${perigee_SOURCE_DIR}/src/IonicModel_AP.cpp
   ${perigee_SOURCE_DIR}/src/IonicModel_TTP.cpp
   ${perigee_SOURCE_DIR}/src/IonicModel_FHN.cpp
-  ${perigee_SOURCE_DIR}/src/IonicModel_Test.cpp
   ${perigee_SOURCE_DIR}/src/IonicModel_Purkinje.cpp
   ${perigee_SOURCE_DIR}/src/IonicModel.cpp
   ${perigee_SOURCE_DIR}/src/AGlobal_Mesh_Info_Mixed.cpp

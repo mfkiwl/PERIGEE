@@ -64,9 +64,9 @@ int main( int argc, char * argv[] )
   const int dof = 1;
 
   int time_start = 0;
-  int time_step = 1;
-  int time_end = 20;
-  double dt = 0.5;
+  int time_step = 10;
+  int time_end = 3000;
+  double dt = 0.1;
 
   bool isXML = true;
   bool is_write_fibers = false;

@@ -14,6 +14,7 @@
 #include "Sys_Tools.hpp"
 #include "Tensor4_3D.hpp"
 #include "Math_Tools.hpp"
+#include "Vec_Tools.hpp"
 
 class IonicModel
 {
@@ -41,20 +42,20 @@ public:
   virtual void get_int_vars( double* val) const;
 
   //only one I_stim at t_n
-  void Forward_Euler(const double &r_old_in,
+  void Forward_Euler(const std::vector<double> &r_old_in,
 		     const double &dt_in,
 		     const double &V_in,
 		     const std::vector<double> &I_stim,
-		     double &r_new,
+		     std::vector<double> &r_new,
 		     double &V_new) const ;
 
   //for this function we need 3 values of Istim,
   //at t_n , at  t_{n+1/2} and t_{n+1}
-  void Runge_Kutta_4(const double &r_old_in,
+  void Runge_Kutta_4(const std::vector<double> &r_old_in,
 		     const double &dt_in,
 		     const double &V_in,
 		     const std::vector<double> &I_stim,
-		     double &r_new,
+		     std::vector<double> &r_new,
 		     double &V_new) const ;
 
   virtual void get_Istim(double &Istim,
@@ -64,11 +65,19 @@ public:
 			 const double &z ) const;
 
 protected:
-  virtual void get_Iion(const double &r_old_in,
-			const double &V_in,
-			const double &I_stim,
-			double &f_r,
-			double &Iion ) const;
+//  virtual void get_Iion(const std::vector<double> &r_old_in,
+//			const double &V_in,
+//			const double &I_stim,
+//			std::vector<double> &f_r,
+//			double &Iion ) const;
+
+
+  virtual void run_ionic(const std::vector<double> &r_old_in,
+			 const double &V_old_in,
+			 const double &I_stim,
+			 const double &dt_in,
+			 std::vector<double> &r_new,
+			 double &V_new) const;
 
   const double d_iso, d_ani, chi, C_m, n_int_vars;
 
