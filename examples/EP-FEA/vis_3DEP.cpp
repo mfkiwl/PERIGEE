@@ -65,7 +65,7 @@ int main( int argc, char * argv[] )
 
   int time_start = 0;
   int time_step = 10;
-  int time_end = 3000;
+  int time_end = 100;
   double dt = 0.1;
 
   bool isXML = true;

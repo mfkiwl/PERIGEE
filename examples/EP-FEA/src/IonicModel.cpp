@@ -113,7 +113,7 @@ void IonicModel::Forward_Euler(const std::vector<double> &r_old_in,
 {
   double V_old = V_in;
   std::vector<double> r_old=r_old_in;
-  int time_steps = 1;
+  int time_steps = 2;
   const double dt = dt_in / time_steps;
 
   for(int i=0; i<time_steps; ++i)    {

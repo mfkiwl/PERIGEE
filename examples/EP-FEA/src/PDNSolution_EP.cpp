@@ -22,7 +22,7 @@ PDNSolution_EP::PDNSolution_EP(const class APart_Node * const &pNode,
       break;
     case 3:
       Init_Rest(locbc);
-      SYS_T::commPrint("===> Initial solution: -80 milivolt overall. \n");
+      SYS_T::commPrint("===> Initial solution: -85.23 milivolt overall. \n");
       break;            
     default:
       SYS_T::commPrint("ERROR: PDNSolution_EP: No such type of initial solution. \n");
@@ -138,13 +138,8 @@ void PDNSolution_EP::Init_Partial( const class APart_Node * const &pNode,
 
     //set some nodes to 0 and some to -80
     if ( std::sqrt(  std::pow(x_coor-(-107.110), 2.0)
-		   + std::pow(y_coor-(-301.313), 2.0)
-    		   + std::pow(z_coor-( 248.233), 2.0)  ) <= 10 ) {
-    //if(x_coor < 20.0) {
-    //if ((x_coor < 2.1) && (x_coor > 1.9)) {
-    //if ( std::sqrt(  std::pow(x_coor-(3.0), 2.0)
-    //		   + std::pow(y_coor-(2.0), 2.0)
-    //		   + std::pow(z_coor-(0.0), 2.0)  ) <= 0.2 ) { 
+		     + std::pow(y_coor-(-301.313), 2.0)
+		     + std::pow(z_coor-( 248.233), 2.0)  ) <= 10 ) {
       value = 0.0;
     }
     else {
@@ -173,6 +168,7 @@ void PDNSolution_EP::Init_Partial( const class APart_Node * const &pNode,
   delete [] index; delete [] value_bc;
 }
 
+//case 3
 void PDNSolution_EP::Init_Rest( const class ALocal_NodalBC * const &LBC )
 {
   VecSet(solution, -85.23);

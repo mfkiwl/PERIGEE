@@ -2,7 +2,7 @@
 
 IonicModel_TTP::IonicModel_TTP()
   //           d_iso,     d_ani,     chi,   C_m, n_int_vars
-  : IonicModel(0.012*1.0, 0.078*1.0, 140.0, 0.01, 18),
+  : IonicModel(0.012*4.0, 0.078*4.0, 140.0, 0.01, 18),
     Rc{8.314}, Tc{310.0e0}, Fc{96.485},
     rho{162.0e0}, V_c{16.404e-3}, V_sr{1.094e-3}, V_ss{5.468e-5},
     K_o{5.4e0}, Na_o{140.0e0}, Ca_o{2.0e0}, G_Na{14.838e0},
@@ -346,15 +346,21 @@ void IonicModel_TTP::get_Istim(double &Istim,
 			       const double &y,
 			       const double &z ) const
 {
-  //if ( ( x>1.5 ) || ( y>1.5 ) ) {
-  //  if ((t >= 0.0) && (t <= 1.0)) {
-  //    Istim = -52.0;
-  //  }
-  //}
-  //else {
-  //  Istim = 0.0 ;
-  //}
-  Istim = 0.0 ;
+//  //excite 1st node of purkinje network:
+//  if (( std::sqrt(  std::pow(x-(-106.7), 2.0)
+//   		    + std::pow(y-(-301.9), 2.0)
+//   		    + std::pow(z-( 248.2), 2.0)  ) <= 1.0 )
+//      || ( std::sqrt( std::pow(x-(-104.9), 2.0)
+//   		      + std::pow(y-(-304.0), 2.0)
+//   		      + std::pow(z-( 234.0), 2.0)  ) <= 1.0 ) ){
+//    //if (( x >= 1.0 ) || ( y >= 1.0 )) {
+//    if(t <= 2.0){
+//      Istim = -52.0;
+//    }
+//  }
+//  else {
+    Istim = 0.0 ;
+//  }
 };
 
 void IonicModel_TTP::get_int_vars(double* val) const

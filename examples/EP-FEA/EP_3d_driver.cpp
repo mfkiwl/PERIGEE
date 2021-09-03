@@ -78,18 +78,18 @@ int main(int argc, char *argv[])
   double nl_atol = 1.0e-10;
   double nl_dtol = 0.9;
   int nl_maxits = 20;
-  int nl_refreq = 1;
+  int nl_refreq = 5;
   //  int nl_threshold = 4;
   
   // Time step initailization
   double initial_time = 0.0;
   double initial_step = 0.1;
   int initial_index = 0;
-  double final_time = 300.0;
+  double final_time = 10.0;
 
   // Time solver parameters
   std::string sol_bName("SOL_");
-  int ttan_renew_freq = 1;
+  int ttan_renew_freq = 5;
   int sol_record_freq = 10;
 
   //// Restart options
@@ -156,8 +156,8 @@ int main(int argc, char *argv[])
   // 1.4 Get LIEN for each local elements
   SYS_T::commPrint("===> ALocal_IEN_Mixed ... \n");
   ALocal_IEN_Mixed * locIEN = new ALocal_IEN_Mixed(part_file, rank);
-  if (rank==1)
-    locIEN->print_info();
+  //if (rank==1)
+  //  locIEN->print_info();
   
   // 1.5 Get Global Mesh Info
   SYS_T::commPrint("===> AGlobal_Mesh_Info_Mixed ... \n");
