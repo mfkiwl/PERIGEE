@@ -64,8 +64,8 @@ int main( int argc, char * argv[] )
   const int dof = 1;
 
   int time_start = 0;
-  int time_step = 10;
-  int time_end = 100;
+  int time_step = 100;
+  int time_end = 10000;
   double dt = 0.1;
 
   bool isXML = true;
