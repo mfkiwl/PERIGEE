@@ -30,7 +30,7 @@ using namespace std;
 int main( int argc, char * argv[] )
 {
   // say that tissue is activated beyond this value.
-  double act_threshold= 0.0;
+  double act_threshold= -40;
   
   int nqp_line = 2;
   int nqp_tet = 4;
@@ -48,9 +48,9 @@ int main( int argc, char * argv[] )
   const int dof = 1;
 
   int time_start = 0;
-  int time_step = 10;
-  int time_end = 2000;
-  double dt = 0.5;
+  int time_step = 50;
+  int time_end = 10000;
+  double dt = 0.1;
 
   bool isXML = true;
   bool is_write_fibers = false;

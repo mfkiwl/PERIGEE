@@ -2,7 +2,7 @@
 
 IonicModel_TTP::IonicModel_TTP()
   //           d_iso,     d_ani,     chi,   C_m, n_int_vars
-  : IonicModel(0.012*4.0, 0.078*4.0, 140.0, 0.01, 18),
+  : IonicModel(0.012*2.0, 0.078*2.0, 140.0, 0.01, 18),
     Rc{8.314}, Tc{310.0e0}, Fc{96.485},
     rho{162.0e0}, V_c{16.404e-3}, V_sr{1.094e-3}, V_ss{5.468e-5},
     K_o{5.4e0}, Na_o{140.0e0}, Ca_o{2.0e0}, G_Na{14.838e0},
