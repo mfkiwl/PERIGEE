@@ -4,12 +4,12 @@ Mesh.CharacteristicLengthFactor=1.0;
 
 
 ee=1;
-height=100.0;
+height=3.0;
 
-Point(1) = {0.0,0.0,0.0};
-Point(2) = {0.0,1.0,0.0};
-Point(3) = {0.0,1.0,1.0};
-Point(4) = {0.0,0.0,1.0};
+Point(1) = {0.0, 0.0,0.0};
+Point(2) = {0.0,20.0,0.0};
+Point(3) = {0.0,20.0,7.0};
+Point(4) = {0.0, 0.0,7.0};
 
 Line(5) = {1,2};
 Line(6) = {2,3};

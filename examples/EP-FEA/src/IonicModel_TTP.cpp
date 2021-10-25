@@ -2,7 +2,8 @@
 
 IonicModel_TTP::IonicModel_TTP()
   //           d_iso,     d_ani,     chi,   C_m, n_int_vars
-  : IonicModel(0.012*2.0, 0.078*2.0, 140.0, 0.01, 18),
+  : IonicModel(0.0176,    0.1158,    140.0, 0.01, 18),
+    // niederer conductivities: transversal=0.0176,  longitudinal=0.1158 Sm-1 
     Rc{8.314}, Tc{310.0e0}, Fc{96.485},
     rho{162.0e0}, V_c{16.404e-3}, V_sr{1.094e-3}, V_ss{5.468e-5},
     K_o{5.4e0}, Na_o{140.0e0}, Ca_o{2.0e0}, G_Na{14.838e0},
@@ -353,37 +354,59 @@ void IonicModel_TTP::get_Istim(double &Istim,
 //      || ( std::sqrt( std::pow(x-(-104.9), 2.0)
 //   		      + std::pow(y-(-304.0), 2.0)
 //   		      + std::pow(z-( 234.0), 2.0)  ) <= 1.0 ) ){
-//    //if (( x >= 1.0 ) || ( y >= 1.0 )) {
-//    if(t <= 2.0){
-//      Istim = -52.0;
-//    }
-//  }
-//  else {
+  if (( x <= 1.5 ) && ( y <= 1.5 ) && ( z <= 1.5 )) {
+    if(t <= 2.0){
+      Istim = -50.0;
+    }
+  }
+  else {
     Istim = 0.0 ;
-//  }
+  }
 };
 
 void IonicModel_TTP::get_int_vars(double* val) const
 {
   //SYS_T::commPrint("TTP ionic, get int vars. \n"); 
-  val[ 0 ]= 138.4    ;//K_i    
-  val[ 1 ]= 10.355   ;//Na_i   
-  val[ 2 ]= 1.3e-4   ;//Ca_i   
-  val[ 3 ]= 3.6e-4   ;//Ca_ss  
-  val[ 4 ]= 3.715    ;//Ca_sr  
-  val[ 5 ]= 9.068e-1 ;//R_bar  
-  val[ 6 ]= 4.48e-3  ;//x_r1   
-  val[ 7 ]= 4.76e-1  ;//x_r2   
-  val[ 8 ]= 8.7e-3   ;//x_s    
-  val[ 9 ]= 1.55e-3  ;//m      
-  val[10 ]= 7.573e-1 ;//h      
-  val[11 ]= 7.225e-1 ;//j      
-  val[12 ]= 3.164e-5 ;//d      
-  val[13 ]= 8.009e-1 ;//f      
-  val[14 ]= 9.778e-1 ;//f_2    
-  val[15 ]= 9.953e-1 ;//f_cass 
-  val[16 ]= 3.212e-1 ;//s      
-  val[17 ]= 2.235e-8 ;//r      
+  //values from the original paper ??
+  // val[ 0 ]= 138.4    ;//K_i    
+  // val[ 1 ]= 10.355   ;//Na_i   
+  // val[ 2 ]= 1.3e-4   ;//Ca_i   
+  // val[ 3 ]= 3.6e-4   ;//Ca_ss  
+  // val[ 4 ]= 3.715    ;//Ca_sr  
+  // val[ 5 ]= 9.068e-1 ;//R_bar  
+  // val[ 6 ]= 4.48e-3  ;//x_r1   
+  // val[ 7 ]= 4.76e-1  ;//x_r2   
+  // val[ 8 ]= 8.7e-3   ;//x_s    
+  // val[ 9 ]= 1.55e-3  ;//m      
+  // val[10 ]= 7.573e-1 ;//h      
+  // val[11 ]= 7.225e-1 ;//j      
+  // val[12 ]= 3.164e-5 ;//d      
+  // val[13 ]= 8.009e-1 ;//f      
+  // val[14 ]= 9.778e-1 ;//f_2    
+  // val[15 ]= 9.953e-1 ;//f_cass 
+  // val[16 ]= 3.212e-1 ;//s      
+  // val[17 ]= 2.235e-8 ;//r
+
+  //values from the niederer11 benchmark probelm
+  
+   val[ 0 ]= 136.89   ;//K_i    
+   val[ 1 ]= 8.604    ;//Na_i   
+   val[ 2 ]= 0.000126 ;//Ca_i   
+   val[ 3 ]= 0.00036  ;//Ca_ss  
+   val[ 4 ]= 3.64     ;//Ca_sr  
+   val[ 5 ]= 0.9073   ;//R_bar  
+   val[ 6 ]= 0.00621  ;//x_r1   
+   val[ 7 ]= 0.4712   ;//x_r2   
+   val[ 8 ]= 0.0095   ;//x_s    
+   val[ 9 ]= 0.00172  ;//m      
+   val[10 ]= 0.7444   ;//h      
+   val[11 ]= 0.7045   ;//j      
+   val[12 ]= 3.373e-5 ;//d      
+   val[13 ]= 0.7888   ;//f      
+   val[14 ]= 0.9755   ;//f_2    
+   val[15 ]= 0.9953   ;//f_cass 
+   val[16 ]= 0.999998 ;//s      
+   val[17 ]= 2.42e-8  ;//r      
 };
 
 // EOF

@@ -28,21 +28,23 @@ void IonicModel_Purkinje::get_Istim(double &Istim,
 				    const double &y,
 				    const double &z ) const
 {
-  //if (( x >= 1.0 ) || ( y >= 1.0 )) {
-  //excite 1st node of purkinje network:
-  if (( std::sqrt(  std::pow(x-(-106.7), 2.0)
-   		    + std::pow(y-(-301.9), 2.0)
-   		    + std::pow(z-( 248.2), 2.0)  ) <= 1.0 )
-      || ( std::sqrt( std::pow(x-(-104.9), 2.0)
-   		      + std::pow(y-(-304.0), 2.0)
-   		      + std::pow(z-( 234.0), 2.0)  ) <= 1.0 ) ){
-    if(t <= 2.0){
-      Istim = -300.0;
-    }
-  }
-  else {
-    Istim = 0.0 ;
-  }
+  // //if (( x >= 1.0 ) || ( y >= 1.0 )) {
+  // //excite 1st node of purkinje network:
+  // if (( std::sqrt(  std::pow(x-(-106.7), 2.0)
+  //  		    + std::pow(y-(-301.9), 2.0)
+  //  		    + std::pow(z-( 248.2), 2.0)  ) <= 1.0 )
+  //     || ( std::sqrt( std::pow(x-(-104.9), 2.0)
+  //  		      + std::pow(y-(-304.0), 2.0)
+  //  		      + std::pow(z-( 234.0), 2.0)  ) <= 1.0 ) ){
+  //   if(t <= 2.0){
+  //     Istim = -300.0;
+  //   }
+  // }
+  // else {
+  //   Istim = 0.0 ;
+  // }
+
+  Istim=0.0;
 };
 
 void IonicModel_Purkinje::run_ionic(const std::vector<double> &r_old_in,

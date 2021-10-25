@@ -100,8 +100,9 @@ void TET_T::read_vtu_grid( const std::string &filename,
     }
   }
   if(!fibers_present) {
-    std::cout << "WARNING: Fibers are not given in the input file, so default "
-      << "orientations  will be assigned" << std::endl;
+    std::cout << "WARNING (Tet_Tools::read_vtu_grid): Fibers are not given  " 
+	      << "in the input file, so default orientations  will be assigned"
+	      << std::endl; 
   }
 	 
   // Number of grid points in the mesh
@@ -148,30 +149,30 @@ void TET_T::read_vtu_grid( const std::string &filename,
       ien_array.push_back( static_cast<int>( cell->GetPointId(2) ) );
       ien_array.push_back( static_cast<int>( cell->GetPointId(3) ) );
     }
-    else if( cell-> GetCellType() == 22 )
-    {
-      // cell type 22 is six-node triangle
-      ien_array.push_back( static_cast<int>( cell->GetPointId(0) ) );
-      ien_array.push_back( static_cast<int>( cell->GetPointId(1) ) );
-      ien_array.push_back( static_cast<int>( cell->GetPointId(2) ) );
-      ien_array.push_back( static_cast<int>( cell->GetPointId(3) ) );
-      ien_array.push_back( static_cast<int>( cell->GetPointId(4) ) );
-      ien_array.push_back( static_cast<int>( cell->GetPointId(5) ) );
-    }
-    else if( cell-> GetCellType() == 24 )
-    {
-      // cell type 24 is ten-node tet
-      ien_array.push_back( static_cast<int>( cell->GetPointId(0) ) );
-      ien_array.push_back( static_cast<int>( cell->GetPointId(1) ) );
-      ien_array.push_back( static_cast<int>( cell->GetPointId(2) ) );
-      ien_array.push_back( static_cast<int>( cell->GetPointId(3) ) );
-      ien_array.push_back( static_cast<int>( cell->GetPointId(4) ) );
-      ien_array.push_back( static_cast<int>( cell->GetPointId(5) ) );
-      ien_array.push_back( static_cast<int>( cell->GetPointId(6) ) );
-      ien_array.push_back( static_cast<int>( cell->GetPointId(7) ) );
-      ien_array.push_back( static_cast<int>( cell->GetPointId(8) ) );
-      ien_array.push_back( static_cast<int>( cell->GetPointId(9) ) );
-    }
+    // else if( cell-> GetCellType() == 22 )
+    // {
+    //   // cell type 22 is six-node triangle
+    //   ien_array.push_back( static_cast<int>( cell->GetPointId(0) ) );
+    //   ien_array.push_back( static_cast<int>( cell->GetPointId(1) ) );
+    //   ien_array.push_back( static_cast<int>( cell->GetPointId(2) ) );
+    //   ien_array.push_back( static_cast<int>( cell->GetPointId(3) ) );
+    //   ien_array.push_back( static_cast<int>( cell->GetPointId(4) ) );
+    //   ien_array.push_back( static_cast<int>( cell->GetPointId(5) ) );
+    // }
+    // else if( cell-> GetCellType() == 24 )
+    // {
+    //   // cell type 24 is ten-node tet
+    //   ien_array.push_back( static_cast<int>( cell->GetPointId(0) ) );
+    //   ien_array.push_back( static_cast<int>( cell->GetPointId(1) ) );
+    //   ien_array.push_back( static_cast<int>( cell->GetPointId(2) ) );
+    //   ien_array.push_back( static_cast<int>( cell->GetPointId(3) ) );
+    //   ien_array.push_back( static_cast<int>( cell->GetPointId(4) ) );
+    //   ien_array.push_back( static_cast<int>( cell->GetPointId(5) ) );
+    //   ien_array.push_back( static_cast<int>( cell->GetPointId(6) ) );
+    //   ien_array.push_back( static_cast<int>( cell->GetPointId(7) ) );
+    //   ien_array.push_back( static_cast<int>( cell->GetPointId(8) ) );
+    //   ien_array.push_back( static_cast<int>( cell->GetPointId(9) ) );
+    // }
     else SYS_T::print_fatal("Error: TET_T::read_vtu_grid read a mesh with VTK cell type 10, 24, or 22. \n");
 
   }

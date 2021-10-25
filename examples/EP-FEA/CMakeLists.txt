@@ -115,6 +115,7 @@ SET( perigee_analysis_lib_src
   ${perigee_SOURCE_DIR}/src/IonicModel_TTP.cpp
   ${perigee_SOURCE_DIR}/src/IonicModel_FHN.cpp
   ${perigee_SOURCE_DIR}/src/IonicModel_Purkinje.cpp
+  ${perigee_SOURCE_DIR}/src/IonicModel_Passive.cpp
   ${perigee_SOURCE_DIR}/src/IonicModel.cpp
   ${perigee_SOURCE_DIR}/src/AGlobal_Mesh_Info_Mixed.cpp
   ${perigee_SOURCE_DIR}/src/ALocal_Elem_Fiber.cpp

@@ -58,6 +58,7 @@
 #include "IonicModel_AP.hpp"
 #include "IonicModel_TTP.hpp"
 #include "IonicModel_Purkinje.hpp"
+#include "IonicModel_Passive.hpp"
 
 int main(int argc, char *argv[])
 {
@@ -85,12 +86,12 @@ int main(int argc, char *argv[])
   double initial_time = 0.0;
   double initial_step = 0.1;
   int initial_index = 0;
-  double final_time = 1000.0;
+  double final_time = 100.0;
 
   // Time solver parameters
   std::string sol_bName("SOL_");
   int ttan_renew_freq = 5;
-  int sol_record_freq = 50;
+  int sol_record_freq = 10;
 
   //// Restart options
   //bool is_restart = false;
@@ -309,7 +310,8 @@ int main(int argc, char *argv[])
   IonicModel * ionicmodel_myo = new IonicModel_TTP () ;
   //IonicModel * ionicmodel_myo = new IonicModel_AP () ;
   //IonicModel * ionicmodel_pur = new IonicModel_TTP () ;
-  IonicModel * ionicmodel_pur = new IonicModel_Purkinje () ;
+  //IonicModel * ionicmodel_pur = new IonicModel_Purkinje () ;
+  IonicModel * ionicmodel_pur = new IonicModel_Passive () ;
   
   int ionicmodel_dof ; 
   ionicmodel_dof =   std::max( ionicmodel_myo->get_n_int_vars(),

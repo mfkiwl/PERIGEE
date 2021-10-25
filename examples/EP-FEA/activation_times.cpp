@@ -30,7 +30,7 @@ using namespace std;
 int main( int argc, char * argv[] )
 {
   // say that tissue is activated beyond this value.
-  double act_threshold= -40;
+  double act_threshold= 0;
   
   int nqp_line = 2;
   int nqp_tet = 4;
@@ -48,8 +48,8 @@ int main( int argc, char * argv[] )
   const int dof = 1;
 
   int time_start = 0;
-  int time_step = 50;
-  int time_end = 10000;
+  int time_step = 10;
+  int time_end = 1000;
   double dt = 0.1;
 
   bool isXML = true;
@@ -149,10 +149,14 @@ int main( int argc, char * argv[] )
 
   // Allocate memory for pointArrays and activation times
   double ** pointArrays = new double * [visprep->get_arrayCompSize()];
+  double ** pointArrays_old = new double * [visprep->get_arrayCompSize()];
   double ** activation_times = new double * [visprep->get_arrayCompSize()];
 
   for(int ii=0; ii<visprep->get_arrayCompSize(); ++ii){
-    pointArrays[ii] = new double [pNode->get_nlocghonode() * visprep->get_arraySizes(ii)];
+    pointArrays[ii] = new double [pNode->get_nlocghonode() *
+				  visprep->get_arraySizes(ii)];
+    pointArrays_old[ii] = new double [pNode->get_nlocghonode() *
+				      visprep->get_arraySizes(ii)]; 
     activation_times[ii] = new double [pNode->get_nlocghonode() * visprep->get_arraySizes(ii)];
     //initialize activation times array to -100.
     for(int jj=0; jj< pNode->get_nlocghonode() * visprep->get_arraySizes(ii) ; ++jj) {
@@ -164,7 +168,17 @@ int main( int argc, char * argv[] )
   
   std::ostringstream time_index;
 
+  //set the initial pointarrays_old
+  std::string name_to_read_old(sol_bname);
+  time_index.str("");
+  time_index<< 900000000 + time_start;
+  name_to_read_old.append(time_index.str());
+  visprep->get_pointArray(name_to_read_old, anode_mapping_file,
+			  pnode_mapping_file, pNode, GMIptr,
+			  dof, pointArrays_old);
+
   for(int time = time_start; time<=time_end; time+= time_step)  {
+    
     std::string name_to_read(sol_bname);
     time_index.str("");
     time_index<< 900000000 + time;
@@ -178,11 +192,24 @@ int main( int argc, char * argv[] )
 			    dof, pointArrays);
     
     for (int ii=0 ; ii < pNode->get_nlocghonode() ; ++ii){
-      //std::cout << "pointArrays " << pointArrays[0][ii] <<std::endl;
       
-      if ((pointArrays[0][ii] > act_threshold) && (activation_times[0][ii] <0.0 )) {
-	activation_times[0][ii] = time*dt;
+      if ((pointArrays[0][ii]>act_threshold) && (activation_times[0][ii]<0.0)){
+
+	// activation_times[0][ii] = time*dt;
+	
+	 double dbl_time= time;
+	 activation_times[0][ii] = (dbl_time-time_step*((pointArrays[0][ii]-act_threshold)
+	 				     /(pointArrays[0][ii]-pointArrays_old[0][ii])))*dt;
+	 std::cout << "dbl_time: " << dbl_time << "\n"
+		   << "time_step : " << time_step << "\n"
+		   << "pointArrays[0][" << ii << "]: "<<pointArrays[0][ii]<<"\n"
+		   << "pointArrays_old[0][" << ii << "]: "<<pointArrays_old[0][ii]<<"\n"
+		   << "activation_times[0][" << ii << "]: "<<activation_times[0][ii]<<"\n"
+		   <<std::endl;
+
       }
+      
+      pointArrays_old[0][ii]= pointArrays[0][ii];
     }
     		
   }
