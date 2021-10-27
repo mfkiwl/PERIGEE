@@ -200,18 +200,15 @@ int main( int argc, char * argv[] )
 	 double dbl_time= time;
 	 activation_times[0][ii] = (dbl_time-time_step*((pointArrays[0][ii]-act_threshold)
 	 				     /(pointArrays[0][ii]-pointArrays_old[0][ii])))*dt;
-	 std::cout << "dbl_time: " << dbl_time << "\n"
-		   << "time_step : " << time_step << "\n"
-		   << "pointArrays[0][" << ii << "]: "<<pointArrays[0][ii]<<"\n"
-		   << "pointArrays_old[0][" << ii << "]: "<<pointArrays_old[0][ii]<<"\n"
-		   << "activation_times[0][" << ii << "]: "<<activation_times[0][ii]<<"\n"
-		   <<std::endl;
-
+	 // std::cout << "dbl_time: " << dbl_time << "\n"
+	 // 	   << "time_step : " << time_step << "\n"
+	 // 	   << "pointArrays[0][" << ii << "]: "<<pointArrays[0][ii]<<"\n"
+	 // 	   << "pointArrays_old[0][" << ii << "]: "<<pointArrays_old[0][ii]<<"\n"
+	 // 	   << "activation_times[0][" << ii << "]: "<<activation_times[0][ii]<<"\n"
+	 // 	   <<std::endl;
       }
-      
       pointArrays_old[0][ii]= pointArrays[0][ii];
     }
-    		
   }
 
   std::string name_to_write(out_bname);

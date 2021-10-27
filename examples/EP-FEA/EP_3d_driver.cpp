@@ -84,14 +84,14 @@ int main(int argc, char *argv[])
   
   // Time step initailization
   double initial_time = 0.0;
-  double initial_step = 0.1;
+  double initial_step = 1.0;
   int initial_index = 0;
-  double final_time = 100.0;
+  double final_time = 300.0;
 
   // Time solver parameters
   std::string sol_bName("SOL_");
-  int ttan_renew_freq = 5;
-  int sol_record_freq = 10;
+  int ttan_renew_freq = 1;
+  int sol_record_freq = 1;
 
   //// Restart options
   //bool is_restart = false;
@@ -307,11 +307,11 @@ int main(int argc, char *argv[])
   //  that size will need to be tracked.)
   // Idea: implement stride vector in PDNsolution class. 
   SYS_T::commPrint("===> Generate Ionic Models of myocardium and purkinje ... \n");
-  IonicModel * ionicmodel_myo = new IonicModel_TTP () ;
-  //IonicModel * ionicmodel_myo = new IonicModel_AP () ;
+  //IonicModel * ionicmodel_myo = new IonicModel_TTP () ;
+  IonicModel * ionicmodel_myo = new IonicModel_AP () ;
   //IonicModel * ionicmodel_pur = new IonicModel_TTP () ;
   //IonicModel * ionicmodel_pur = new IonicModel_Purkinje () ;
-  IonicModel * ionicmodel_pur = new IonicModel_Passive () ;
+  IonicModel * ionicmodel_pur = new IonicModel_AP () ;
   
   int ionicmodel_dof ; 
   ionicmodel_dof =   std::max( ionicmodel_myo->get_n_int_vars(),
@@ -355,8 +355,6 @@ int main(int argc, char *argv[])
   PDNSolution * velo = new PDNSolution_EP(pNode, fNode, locbc,  0);
   PDNSolution * hist = new PDNSolution_EP(pNode, ionicmodel_dof,
 					  fNode,  locbc, 0, locIEN, ionicmodel_array);
-
-  
 
   //std::cout << "initial solution: " << std::endl;
   //hist->PrintNoGhost();

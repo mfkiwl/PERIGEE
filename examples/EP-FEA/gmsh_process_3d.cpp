@@ -17,9 +17,9 @@ int main( int argc, char * argv[] )
   //gmshVol.append("/PERIGEE/examples/EP-FEA/mesh/HLHS-coarse.msh");
   //gmshVol.append("/PERIGEE/examples/EP-FEA/mesh/tets_cube.msh");
   // gmshVol.append("/PERIGEE/examples/EP-FEA/mesh/niederer-1mm.msh");
-  gmshVol.append("/PERIGEE/examples/EP-FEA/mesh/niederer-05mm.msh");
+  // gmshVol.append("/PERIGEE/examples/EP-FEA/mesh/niederer-05mm.msh");
   // gmshVol.append("/PERIGEE/examples/EP-FEA/mesh/niederer-025mm.msh");
-  //gmshVol.append("/PERIGEE/examples/EP-FEA/mesh/single_tet.msh");
+  gmshVol.append("/PERIGEE/examples/EP-FEA/mesh/tets_cube.msh");
   SYS_T::GetOptionString("-gmsh_Vol", gmshVol);
   std::cout<<" -gmsh_Vol: "<<gmshVol<<std::endl;
   Gmsh_FileIO * GIOVol = new Gmsh_FileIO( gmshVol );

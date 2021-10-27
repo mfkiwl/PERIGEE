@@ -122,6 +122,52 @@ namespace VEC_T
       result += vec1[ii] * vec2[ii];
     return result;
   }
+  
+  // multiply a vector with a given scalar and return the new vector 
+  inline std::vector<double> Vxa( const std::vector<double> &vec1,
+					     const double &a)
+  {
+    std::vector<double> result ;
+    result.resize(vec1.size());
+    for( int ii = 0; ii != vec1.size(); ++ii )  {
+      result.at(ii) = (vec1.at(ii)) * a ; 
+    }
+    return result;
+  }
+  
+  // sum 2 vectors. return the resulting vector
+  inline std::vector<double> VplusV( const std::vector<double> &vec1,
+				     const std::vector<double> &vec2)
+  {
+    if (vec1.size() != vec2.size()) {
+      SYS_T::print_exit("Error: get_int_vars is not implemented. \n");
+    }
+    
+    std::vector<double> result ;
+    result.resize(vec1.size());
+    
+    for( int ii = 0; ii != vec1.size(); ++ii )  {
+      result.at(ii) = vec1.at(ii) + vec2.at(ii) ; 
+    }
+    return result;
+  }
+
+  // subtract  vector2 from vector1 . return the resulting vector
+  inline std::vector<double> VminusV( const std::vector<double> &vec1,
+				     const std::vector<double> &vec2)
+  {
+    if (vec1.size() != vec2.size()) {
+      SYS_T::print_exit("Error: get_int_vars is not implemented. \n");
+    }
+    
+    std::vector<double> result ;
+    result.resize(vec1.size());
+    
+    for( int ii = 0; ii != vec1.size(); ++ii )  {
+      result.at(ii) = vec1.at(ii) - vec2.at(ii) ; 
+    }
+    return result;
+  }
 
 
   // ----------------------------------------------------------------

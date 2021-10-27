@@ -64,9 +64,9 @@ int main( int argc, char * argv[] )
   std::string geo_file_LVpur("./pur1.vtu");
   std::string geo_file_RVpur("./pur2.vtu");
   std::string LVendnodes_file
-    (home_dir+"/PERIGEE/examples/EP-FEA/mesh/twolines_endnode.txt");
+    (home_dir+"/PERIGEE/examples/EP-FEA/mesh/endnodes.txt");
   std::string RVendnodes_file
-    (home_dir+"/PERIGEE/examples/EP-FEA/mesh/twolines_endnode.txt");
+    (home_dir+"/PERIGEE/examples/EP-FEA/mesh/endnodes.txt");
   //criteria (distance) for matching purkinje junction nodes to myocardium 
   const double LV_tol= 0.1;
   const double RV_tol= 0.1;
@@ -109,7 +109,7 @@ int main( int argc, char * argv[] )
   //
   const std::string part_file("part");
 
-  int cpu_size = 4; 
+  int cpu_size = 1; 
   int in_ncommon = 1;
   const bool isDualGraph = true;
 

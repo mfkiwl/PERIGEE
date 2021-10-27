@@ -48,9 +48,9 @@ int main(int argc, char *argv[])
 
   //test mesh endnodes
   std::string LVendnodes_file
-    (home_dir+"/PERIGEE/examples/EP-FEA/mesh/twolines_endnode.txt");
+    (home_dir+"/PERIGEE/examples/EP-FEA/mesh/endnodes.txt");
   std::string RVendnodes_file
-    (home_dir+"/PERIGEE/examples/EP-FEA/mesh/twolines_endnode.txt");
+    (home_dir+"/PERIGEE/examples/EP-FEA/mesh/endnodes.txt");
   //criteria (distance) for matching purkinje junction nodes to myocardium 
   const double LV_tol= 0.1;
   const double RV_tol= 0.1;

@@ -1361,11 +1361,11 @@ void PGAssem_EP::Update_nodal_velo(const PDNSolution * const &sol_a, //V_in
     //oss << "ctrlpts of this node: " <<  ctrl_x << " , "
     //	  <<  ctrl_y << " , "  <<  ctrl_z << " \n "  ;
       
-    ionicmodel_array[node_to_elem[0]]->
-      Forward_Euler(r_old, dt, V_in, Istim, r_new, V_new);
+    // ionicmodel_array[node_to_elem[0]]->
+    //   Forward_Euler(r_old, dt, V_in, Istim, r_new, V_new);
     
-    //ionicmodel_array[node_to_elem[0]]->
-    //  Runge_Kutta_4(r_old, dt, V_in, Istim, r_new, V_new);
+    ionicmodel_array[node_to_elem[0]]->
+      Runge_Kutta_4(r_old, dt, V_in, Istim, r_new, V_new);
 
     //oss << "r_new : size, "<< r_new.size()<< " \n";
     //VEC_T::print(r_new);
