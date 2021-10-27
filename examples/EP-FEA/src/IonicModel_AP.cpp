@@ -2,7 +2,7 @@
 
 IonicModel_AP::IonicModel_AP()
   //           d_iso,     d_ani,     chi,   C_m, n_int_vars
-  : IonicModel(0.012*1.0, 0.078*1.0, 1400.0, 1.0, 1),
+  : IonicModel(0.012*1.0, 0.078*1.0, 140.0, 0.1, 1),
     ap_1{100.0}, ap_2{80.0}, ap_3{12.9}, m1{0.2},
     m2{0.3}, alpha{0.01}, gamma{0.002}, b{0.15}, c{8.0}
 {
@@ -64,14 +64,14 @@ void IonicModel_AP::get_Istim(double &Istim,
 			       const double &y,
 			       const double &z ) const
 {
-  //if (( x >= 0.9 ) && ( y >= 0.9 ) && ( z >= 0.9 )) {
-  //  if(t <= 2.0){
-  //    Istim = -3.0;
-  //  }
-  //}
-  //else {
-  Istim = 0.0 ;
-  //}
+  if (( x <= 0.1 ) && ( y <= 0.1 ) && ( z <= 0.1 )) {
+    if(t <= 2.0){
+      Istim = -10.0;
+    }
+  }
+  else {
+    Istim = 0.0 ;
+  }
 };
 
 void IonicModel_AP::get_int_vars(double* val) const

@@ -34,9 +34,10 @@
 int main( int argc, char * argv[] )
 {
   //remove previously existing ECG recording
-  std::string ecg_out_file ("ecg_recording.dat");
+  char ecg_out_file[]="ecg_recording.csv";
 
-  std::string rm_command ("rm -rf " + ecg_out_file);
+  std::string ecg_file_to_remove {ecg_out_file};
+  std::string rm_command ("rm -rf " + ecg_file_to_remove);
   int sysret = system(rm_command.c_str());
   SYS_T::print_fatal_if(sysret != 0, "Error: removing the ecg recording failed. \n");
   
@@ -56,9 +57,9 @@ int main( int argc, char * argv[] )
   const int dof = 1;
 
   int time_start = 0;
-  int time_step = 50;
-  int time_end = 10000;
-  double dt = 0.1;
+  int time_step = 1;
+  int time_end = 20;
+  double dt = 1.0;
 
   bool isXML = true;
 
@@ -72,12 +73,12 @@ int main( int argc, char * argv[] )
   //double electrode_y = -303.80;  
   //double electrode_z =  248.30;
   //v2 lead 
-  double electrode_x = -86.20;
-  double electrode_y = -280.17;  
-  double electrode_z =  229.31;
-  //double electrode_x = -0.75;
-  //double electrode_y =  0.75;
-  //double electrode_z =  0.375;
+  //double electrode_x = -86.20;
+  //double electrode_y = -280.17;  
+  //double electrode_z =  229.31;
+  double electrode_x = 2.00;
+  double electrode_y = 2.00;
+  double electrode_z = 2.00;
   
   PetscMPIInt rank, size;
   // ====== PETSc Initialize =====
@@ -163,15 +164,18 @@ int main( int argc, char * argv[] )
   int * IEN_e;
   double * ectrl_x; double * ectrl_y; double * ectrl_z;
   double * esol;
-  double ecg_tn, ecg_el;
+  double ecg_el,   ecg_tn_proc, ecg_tn_tot;
   PostVectSolution * pSolu;
+  FILE *fp;
   
-  std::ofstream out_str{ ecg_out_file };
+  //std::ofstream out_str{ ecg_out_file };
   std::ostringstream time_index;
+  PetscFOpen(PETSC_COMM_WORLD, ecg_out_file, "w", &fp);
+  PetscFPrintf(PETSC_COMM_WORLD, fp, "Time, \t ECG \n");
   
   for(int time = time_start; time<=time_end; time+= time_step)  {
 
-    ecg_tn = 0.0;
+    ecg_tn_proc = 0.0;
     
     std::string name_to_read(sol_bname);
     std::string name_to_write(out_bname);
@@ -220,7 +224,7 @@ int main( int argc, char * argv[] )
       //std::cout << "ecg_el= " << ecg_el <<std::endl;
       //}
 
-      ecg_tn = ecg_tn + ecg_el;
+      ecg_tn_proc = ecg_tn_proc + ecg_el;
       
       delete [] IEN_e    ; IEN_e    =nullptr;
       delete [] ectrl_x  ; ectrl_x  =nullptr;
@@ -229,12 +233,23 @@ int main( int argc, char * argv[] )
       delete [] esol     ; esol     =nullptr;
     }
 
-    //write the ecg signal at the current time point.
-    std::cout << "ecg_tn= " << ecg_tn <<std::endl;
-    out_str << time*dt << "\t" << ecg_tn  << '\n';
+    ecg_tn_tot = 0.0;
+    PetscBarrier(NULL);
+    
+    MPI_Reduce(&ecg_tn_proc, &ecg_tn_tot, 1, MPI_DOUBLE, MPI_SUM, 0, PETSC_COMM_WORLD);
 
+    ////write the ecg signal at the current time point.
+    //std::cout << "time: " << time*dt << "\t"
+    //	      << "ecg_tn_proc= " << ecg_tn_proc <<std::endl;
+    ////out_str << time*dt << "\t" << ecg_tn  << '\n';
+    
+    PetscFPrintf(PETSC_COMM_WORLD, fp, "%e, \t %e \n", time*dt, ecg_tn_tot);
+    PetscPrintf(PETSC_COMM_WORLD, "Time: %e \t ECG: %e \n", time*dt, ecg_tn_tot);
+    
     delete pSolu;
   }
+  
+  PetscFClose(PETSC_COMM_WORLD, fp);
 
   // ===== PETSc Finalize =====
   delete pNode;
