@@ -30,7 +30,7 @@ using namespace std;
 int main( int argc, char * argv[] )
 {
   // say that tissue is activated beyond this value.
-  double act_threshold= 0;
+  double act_threshold= 0; // mV
   
   int nqp_line = 2;
   int nqp_tet = 4;
@@ -48,7 +48,7 @@ int main( int argc, char * argv[] )
   const int dof = 1;
 
   int time_start = 0;
-  int time_step = 10;
+  int time_step = 1;
   int time_end = 1000;
   double dt = 0.1;
 
@@ -198,8 +198,10 @@ int main( int argc, char * argv[] )
 	// activation_times[0][ii] = time*dt;
 	
 	 double dbl_time= time;
-	 activation_times[0][ii] = (dbl_time-time_step*((pointArrays[0][ii]-act_threshold)
-	 				     /(pointArrays[0][ii]-pointArrays_old[0][ii])))*dt;
+	 activation_times[0][ii] =
+	   (dbl_time-time_step*((pointArrays[0][ii]-act_threshold) 
+				/(pointArrays[0][ii]
+				  -pointArrays_old[0][ii])))*dt;
 	 // std::cout << "dbl_time: " << dbl_time << "\n"
 	 // 	   << "time_step : " << time_step << "\n"
 	 // 	   << "pointArrays[0][" << ii << "]: "<<pointArrays[0][ii]<<"\n"

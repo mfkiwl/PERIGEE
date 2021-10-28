@@ -71,7 +71,7 @@ int main(int argc, char *argv[])
   int dofNum, dofMat, elemType_myo, elemType_LVpur, elemType_RVpur, in_ncommon, probDim;
 
   std::string part_file("postpart");
-  int cpu_size = 2;
+  int cpu_size = 8;
   bool isDualGraph = true;
   bool isread_part = true;
 

@@ -129,7 +129,7 @@ namespace VEC_T
   {
     std::vector<double> result ;
     result.resize(vec1.size());
-    for( int ii = 0; ii != vec1.size(); ++ii )  {
+    for(unsigned int ii = 0; ii != vec1.size(); ++ii )  {
       result.at(ii) = (vec1.at(ii)) * a ; 
     }
     return result;
@@ -146,7 +146,7 @@ namespace VEC_T
     std::vector<double> result ;
     result.resize(vec1.size());
     
-    for( int ii = 0; ii != vec1.size(); ++ii )  {
+    for(unsigned int ii = 0; ii != vec1.size(); ++ii )  {
       result.at(ii) = vec1.at(ii) + vec2.at(ii) ; 
     }
     return result;
@@ -163,7 +163,7 @@ namespace VEC_T
     std::vector<double> result ;
     result.resize(vec1.size());
     
-    for( int ii = 0; ii != vec1.size(); ++ii )  {
+    for(unsigned int ii = 0; ii != vec1.size(); ++ii )  {
       result.at(ii) = vec1.at(ii) - vec2.at(ii) ; 
     }
     return result;
