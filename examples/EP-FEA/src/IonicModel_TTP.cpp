@@ -2,8 +2,9 @@
 
 IonicModel_TTP::IonicModel_TTP()
   //           d_iso,     d_ani,     chi,   C_m, n_int_vars
-  : IonicModel(0.0176,    0.1158,    140.0, 0.01, 18),
+  : IonicModel( 0.012571,  0.070144, 140.0, 0.01, 18),
     // niederer conductivities: transversal=0.0176,  longitudinal=0.1158 Sm-1 
+    // vijay used : 0.012571,  0.082715 [unknown units]
     Rc{8.314}, Tc{310.0e0}, Fc{96.485},
     rho{162.0e0}, V_c{16.404e-3}, V_sr{1.094e-3}, V_ss{5.468e-5},
     K_o{5.4e0}, Na_o{140.0e0}, Ca_o{2.0e0}, G_Na{14.838e0},
