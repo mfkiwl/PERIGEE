@@ -21,7 +21,7 @@
 class IonicModel_TTP : public IonicModel
 {
 public:
-  IonicModel_TTP();
+  IonicModel_TTP(const double &cond_scale);
   
   virtual ~IonicModel_TTP();
   

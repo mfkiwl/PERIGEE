@@ -17,7 +17,7 @@
 class IonicModel_Purkinje : public IonicModel
 {
 public:
-  IonicModel_Purkinje();
+  IonicModel_Purkinje(const double &cond_scale);
   
   virtual ~IonicModel_Purkinje();
   

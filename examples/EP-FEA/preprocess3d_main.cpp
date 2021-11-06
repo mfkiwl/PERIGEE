@@ -109,7 +109,7 @@ int main( int argc, char * argv[] )
   //
   const std::string part_file("part");
 
-  int cpu_size = 8; 
+  int cpu_size = 1; 
   int in_ncommon = 1;
   const bool isDualGraph = true;
 

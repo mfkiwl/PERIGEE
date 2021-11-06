@@ -1,6 +1,6 @@
 #include "IonicModel_TTP.hpp"
 
-IonicModel_TTP::IonicModel_TTP()
+IonicModel_TTP::IonicModel_TTP(const double &cond_scale)
   //           d_iso,     d_ani,     chi,   C_m, n_int_vars
   : IonicModel( 0.012571,  0.070144, 140.0, 0.01, 18),
     // niederer conductivities: transversal=0.0176,  longitudinal=0.1158 Sm-1 

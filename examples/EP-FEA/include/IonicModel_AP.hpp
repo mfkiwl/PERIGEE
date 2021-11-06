@@ -17,7 +17,7 @@
 class IonicModel_AP : public IonicModel
 {
 public:
-  IonicModel_AP();
+  IonicModel_AP(const double &cond_scale);
   
   virtual ~IonicModel_AP();
   

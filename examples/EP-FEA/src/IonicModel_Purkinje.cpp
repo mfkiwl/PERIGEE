@@ -1,6 +1,6 @@
 #include "IonicModel_Purkinje.hpp"
 
-IonicModel_Purkinje::IonicModel_Purkinje()
+IonicModel_Purkinje::IonicModel_Purkinje(const double &cond_scale)
   //           d_iso,   d_ani, chi,   C_m  n_int_var
   : IonicModel(5.0*2.0, 0.0,   140.0, 0.1, 1),
     ap_1{80.0}, ap_2{80.0}, ap_3{3.0}, m1{0.2},
