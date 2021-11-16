@@ -1,8 +1,10 @@
 #include "IonicModel_TTP.hpp"
 
-IonicModel_TTP::IonicModel_TTP(const double &cond_scale)
+IonicModel_TTP::IonicModel_TTP(const double &cond_scale,
+			       const double &LV_delay_in,
+			       const double &RV_delay_in)
   //           d_iso,     d_ani,     chi,   C_m, n_int_vars
-  : IonicModel( 0.012571,  0.070144, 140.0, 0.01, 18),
+  : IonicModel( cond_scale*0.012571,  cond_scale*0.070144, 140.0, 0.01, 18),
     // niederer conductivities: transversal=0.0176,  longitudinal=0.1158 Sm-1 
     // vijay used : 0.012571,  0.082715 [unknown units]
     Rc{8.314}, Tc{310.0e0}, Fc{96.485},
@@ -17,7 +19,31 @@ IonicModel_TTP::IonicModel_TTP(const double &cond_scale)
     V_rel{0.102e0}, k1p{0.15e0}, k2p{0.045e0}, k3{0.06e0}, k4{5.0e-3},
     EC{1.5e0}, max_sr{2.5e0}, min_sr{1.0e0}, V_leak{3.6e-4},
     V_xfer{3.8e-3}, Buf_c{0.2e0}, K_bufc{1.0e-3}, Buf_sr{10.0e0},
-    K_bufsr{0.3e0}, Buf_ss{0.4e0}, K_bufss{2.5e-4}
+    K_bufsr{0.3e0}, Buf_ss{0.4e0}, K_bufss{2.5e-4},
+    LV_pur_delay{LV_delay_in}, RV_pur_delay{RV_delay_in}
+{
+  //SYS_T::commPrint("AP constructor. \n");
+};
+
+IonicModel_TTP::IonicModel_TTP(const double &cond_scale)
+  //           d_iso,     d_ani,     chi,   C_m, n_int_vars
+  : IonicModel( cond_scale*0.012571,  cond_scale*0.070144, 140.0, 0.01, 18),
+    // niederer conductivities: transversal=0.0176,  longitudinal=0.1158 Sm-1 
+    // vijay used : 0.012571,  0.082715 [unknown units]
+    Rc{8.314}, Tc{310.0e0}, Fc{96.485},
+    rho{162.0e0}, V_c{16.404e-3}, V_sr{1.094e-3}, V_ss{5.468e-5},
+    K_o{5.4e0}, Na_o{140.0e0}, Ca_o{2.0e0}, G_Na{14.838e0},
+    G_K1{5.405e0}, G_to{0.073e0, 0.294e0, 0.294e0}, G_Kr{0.153e0},
+    G_Ks{0.392e0, 0.392e0, 0.098e0}, p_KNa{0.03e0}, G_CaL{3.98e-5},
+    K_NaCa{1000.0e0}, gamma{0.35e0}, K_mCa{1.38e0}, K_mNai{87.5e0},
+    K_sat{0.1e0}, alpha{2.5e0}, P_NaK{2.724e0}, K_mK{1.0e0},
+    K_mNa{40.0e0}, G_pK{1.46e-2}, G_pCa{0.1238e0}, K_pCa{5.0e-4},
+    G_bNa{2.9e-4}, G_bCa{5.92e-4}, Vmax_up{6.375e-3}, K_up{2.5e-4},
+    V_rel{0.102e0}, k1p{0.15e0}, k2p{0.045e0}, k3{0.06e0}, k4{5.0e-3},
+    EC{1.5e0}, max_sr{2.5e0}, min_sr{1.0e0}, V_leak{3.6e-4},
+    V_xfer{3.8e-3}, Buf_c{0.2e0}, K_bufc{1.0e-3}, Buf_sr{10.0e0},
+    K_bufsr{0.3e0}, Buf_ss{0.4e0}, K_bufss{2.5e-4},
+    LV_pur_delay{0.0}, RV_pur_delay{0.0}
 {
   //SYS_T::commPrint("AP constructor. \n");
 };
@@ -350,22 +376,24 @@ void IonicModel_TTP::get_Istim(double &Istim,
 {
   // set Istim to zero first,
   Istim = 0.0;
-  
-//  //excite 1st node of purkinje network:
-//  if (( std::sqrt(  std::pow(x-(-106.7), 2.0)
-//   		    + std::pow(y-(-301.9), 2.0)
-//   		    + std::pow(z-( 248.2), 2.0)  ) <= 1.0 )
-//      || ( std::sqrt( std::pow(x-(-104.9), 2.0)
-//   		      + std::pow(y-(-304.0), 2.0)
-//   		      + std::pow(z-( 234.0), 2.0)  ) <= 1.0 ) ){
-  if (( x <= 1.5 ) && ( y <= 1.5 ) && ( z <= 1.5 )) {
-    if(t <= 2.0){
-      Istim = -50.0;
-    }
-  }
-  else {
-    Istim = 0.0 ;
-  }
+  //  
+  //  //excite 1st node of purkinje network:
+  //  if (( std::sqrt(  std::pow(x-(-106.7), 2.0)
+  //   		    + std::pow(y-(-301.9), 2.0)
+  //   		    + std::pow(z-( 248.2), 2.0)  ) <= 1.0 )
+  //      || ( std::sqrt( std::pow(x-(-104.9), 2.0)
+  //   		      + std::pow(y-(-304.0), 2.0)
+  //   		      + std::pow(z-( 234.0), 2.0)  ) <= 1.0 ) ){
+  //
+  //
+  //if (( x <= 1.5 ) && ( y <= 1.5 ) && ( z <= 1.5 )) {
+  //  if(t <= 2.0){
+  //    Istim = -50.0;
+  //  }
+  //}
+  //else {
+  //  Istim = 0.0 ;
+  //}
 };
 
 void IonicModel_TTP::get_int_vars(double* val) const

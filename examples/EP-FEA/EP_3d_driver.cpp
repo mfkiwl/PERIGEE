@@ -84,14 +84,14 @@ int main(int argc, char *argv[])
   
   // Time step initailization
   double initial_time = 0.0;
-  double initial_step = 0.5;
+  double initial_step = 0.1;
   int initial_index = 0;
-  double final_time = 100.0;
+  double final_time = 1000.0;
 
   // Time solver parameters
   std::string sol_bName("SOL_");
-  int ttan_renew_freq = 1;
-  int sol_record_freq = 2;
+  int ttan_renew_freq = 5;
+  int sol_record_freq = 50;
 
   // parameters to optimize personalized EP
   double myo_cond_scaler = 1.0;
@@ -322,14 +322,16 @@ int main(int argc, char *argv[])
   // Idea: implement stride vector in PDNsolution class. 
   //
   SYS_T::commPrint("===> Generate Ionic Models of myocardium and purkinje ... \n");
-  //IonicModel * ionicmodel_myo = new IonicModel_TTP ( myo_cond_scaler) ;
-  IonicModel * ionicmodel_myo = new IonicModel_AP (myo_cond_scaler) ;
+  IonicModel * ionicmodel_myo = new IonicModel_TTP ( myo_cond_scaler) ;
+  //IonicModel * ionicmodel_myo = new IonicModel_AP (myo_cond_scaler) ;
   //
   //IonicModel * ionicmodel_pur = new IonicModel_TTP () ;
-  //IonicModel * ionicmodel_pur = new IonicModel_Purkinje (pur_cond_scaler) ;
-  IonicModel * ionicmodel_pur = new IonicModel_AP (pur_cond_scaler,
-						   LV_pur_delay,
-						   RV_pur_delay) ;
+  IonicModel * ionicmodel_pur = new IonicModel_Purkinje (pur_cond_scaler,
+							 LV_pur_delay,
+							 RV_pur_delay) ;
+  //IonicModel * ionicmodel_pur = new IonicModel_AP (pur_cond_scaler,
+  //						   LV_pur_delay,
+  //						   RV_pur_delay) ;
   //IonicModel * ionicmodel_pur = new IonicModel_Passive () ;
   
   int ionicmodel_dof ; 

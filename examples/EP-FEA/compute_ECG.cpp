@@ -57,28 +57,29 @@ int main( int argc, char * argv[] )
   const int dof = 1;
 
   int time_start = 0;
-  int time_step = 2;
-  int time_end = 200;
-  double dt = 0.5;
+  int time_step = 50;
+  int time_end = 100;
+  double dt = 0.1;
 
   bool isXML = true;
 
-  // electrode location for ECG computation.
-  //3cm away from the left ventricle. 
+  // // electrode location for ECG computation.
+  // //3cm away from the left ventricle. 
   //double electrode_x = -152.2731;
   //double electrode_y = -327.1169;  
   //double electrode_z =  248.9918;
-  //opposite direction
+  //  //opposite direction
   //double electrode_x = -96.99;
   //double electrode_y = -303.80;  
   //double electrode_z =  248.30;
   //v2 lead 
-  //double electrode_x = -86.20;
-  //double electrode_y = -280.17;  
-  //double electrode_z =  229.31;
-  double electrode_x = 2.00;
-  double electrode_y = 2.00;
-  double electrode_z = 2.00;
+  double electrode_x = -86.20;
+  double electrode_y = -280.17;  
+  double electrode_z =  229.31;
+  ////for slab example:
+  //double electrode_x = 10.00;
+  //double electrode_y = 10.00;
+  //double electrode_z = 10.00;
   
   PetscMPIInt rank, size;
   // ====== PETSc Initialize =====

@@ -59,33 +59,33 @@ int main( int argc, char * argv[] )
   char * char_home_dir = getenv("HOME");
   std::string home_dir (char_home_dir);
   
-  //test mesh 
-  std::string geo_file_myo("./myo.vtu");
-  std::string geo_file_LVpur("./pur1.vtu");
-  std::string geo_file_RVpur("./pur2.vtu");
-  std::string LVendnodes_file
-    (home_dir+"/PERIGEE/examples/EP-FEA/mesh/endnodes.txt");
-  std::string RVendnodes_file
-    (home_dir+"/PERIGEE/examples/EP-FEA/mesh/endnodes.txt");
-  //criteria (distance) for matching purkinje junction nodes to myocardium 
-  const double LV_tol= 0.1;
-  const double RV_tol= 0.1;
-  
-  // //heart mesh 
-  // std::string geo_file_myo
-  //   (home_dir+"/PERIGEE/examples/EP-FEA/mesh/HLHS_fibers.vtu");
-  // std::string geo_file_LVpur
-  //   (home_dir+"/PERIGEE/examples/EP-FEA/mesh/LV-purkinje.vtu");
-  // std::string geo_file_RVpur
-  //   (home_dir+"/PERIGEE/examples/EP-FEA/mesh/RV-purkinje.vtu");
-  // //warning: check that the first node of purkinje is not in the endnodes list.
+  // //test mesh 
+  // std::string geo_file_myo("./myo.vtu");
+  // std::string geo_file_LVpur("./pur1.vtu");
+  // std::string geo_file_RVpur("./pur2.vtu");
   // std::string LVendnodes_file
-  //   (home_dir+"/PERIGEE/examples/EP-FEA/mesh/LV_endnodes-picked.txt");
+  //   (home_dir+"/PERIGEE/examples/EP-FEA/mesh/endnodes.txt");
   // std::string RVendnodes_file
-  //   (home_dir+"/PERIGEE/examples/EP-FEA/mesh/RV_endnodes-picked.txt");
+  //   (home_dir+"/PERIGEE/examples/EP-FEA/mesh/endnodes.txt");
   // //criteria (distance) for matching purkinje junction nodes to myocardium 
-  // const double LV_tol= 1.0;
-  // const double RV_tol= 1.0;
+  // const double LV_tol= 0.1;
+  // const double RV_tol= 0.1;
+  
+  //heart mesh 
+  std::string geo_file_myo
+    (home_dir+"/PERIGEE/examples/EP-FEA/mesh/HLHS_fibers.vtu");
+  std::string geo_file_LVpur
+    (home_dir+"/PERIGEE/examples/EP-FEA/mesh/LV-purkinje.vtu");
+  std::string geo_file_RVpur
+    (home_dir+"/PERIGEE/examples/EP-FEA/mesh/RV-purkinje.vtu");
+  //warning: check that the first node of purkinje is not in the endnodes list.
+  std::string LVendnodes_file
+    (home_dir+"/PERIGEE/examples/EP-FEA/mesh/LV_endnodes-picked.txt");
+  std::string RVendnodes_file
+    (home_dir+"/PERIGEE/examples/EP-FEA/mesh/RV_endnodes-picked.txt");
+  //criteria (distance) for matching purkinje junction nodes to myocardium 
+  const double LV_tol= 1.0;
+  const double RV_tol= 1.2;
 
 
   //  // volume & faces purkinje mesh  
@@ -109,7 +109,7 @@ int main( int argc, char * argv[] )
   //
   const std::string part_file("part");
 
-  int cpu_size = 1; 
+  int cpu_size = 6; 
   int in_ncommon = 1;
   const bool isDualGraph = true;
 
