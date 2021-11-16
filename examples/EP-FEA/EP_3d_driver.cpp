@@ -86,7 +86,7 @@ int main(int argc, char *argv[])
   double initial_time = 0.0;
   double initial_step = 0.5;
   int initial_index = 0;
-  double final_time = 50.0;
+  double final_time = 100.0;
 
   // Time solver parameters
   std::string sol_bName("SOL_");
@@ -96,7 +96,9 @@ int main(int argc, char *argv[])
   // parameters to optimize personalized EP
   double myo_cond_scaler = 1.0;
   double pur_cond_scaler = 1.0;
-    
+  double RV_pur_delay    = 0.0;
+  double LV_pur_delay    = 0.0;
+  
   //// Restart options
   //bool is_restart = false;
   //int restart_index = 0;
@@ -133,6 +135,8 @@ int main(int argc, char *argv[])
   SYS_T::GetOptionString("-sol_name", sol_bName);
   SYS_T::GetOptionReal("-myo_cond_scaler",   myo_cond_scaler);
   SYS_T::GetOptionReal("-pur_cond_scaler",   pur_cond_scaler);
+  SYS_T::GetOptionReal("-LV_pur_delay",      LV_pur_delay);
+  SYS_T::GetOptionReal("-RV_pur_delay",      RV_pur_delay);
   
   SYS_T::cmdPrint("-part_file:", part_file);
   SYS_T::cmdPrint("-nqp_line:", nqp_line);
@@ -152,6 +156,8 @@ int main(int argc, char *argv[])
   SYS_T::cmdPrint("-sol_name:", sol_bName);
   SYS_T::cmdPrint("-myo_cond_scaler:", myo_cond_scaler);
   SYS_T::cmdPrint("-pur_cond_scaler:", pur_cond_scaler);
+  SYS_T::cmdPrint("-LV_pur_delay:", LV_pur_delay);
+  SYS_T::cmdPrint("-RV_pur_delay:", RV_pur_delay);
 
   // ======= Generate Main Data Structure =======
   SYS_T::commPrint("===> Reading mesh files ... \n");
@@ -314,12 +320,16 @@ int main(int argc, char *argv[])
   // (because a differing sized vectro will need to be retrieved each time and 
   //  that size will need to be tracked.)
   // Idea: implement stride vector in PDNsolution class. 
+  //
   SYS_T::commPrint("===> Generate Ionic Models of myocardium and purkinje ... \n");
   //IonicModel * ionicmodel_myo = new IonicModel_TTP ( myo_cond_scaler) ;
   IonicModel * ionicmodel_myo = new IonicModel_AP (myo_cond_scaler) ;
+  //
   //IonicModel * ionicmodel_pur = new IonicModel_TTP () ;
   //IonicModel * ionicmodel_pur = new IonicModel_Purkinje (pur_cond_scaler) ;
-  IonicModel * ionicmodel_pur = new IonicModel_AP (pur_cond_scaler) ;
+  IonicModel * ionicmodel_pur = new IonicModel_AP (pur_cond_scaler,
+						   LV_pur_delay,
+						   RV_pur_delay) ;
   //IonicModel * ionicmodel_pur = new IonicModel_Passive () ;
   
   int ionicmodel_dof ; 

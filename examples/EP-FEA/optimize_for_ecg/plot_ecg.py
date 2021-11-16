@@ -12,8 +12,8 @@ Time        = np.genfromtxt('./ecg_recording.csv',skip_header=1,delimiter =
 Sim_ecg     = np.genfromtxt('./ecg_recording.csv',skip_header=1,delimiter =
                             ',',usecols=1) 
 
-PS_ecg      = np.interp(Time, PS_time_org, PS_ecg_org)
+#PS_ecg      = np.interp(Time, PS_time_org, PS_ecg_org)
     
-plt.plot(PS_time_org, PS_ecg_org, 'r', Time, Sim_ecg, 'b', Time, PS_ecg, 'g')
+plt.plot(PS_time_org, PS_ecg_org, 'r', Time, Sim_ecg, 'b')
 #plt.savefig("ECG.png")
 plt.show()

@@ -348,6 +348,9 @@ void IonicModel_TTP::get_Istim(double &Istim,
 			       const double &y,
 			       const double &z ) const
 {
+  // set Istim to zero first,
+  Istim = 0.0;
+  
 //  //excite 1st node of purkinje network:
 //  if (( std::sqrt(  std::pow(x-(-106.7), 2.0)
 //   		    + std::pow(y-(-301.9), 2.0)
