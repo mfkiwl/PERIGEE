@@ -10,12 +10,13 @@ from scipy.optimize import minimize
 import subprocess
 
 #for sherlock 
-#perigee_build_dir = "$HOME/build-perigee/su36_calibrate/" 
+perigee_build_dir = "/home/users/oguzziya/build-perigee/su36_calibrate/" 
 #for mika
-perigee_build_dir = "/Users/oguz/build-PERIGEE/ep_main/"
+#perigee_build_dir = "/Users/oguz/build-PERIGEE/ep_main/"
 
 #patient specific ecg's path. this is the aimed ecg
-PS_ecg_path = "/Users/oguz/PERIGEE/examples/EP-FEA/optimize for ecg/ecg_digitized.csv"
+#PS_ecg_path = "/Users/oguz/PERIGEE/examples/EP-FEA/optimize for ecg/ecg_digitized.csv"
+PS_ecg_path = "/home/users/oguzziya/PERIGEE/examples/EP-FEA/optimize_for_ecg/SU36-V2-1stbeat.csv"
 
 def getrmse(x):
 
@@ -24,20 +25,20 @@ def getrmse(x):
     count = count +1 
 
     #print ("running the analysis with %f, %f" %(x[0],x[1]) )
-    Process = subprocess.call(["mpirun", "-np","6",
-                               #"srun",
+    Process = subprocess.call([#"mpirun", "-np","6",
+                               "srun",
                                (perigee_build_dir+"analysis_3d_EP"),
                                "-myo_cond_scaler", str(x[0]),
                                "-pur_cond_scaler", str(x[1]),
                                "-LV_pur_delay",    str(x[2]), 
-                               "-RV_pur_delay",    str(x[3]) ], 
-                              stdout=subprocess.DEVNULL,
-                              stderr=subprocess.STDOUT)
+                               "-RV_pur_delay",    str(x[3]) ])
+    #stdout=subprocess.DEVNULL,
+    #stderr=subprocess.STDOUT)
     #stdin=subprocess.DEVNULL,
     
     #print ("running compute ecg" )    
-    Process = subprocess.call(["mpirun", "-np","6",
-                               #"srun",
+    Process = subprocess.call([#"mpirun", "-np","6",
+                               "srun",
                                (perigee_build_dir+"compute_ECG")],
                               stdout=subprocess.DEVNULL,
                               stderr=subprocess.STDOUT)
