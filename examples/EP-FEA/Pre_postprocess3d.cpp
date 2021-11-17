@@ -62,7 +62,7 @@ int main(int argc, char *argv[])
     (home_dir+"/PERIGEE/examples/EP-FEA/mesh/RV_endnodes-picked.txt");
   //  criteria (distance) for matching purkinje junction nodes to myocardium 
   const double LV_tol= 1.0;
-  const double RV_tol= 1.2;
+  const double RV_tol= 1.1;
   
   int sysret = system("rm -rf postpart_p*.h5");
   SYS_T::print_fatal_if(sysret != 0, "Error: system call failed. \n");

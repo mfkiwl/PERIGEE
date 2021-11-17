@@ -9,6 +9,15 @@ from matplotlib import pyplot as plt
 from scipy.optimize import minimize
 import subprocess
 
+run_command = "mpirun -np 8 "
+
+#for sherlock 
+#perigee_build_dir = "$HOME/build-perigee/su36_calibrate/" 
+#for mika
+perigee_build_dir = "/Users/oguz/build-PERIGEE/ep_main/"
+
+#patient specific ecg's path. this is the aimed ecg
+PS_ecg_path = "/Users/oguz/build-PERIGEE/ep_main/ecg_digitized.csv"
 
 def getrmse(x):
 
@@ -17,31 +26,36 @@ def getrmse(x):
     count = count +1 
 
     #print ("running the analysis with %f, %f" %(x[0],x[1]) )
-    Process = subprocess.call(["/Users/oguz/build-PERIGEE/ep_main/analysis_3d_EP",
+    Process = subprocess.call([runcommand,
+                               perigee_build_dir+"analysis_3d_EP",
                                "-myo_cond_scaler", str(x[0]),
                                "-pur_cond_scaler", str(x[1]),
                                "-LV_pur_delay",    str(x[2]), 
-                               "-RV_pur_delay",    str(x[3]) ] )
-                              #stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
+                               "-RV_pur_delay",    str(x[3]) ] ,
+                              stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
     
     #print ("running compute ecg" )    
-    Process = subprocess.call(["/Users/oguz/build-PERIGEE/ep_main/compute_ECG"],
+    Process = subprocess.call([runcommand,
+                               perigee_build_dir+"compute_ECG"],
                               stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
 
     #print ("finished running with %f, %f, %f, %f" %(x[0],x[1],x[2],x[3]) )
 
-    PS_time_org =np.genfromtxt('/Users/oguz/build-PERIGEE/ep_main/ecg_digitized.csv'
-                               ,delimiter = ',',usecols=0)
+    # get the patient specific ecg that is the aimed ecg to match and normalize it.
+    PS_time_org =np.genfromtxt(PS_ecg_path, delimiter = ',', usecols=0)
     
-    PS_ecg_org  =np.genfromtxt('/Users/oguz/build-PERIGEE/ep_main/ecg_digitized.csv'
-                               ,delimiter = ',',usecols=1)
+    PS_ecg_org  =np.genfromtxt(PS_ecg_path, delimiter = ',', usecols=1)
+    PS_ecg_org  = PS_ecg_org/(np.amax(PS_ecg_org)-np.amin(PS_ecg_org))
     
-    Time        =np.genfromtxt('/Users/oguz/build-PERIGEE/ep_main/ecg_recording.csv'
-                  ,skip_header=1,delimiter = ',',usecols=0)
+    # get the simulated ecg that is being modified to match PS ecg     
+    Time        =np.genfromtxt('ecg_recording.csv',skip_header=1,delimiter =',',
+                               usecols=0)  
     
-    Sim_ecg     =np.genfromtxt('/Users/oguz/build-PERIGEE/ep_main/ecg_recording.csv'
-                  ,skip_header=1,delimiter = ',',usecols=1)
-    
+    Sim_ecg     =np.genfromtxt('ecg_recording.csv',skip_header=1,delimiter =',',
+                               usecols=1) 
+    Sim_ecg     = Sim_ecg/(np.amax(Sim_ecg)-np.amin(Sim_ecg))    
+
+    #interpolate the PS ecg so that time points are the same as the simulated one.
     PS_ecg      = np.interp(Time, PS_time_org, PS_ecg_org)
     
     plt.plot(PS_time_org, PS_ecg_org, 'r', Time, Sim_ecg, 'b')
@@ -78,10 +92,10 @@ count=0
 #               (3) LV purkinje activation delay,
 #               (4) RV purkinje activation delay
 
-x0 = np.array([0.8, 2.0, 0.0, 0.0])
+x0 = np.array([1.0, 1.0, 140.0, 140.0])
 
-dx = np.array([0.1, 0.1, 1.0, 1.0])
-bnds = ((0.5, 1.5), ( 0.1, 3.0), (0.0, 100.0), ( 0.0, 100.0))
+dx = np.array([0.1, 0.1, 5.0, 5.0])
+bnds = ((0.5, 1.5), ( 0.1, 3.0), (0.0, 400.0), ( 0.0, 400.0))
 
 print ("initial error: ", getrmse(x0))
 
