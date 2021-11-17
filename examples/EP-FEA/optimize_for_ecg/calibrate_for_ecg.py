@@ -9,15 +9,13 @@ from matplotlib import pyplot as plt
 from scipy.optimize import minimize
 import subprocess
 
-run_command = "mpirun -np 8 "
-
 #for sherlock 
 #perigee_build_dir = "$HOME/build-perigee/su36_calibrate/" 
 #for mika
 perigee_build_dir = "/Users/oguz/build-PERIGEE/ep_main/"
 
 #patient specific ecg's path. this is the aimed ecg
-PS_ecg_path = "/Users/oguz/build-PERIGEE/ep_main/ecg_digitized.csv"
+PS_ecg_path = "/Users/oguz/PERIGEE/examples/EP-FEA/optimize for ecg/ecg_digitized.csv"
 
 def getrmse(x):
 
@@ -26,18 +24,23 @@ def getrmse(x):
     count = count +1 
 
     #print ("running the analysis with %f, %f" %(x[0],x[1]) )
-    Process = subprocess.call([runcommand,
-                               perigee_build_dir+"analysis_3d_EP",
+    Process = subprocess.call(["mpirun", "-np","6",
+                               #"srun",
+                               (perigee_build_dir+"analysis_3d_EP"),
                                "-myo_cond_scaler", str(x[0]),
                                "-pur_cond_scaler", str(x[1]),
                                "-LV_pur_delay",    str(x[2]), 
-                               "-RV_pur_delay",    str(x[3]) ] ,
-                              stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
+                               "-RV_pur_delay",    str(x[3]) ], 
+                              stdout=subprocess.DEVNULL,
+                              stderr=subprocess.STDOUT)
+    #stdin=subprocess.DEVNULL,
     
     #print ("running compute ecg" )    
-    Process = subprocess.call([runcommand,
-                               perigee_build_dir+"compute_ECG"],
-                              stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
+    Process = subprocess.call(["mpirun", "-np","6",
+                               #"srun",
+                               (perigee_build_dir+"compute_ECG")],
+                              stdout=subprocess.DEVNULL,
+                              stderr=subprocess.STDOUT)
 
     #print ("finished running with %f, %f, %f, %f" %(x[0],x[1],x[2],x[3]) )
 
@@ -70,7 +73,6 @@ def getrmse(x):
     f = open(outfile,"a")
     f.write("%d, \t %1.2f, %1.2f, %1.2f, %1.2f \t %f \n" %(count,x[0],x[1],x[2],x[3],rmse))
     f.close()
-    
 
     return rmse
 
@@ -107,7 +109,6 @@ count=0
 res = minimize(getrmse, x0, method='nelder-mead',
                options={'xtol': 1e-8, 'disp': True})
 #options={'disp': False, 'minfev': 0, 'scale': None, 'rescale': -1, 'offset': None, 'gtol': -1, 'eps': 1e-08, 'eta': -1, 'maxiter': None, 'maxCGit': -1, 'mesg_num': None, 'ftol': -1, 'xtol': -1, 'stepmx': 0, 'accuracy': 0}
-
 
 print("res.x" , res.x)
 print ("final error: ", getrmse(res.x))
