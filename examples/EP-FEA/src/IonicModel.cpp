@@ -151,44 +151,38 @@ void IonicModel::Runge_Kutta_4(const std::vector<double> &r_old_in,
   for(int i=0; i<time_steps; ++i)
     {
       //1st pass
-      //get_Iion( r_old, V_old, I_stim.at(0), f_r, Iion);
       run_ionic(r_old, V_old, I_stim.at(0), dt, r_new_tmp, V_new_tmp);
       K1V   = (V_new_tmp - V_old);
       K1r   = VEC_T::VminusV(r_new_tmp, r_old) ;
 
       //2nd pass
-      // get_Iion( r_old+0.5*K1r, V_old+0.5*K1V, I_stim.at(1), f_r, Iion);
       run_ionic(VEC_T::VplusV(r_old, VEC_T::Vxa(K1r,0.5)) , V_old + 0.5*K1V,
       		I_stim.at(1), dt, r_new_tmp, V_new_tmp);
-      K2V   = (V_new_tmp - V_old);                
-      K2r   = VEC_T::VminusV(r_new_tmp, r_old) ;
-
+      K2V   = (V_new_tmp - (V_old+0.5*K1V));                
+      K2r   = VEC_T::VminusV(r_new_tmp, VEC_T::VplusV(r_old, VEC_T::Vxa(K1r,0.5))) ;
+      
       //3rd pass
-      // get_Iion( r_old+0.5*K2r, V_old+0.5*K2V, I_stim.at(1), f_r, Iion);
       run_ionic(VEC_T::VplusV(r_old, VEC_T::Vxa(K2r,0.5)) , V_old + 0.5*K2V,
       		I_stim.at(1), dt, r_new_tmp, V_new_tmp);
-      K3V   = (V_new_tmp - V_old);                
-      K3r   = VEC_T::VminusV(r_new_tmp, r_old) ;
+      K3V   = (V_new_tmp - (V_old+0.5*K2V));                
+      K3r   = VEC_T::VminusV(r_new_tmp, VEC_T::VplusV(r_old, VEC_T::Vxa(K2r,0.5))) ;
       
       //4th pass
-      // get_Iion( r_old+K3r, V_old+K3V, I_stim.at(2),  f_r, Iion);
       run_ionic(VEC_T::VplusV(r_old ,K3r) , V_old + K3V,
       		I_stim.at(2), dt, r_new_tmp, V_new_tmp); 
-      K4V   = (V_new_tmp - V_old);                
-      K4r   = VEC_T::VminusV(r_new_tmp, r_old) ;
+      K4V   = (V_new_tmp - (V_old+K3V));                
+      K4r   = VEC_T::VminusV(r_new_tmp, VEC_T::VplusV(r_old ,K3r)) ;
       
       V_new = V_old + (1.0/6.0)*(K1V + 2.0*K2V + 2.0*K3V + K4V);
-      // r_new = r_old + (1.0/6.0)*(K1r + 2.0*K2r + 2.0*K3r + K4r);
       r_new = VEC_T::VplusV( r_old ,
       	VEC_T::Vxa(VEC_T::VplusV(VEC_T::VplusV(K1r , VEC_T::Vxa(K2r,2.0)),
       				 VEC_T::VplusV(VEC_T::Vxa(K3r,2.0) , K4r))
-      		   , 1.0/6.0)); 
+      		   , 1.0/6.0));
       
       //update before the next time step 
       V_old=V_new; 
       r_old=r_new;
     }
-  
 }
 
 double IonicModel::get_diso() const
