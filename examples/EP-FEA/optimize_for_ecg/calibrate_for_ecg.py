@@ -16,7 +16,7 @@ perigee_build_dir = "/home/users/oguzziya/build-perigee/su36_calibrate/"
 
 #patient specific ecg's path. this is the aimed ecg
 #PS_ecg_path = "/Users/oguz/PERIGEE/examples/EP-FEA/optimize for ecg/ecg_digitized.csv"
-PS_ecg_path = "/home/users/oguzziya/PERIGEE/examples/EP-FEA/optimize_for_ecg/SU36-V2-1stbeat.csv"
+PS_ecg_path = "/home/users/oguzziya/SU36-V2-1stbeat.csv"
 
 def getrmse(x):
 
@@ -49,7 +49,8 @@ def getrmse(x):
     PS_time_org =np.genfromtxt(PS_ecg_path, delimiter = ',', usecols=0)
     
     PS_ecg_org  =np.genfromtxt(PS_ecg_path, delimiter = ',', usecols=1)
-    PS_ecg_org  = PS_ecg_org/(np.amax(PS_ecg_org)-np.amin(PS_ecg_org))
+    PS_ecg_org  = PS_ecg_org/(np.amax(PS_ecg_org)-np.amin(PS_ecg_org)) #normalize amp=1
+    PS_ecg_org  = PS_ecg_org - ((PS_ecg_org[0]+PS_ecg_org[-1])/2.0) #bring the rest state=0 
     
     # get the simulated ecg that is being modified to match PS ecg     
     Time        =np.genfromtxt('ecg_recording.csv',skip_header=1,delimiter =',',
