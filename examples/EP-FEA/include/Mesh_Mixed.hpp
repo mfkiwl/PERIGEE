@@ -19,8 +19,8 @@ public:
   Mesh_Mixed(const std::vector< IMesh * > &mesh_list,
 	     const std::vector< int > &elemType_list,
 	     const IIEN * const &ien_ptr,
-	     const std::vector< std::vector<double> > &myo_fiber);
-  //Mesh_Mixed(const int &in_nfunc, const int &in_nelem);
+	     const std::vector< std::vector<double> > &myo_fiber,
+	     const std::vector< int > &phy_tag_list);
 
   virtual ~Mesh_Mixed();
 
@@ -28,6 +28,9 @@ public:
   
   virtual void get_fiber_ori_loc(std::vector< std::vector< double > > &fiber_ori_loc,
 				 const std::vector<int> &elem_loc) const ;
+  
+  virtual void get_phy_tag_loc( std::vector< int > &phy_tag_loc,
+				const std::vector<int> &elem_loc) const ;
 
   virtual int get_s_degree()
     const {SYS_T::print_exit("Error: Mesh.get_s_degree is not implemented. \n");return 0;}
@@ -62,6 +65,7 @@ private:
   int nFunc, nElem, nElemXnLocBas;
   std::vector < int > nLocBas; // nlocbas per element
   std::vector < int > elemType; //elemTypes per element
+  std::vector < int > phy_tag; //phy_tag per element
   std::vector < std::vector < int > > stu_degrees;
   std::vector < std::vector < double > > fiber_ori;
 };

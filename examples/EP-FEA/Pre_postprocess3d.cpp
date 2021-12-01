@@ -45,6 +45,12 @@ int main(int argc, char *argv[])
   //warning: check that the first node of purkinje is not in the endnodes list.
   char * char_home_dir = getenv("HOME");
   std::string home_dir (char_home_dir);
+  
+  //MAKE SURE: that these values below are consistent with preprocess.
+  const int phy_tag_myo    = 1;   // tag number to be assigned to myocardium  
+  const int phy_tag_LVpur  = 2;   // tag number to be assigned to the LV
+  const int phy_tag_RVpur  = 3;   // and RV purkinje cells
+  std::vector< int > phy_tag_list {phy_tag_myo, phy_tag_LVpur, phy_tag_RVpur}; 
 
   ////test mesh endnodes
   //std::string LVendnodes_file
@@ -127,7 +133,6 @@ int main(int argc, char *argv[])
   // Read the geo_file
   int nFunc_LVpur,  nFunc_RVpur, nElem_LVpur, nElem_RVpur, nFunc_myo, nElem_myo;
   std::vector<int> vecIEN_LVpur, vecIEN_RVpur, vecIEN_myo;
-  std::vector<int> phy_tag_LVpur, phy_tag_RVpur, phy_tag_myo;
   std::vector<double> ctrlPts_LVpur, ctrlPts_RVpur, ctrlPts_myo, ctrlPts_combined;
   std::vector< std::vector< double > > myo_fiber;
   std::vector< int > elemType_list {elemType_myo, elemType_LVpur, elemType_RVpur};
@@ -147,9 +152,9 @@ int main(int argc, char *argv[])
   TET_T::read_vtu_grid(geo_file_myo.c_str(), nFunc_myo, nElem_myo,
 		       ctrlPts_myo, vecIEN_myo, myo_fiber);
   TET_T::read_purkinje_lines(geo_file_LVpur.c_str(),nFunc_LVpur, nElem_LVpur, 
-			     ctrlPts_LVpur, vecIEN_LVpur, phy_tag_LVpur);
+			     ctrlPts_LVpur, vecIEN_LVpur );
   TET_T::read_purkinje_lines(geo_file_RVpur.c_str(),nFunc_RVpur, nElem_RVpur, 
-			     ctrlPts_RVpur, vecIEN_RVpur, phy_tag_RVpur);  
+			     ctrlPts_RVpur, vecIEN_RVpur);  
 
   //std::cout<<"elemType_myo: "<<elemType_myo<<std::endl;
   if(elemType_myo == 501)  {
@@ -248,7 +253,7 @@ int main(int argc, char *argv[])
   //VEC_T::clean( vecIEN_pur );
 
   IMesh * mesh_combined = new Mesh_Mixed(mesh_list, elemType_list,
-					 IEN_combined, myo_fiber);
+					 IEN_combined, myo_fiber, phy_tag_list);
   mesh_combined -> print_mesh_info();
 
   //int db_elem = 47395;

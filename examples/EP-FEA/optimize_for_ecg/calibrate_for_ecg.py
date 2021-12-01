@@ -28,10 +28,11 @@ def getrmse(x):
     Process = subprocess.call([#"mpirun", "-np","6",
                                "srun",
                                (perigee_build_dir+"analysis_3d_EP"),
-                               "-myo_cond_scaler", str(x[0]),
-                               "-pur_cond_scaler", str(x[1]),
-                               "-LV_pur_delay",    str(x[2]), 
-                               "-RV_pur_delay",    str(x[3]) ])
+                               "-myo_cond_scaler",   str(x[0]),
+                               "-LVpur_cond_scaler", str(x[1]),
+                               "-RVpur_cond_scaler", str(x[2]),
+                               "-LV_pur_delay",      str(x[3]), 
+                               "-RV_pur_delay",      str(x[4]) ])
     #stdout=subprocess.DEVNULL,
     #stderr=subprocess.STDOUT)
     #stdin=subprocess.DEVNULL,
@@ -70,10 +71,12 @@ def getrmse(x):
     
     rmse = np.sqrt(np.mean((Sim_ecg-PS_ecg)**2))
     
-    print ("iter%d, rmse with %1.2f, %1.2f, %1.2f, %1.2f is: " %(count,x[0],x[1],x[2],x[3]), rmse)
+    print ("iter%d, rmse with %1.2f, %1.2f, %1.2f, %1.2f, %1.2f is: "
+           %(count,x[0],x[1],x[2],x[3],x[4]), rmse)
     
     f = open(outfile,"a")
-    f.write("%d, \t %1.2f, %1.2f, %1.2f, %1.2f \t %f \n" %(count,x[0],x[1],x[2],x[3],rmse))
+    f.write("%d, \t %1.2f, %1.2f, %1.2f, %1.2f, %1.2f \t %f \n"
+            %(count,x[0],x[1],x[2],x[3],x[4],rmse))
     f.close()
 
     return rmse
@@ -92,14 +95,15 @@ f.close()
 
 count=0
 #x values are : (1) myocardium conduction scaler,
-#               (2) purkinje conduction scaler, 
-#               (3) LV purkinje activation delay,
-#               (4) RV purkinje activation delay
+#               (2) LV purkinje conduction scaler,
+#               (3) RV purkinje conduction scaler, 
+#               (4) LV purkinje activation delay,
+#               (5) RV purkinje activation delay
 
-x0 = np.array([1.0, 1.0, 140.0, 140.0])
+x0 = np.array([1.0, 1.0, 1.0, 140.0, 140.0])
 
-dx = np.array([0.1, 0.1, 5.0, 5.0])
-bnds = ((0.5, 1.5), ( 0.1, 3.0), (0.0, 400.0), ( 0.0, 400.0))
+dx = np.array([0.1, 0.1, 0.1, 5.0, 5.0])
+bnds = ((0.5, 1.5), ( 0.1, 3.0), ( 0.1, 3.0), (0.0, 400.0), ( 0.0, 400.0))
 
 print ("initial error: ", getrmse(x0))
 

@@ -302,8 +302,7 @@ void TET_T::read_vtu_grid( const std::string &filename,
 void TET_T::read_purkinje_lines( const std::string &filename,
 				 int &numpts, int &numcels,
 				 std::vector<double> &pt,
-				 std::vector<int> &ien_array,
-				 std::vector<int> &phy_tag )
+				 std::vector<int> &ien_array)
 {
   vtkXMLUnstructuredGridReader * reader = vtkXMLUnstructuredGridReader::New();
   reader -> SetFileName( filename.c_str() );
@@ -327,7 +326,7 @@ void TET_T::read_purkinje_lines( const std::string &filename,
   }
 
   ien_array.clear();
-  phy_tag.clear();
+  //phy_tag.clear();
   for(int ii=0; ii<numcels; ++ii)
   {
     vtkCell * cell = vtkugrid -> GetCell(ii);
@@ -337,7 +336,7 @@ void TET_T::read_purkinje_lines( const std::string &filename,
       ien_array.push_back( static_cast<int>( cell->GetPointId(0) ) );
       ien_array.push_back( static_cast<int>( cell->GetPointId(1) ) );
 
-      phy_tag.push_back( 1 ) ;
+      //phy_tag.push_back( 1 ) ;
       // to read from vtu : static_cast<int>( cd->GetComponent(ii, 0) ) 
     }
     // later implementation: 32 is for cubic line

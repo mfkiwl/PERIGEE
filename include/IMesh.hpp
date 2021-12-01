@@ -18,137 +18,141 @@
 
 class IMesh
 {
-  public:
-    IMesh(){};
+public:
+  IMesh(){};
     
-    virtual ~IMesh(){};
+  virtual ~IMesh(){};
 
-    virtual void print_mesh_info() const = 0;
+  virtual void print_mesh_info() const = 0;
 
-    virtual int get_s_degree() const = 0;
-    virtual int get_t_degree() const = 0;
-    virtual int get_u_degree() const = 0;
-    virtual int get_nFunc() const = 0;
-    virtual int get_nElem() const = 0;
-    virtual int get_nLocBas() const = 0;
+  virtual int get_s_degree() const = 0;
+  virtual int get_t_degree() const = 0;
+  virtual int get_u_degree() const = 0;
+  virtual int get_nFunc() const = 0;
+  virtual int get_nElem() const = 0;
+  virtual int get_nLocBas() const = 0;
 
-    virtual int get_nLocBas(const int &ee) const
-    {SYS_T::print_exit("Error: get_nLocBas(ee) is not implemented. \n"); return 0;}
+  virtual int get_nLocBas(const int &ee) const
+  {SYS_T::print_exit("Error: get_nLocBas(ee) is not implemented. \n"); return 0;}
 
-    virtual void get_nLocBas_vec(std::vector< int >  &nLocBas_vec_in) const
-    {SYS_T::print_exit("Error: get_nLocBas_vec is not implemented. \n");}
+  virtual void get_nLocBas_vec(std::vector< int >  &nLocBas_vec_in) const
+  {SYS_T::print_exit("Error: get_nLocBas_vec is not implemented. \n");}
 
-    virtual int get_elemType(const int &ee) const
-    {SYS_T::print_exit("Error: get_nLocBas(ee) is not implemented. \n"); return 0;}
+  virtual int get_elemType(const int &ee) const
+  {SYS_T::print_exit("Error: get_nLocBas(ee) is not implemented. \n"); return 0;}
   
-    virtual void get_elemType_vec(std::vector< int >  &elemType_vec_in) const
-    {SYS_T::print_exit("Error: get_elemType_vec is not implemented. \n");}
-
-    virtual void get_fiber_ori_loc(std::vector< std::vector< double > > &fiber_ori_loc_in,
-				   const std::vector<int> &elem_loc) const 
-    {SYS_T::print_exit("Error IMesh.hpp: get_fiber_ori_loc is not implemented. \n");}
+  virtual void get_elemType_vec(std::vector< int >  &elemType_vec_in) const
+  {SYS_T::print_exit("Error: get_elemType_vec is not implemented. \n");}
   
-    virtual void get_stu_degree(std::vector <int >  &stu_of_elem,
-				 const int &ee) const
-    {SYS_T::print_exit("Error: get_stu_degree is not implemented. \n");}
+  virtual void get_fiber_ori_loc(std::vector< std::vector< double > > &fiber_ori_loc_in,
+				 const std::vector<int> &elem_loc) const 
+  {SYS_T::print_exit("Error IMesh.hpp: get_fiber_ori_loc is not implemented. \n");}
+		     
+  virtual void get_phy_tag_loc(std::vector< int > &phy_tag_loc_in,
+			       const std::vector<int> &elem_loc) const 
+  {SYS_T::print_exit("Error IMesh.hpp: get_phy_tag_loc is not implemented. \n");} 
+    
+  virtual void get_stu_degree(std::vector <int >  &stu_of_elem,
+			      const int &ee) const
+  {SYS_T::print_exit("Error: get_stu_degree is not implemented. \n");}
 
-    virtual void get_stu_deg_vec(std::vector< std::vector< int > > &stu_deg_vec_in) const
-         {SYS_T::print_exit("Error: get_stu_deg_vec is not implemented. \n");}
+  virtual void get_stu_deg_vec(std::vector< std::vector< int > > &stu_deg_vec_in) const
+  {SYS_T::print_exit("Error: get_stu_deg_vec is not implemented. \n");}
 
-    virtual int get_nElemXnLocBas() const
-    {SYS_T::print_exit("Error: get_nElemXnLocBas is not implemented. \n"); return 0;}
+  virtual int get_nElemXnLocBas() const
+  {SYS_T::print_exit("Error: get_nElemXnLocBas is not implemented. \n"); return 0;}
 
-    virtual int get_nFunc_x() const
-    {SYS_T::print_exit("Error: get_nFunc_x is not implemented. \n"); return 0;}
+  virtual int get_nFunc_x() const
+  {SYS_T::print_exit("Error: get_nFunc_x is not implemented. \n"); return 0;}
     
-    virtual int get_nFunc_y() const
-    {SYS_T::print_exit("Error: get_nFunc_y is not implemented. \n"); return 0;}
+  virtual int get_nFunc_y() const
+  {SYS_T::print_exit("Error: get_nFunc_y is not implemented. \n"); return 0;}
     
-    virtual int get_nFunc_z() const
-    {SYS_T::print_exit("Error: get_nFunc_z is not implemented. \n"); return 0;}
+  virtual int get_nFunc_z() const
+  {SYS_T::print_exit("Error: get_nFunc_z is not implemented. \n"); return 0;}
     
-    virtual int get_nElem_x() const
-    {SYS_T::print_exit("Error: get_nElem_x is not implemented. \n"); return 0;}
+  virtual int get_nElem_x() const
+  {SYS_T::print_exit("Error: get_nElem_x is not implemented. \n"); return 0;}
     
-    virtual int get_nElem_y() const
-    {SYS_T::print_exit("Error: get_nElem_y is not implemented. \n"); return 0;}
+  virtual int get_nElem_y() const
+  {SYS_T::print_exit("Error: get_nElem_y is not implemented. \n"); return 0;}
     
-    virtual int get_nElem_z() const
-    {SYS_T::print_exit("Error: get_nElem_z is not implemented. \n"); return 0;}
+  virtual int get_nElem_z() const
+  {SYS_T::print_exit("Error: get_nElem_z is not implemented. \n"); return 0;}
     
-    virtual double get_hx_max() const
-    {SYS_T::print_exit("Error: get_hx_max is not implemented. \n"); return 0.0;}
+  virtual double get_hx_max() const
+  {SYS_T::print_exit("Error: get_hx_max is not implemented. \n"); return 0.0;}
     
-    virtual double get_hy_max() const
-    {SYS_T::print_exit("Error: get_hy_max is not implemented. \n"); return 0.0;}
+  virtual double get_hy_max() const
+  {SYS_T::print_exit("Error: get_hy_max is not implemented. \n"); return 0.0;}
     
-    virtual double get_hz_max() const
-    {SYS_T::print_exit("Error: get_hz_max is not implemented. \n"); return 0.0;}
+  virtual double get_hz_max() const
+  {SYS_T::print_exit("Error: get_hz_max is not implemented. \n"); return 0.0;}
 
-    virtual double get_hx_min() const
-    {SYS_T::print_exit("Error: get_hx_min is not implemented. \n"); return 0.0;}
+  virtual double get_hx_min() const
+  {SYS_T::print_exit("Error: get_hx_min is not implemented. \n"); return 0.0;}
     
-    virtual double get_hy_min() const
-    {SYS_T::print_exit("Error: get_hy_min is not implemented. \n"); return 0.0;}
+  virtual double get_hy_min() const
+  {SYS_T::print_exit("Error: get_hy_min is not implemented. \n"); return 0.0;}
     
-    virtual double get_hz_min() const
-    {SYS_T::print_exit("Error: get_hz_min is not implemented. \n"); return 0.0;}
+  virtual double get_hz_min() const
+  {SYS_T::print_exit("Error: get_hz_min is not implemented. \n"); return 0.0;}
 
-    virtual double get_hx(int ee) const
-    {SYS_T::print_exit("Error: get_hx is not implemented. \n"); return 0.0;}
+  virtual double get_hx(int ee) const
+  {SYS_T::print_exit("Error: get_hx is not implemented. \n"); return 0.0;}
     
-    virtual double get_hy(int ee) const
-    {SYS_T::print_exit("Error: get_hy is not implemented. \n"); return 0.0;}
+  virtual double get_hy(int ee) const
+  {SYS_T::print_exit("Error: get_hy is not implemented. \n"); return 0.0;}
     
-    virtual double get_hz(int ee) const
-    {SYS_T::print_exit("Error: get_hz is not implemented. \n"); return 0.0;}
+  virtual double get_hz(int ee) const
+  {SYS_T::print_exit("Error: get_hz is not implemented. \n"); return 0.0;}
 
 
-    // ------------------------------------------------------------------------
-    // Nonzero element numbering info
-    // ------------------------------------------------------------------------
-    virtual int get_nElem_x_nz() const
-    {std::cerr<<"Error: get_nElem_x_nz is not implemented. \n"; exit(EXIT_FAILURE); return 0;}
+  // ------------------------------------------------------------------------
+  // Nonzero element numbering info
+  // ------------------------------------------------------------------------
+  virtual int get_nElem_x_nz() const
+  {std::cerr<<"Error: get_nElem_x_nz is not implemented. \n"; exit(EXIT_FAILURE); return 0;}
     
-    virtual int get_nElem_y_nz() const
-    {std::cerr<<"Error: get_nElem_y_nz is not implemented. \n"; exit(EXIT_FAILURE); return 0;}
+  virtual int get_nElem_y_nz() const
+  {std::cerr<<"Error: get_nElem_y_nz is not implemented. \n"; exit(EXIT_FAILURE); return 0;}
     
-    virtual int get_nElem_z_nz() const
-    {std::cerr<<"Error: get_nElem_z_nz is not implemented. \n"; exit(EXIT_FAILURE); return 0;}
+  virtual int get_nElem_z_nz() const
+  {std::cerr<<"Error: get_nElem_z_nz is not implemented. \n"; exit(EXIT_FAILURE); return 0;}
     
-    virtual int get_nElem_nz() const
-    {std::cerr<<"Error: get_nElem_nz is not implemented. \n"; exit(EXIT_FAILURE); return 0;}
+  virtual int get_nElem_nz() const
+  {std::cerr<<"Error: get_nElem_nz is not implemented. \n"; exit(EXIT_FAILURE); return 0;}
 
     
-    // ------------------------------------------------------------------------
-    // Information for multipatch
-    // ------------------------------------------------------------------------
-    virtual int get_patch_index() const
-    {std::cerr<<"Error: get_patch_index is not implemented. \n"; exit(EXIT_FAILURE); return 0;}
+  // ------------------------------------------------------------------------
+  // Information for multipatch
+  // ------------------------------------------------------------------------
+  virtual int get_patch_index() const
+  {std::cerr<<"Error: get_patch_index is not implemented. \n"; exit(EXIT_FAILURE); return 0;}
 
-    virtual int get_nElem_start() const
-    {std::cerr<<"Error: get_nElem_start is not implemented. \n"; exit(EXIT_FAILURE); return 0;}
+  virtual int get_nElem_start() const
+  {std::cerr<<"Error: get_nElem_start is not implemented. \n"; exit(EXIT_FAILURE); return 0;}
 
-    virtual int get_nFunc_start() const
-    {std::cerr<<"Error: get_nElem_start is not implemented. \n"; exit(EXIT_FAILURE); return 0;}
+  virtual int get_nFunc_start() const
+  {std::cerr<<"Error: get_nElem_start is not implemented. \n"; exit(EXIT_FAILURE); return 0;}
 
-    // ------------------------------------------------------------------------
-    // get_patch_mesh belongs to the multipatch mesh handler which returns the
-    // invididual mesh's pointer    
-    // ------------------------------------------------------------------------
-    virtual IMesh * get_patch_mesh(const int &pp) const
-    {std::cerr<<"Error: get_patch_mesh is not implmented. \n"; exit(EXIT_FAILURE); return NULL;}
+  // ------------------------------------------------------------------------
+  // get_patch_mesh belongs to the multipatch mesh handler which returns the
+  // invididual mesh's pointer    
+  // ------------------------------------------------------------------------
+  virtual IMesh * get_patch_mesh(const int &pp) const
+  {std::cerr<<"Error: get_patch_mesh is not implmented. \n"; exit(EXIT_FAILURE); return NULL;}
 
-    virtual int get_num_patch() const
-    {std::cerr<<"Error: get_num_patch is not implemented. \n"; exit(EXIT_FAILURE); return 0;}
+  virtual int get_num_patch() const
+  {std::cerr<<"Error: get_num_patch is not implemented. \n"; exit(EXIT_FAILURE); return 0;}
 
-    // ------------------------------------------------------------------------
-    // get_locelem_index
-    // input : global element index ee
-    // output: patch index and the element index in this patch
-    // ------------------------------------------------------------------------
-    virtual void get_locelem_index( const int &ee, int &patch, int &loc_ee) const
-    {std::cerr<<"Error: get_locelem_index is not implemented. \n"; exit(EXIT_FAILURE);}
+  // ------------------------------------------------------------------------
+  // get_locelem_index
+  // input : global element index ee
+  // output: patch index and the element index in this patch
+  // ------------------------------------------------------------------------
+  virtual void get_locelem_index( const int &ee, int &patch, int &loc_ee) const
+  {std::cerr<<"Error: get_locelem_index is not implemented. \n"; exit(EXIT_FAILURE);}
 };
 
 #endif

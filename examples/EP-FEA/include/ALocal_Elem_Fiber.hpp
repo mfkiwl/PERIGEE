@@ -21,27 +21,22 @@ public:
 
   virtual void get_fiber_ori_e( std::vector<double> &fiber_ori_e, const int &ee)
     const {fiber_ori_e = fiber_ori_loc.at(ee);}
+
+  virtual void get_phy_tag_e( int &phy_tag_e, const int &ee)
+    const {phy_tag_e = phy_tag_loc.at(ee);}
+  
   //    // Assess the data
   //    virtual int get_elem_loc(const int &index) const {return elem_loc[index];}
   //    
   //    virtual int get_nlocalele() const {return nlocalele;}
   //
   //    virtual void print_info() const;
-  //
-  //    // This is a virtual function for multiphysics simulations. A tag
-  //    // is attached to an element to identify different physical domain,
-  //    // for example, fluid subdomain and solid subdomain.
-  //    // For single domain problem, this function is NOT needed.
-  //    virtual int get_elem_tag(const int &index) const
-  //    {
-  //      SYS_T::print_fatal("Error: ALocal_Elem_Fiber::get_elem_tag is not implemented.\n");
-  //      return -1;
-  //    }
 
 private:
   // A vector of vector storing the local partition's fiber orientations
   //for each element.
   std::vector<std::vector<double>> fiber_ori_loc;
+  std::vector<int> phy_tag_loc;
 
 };
 

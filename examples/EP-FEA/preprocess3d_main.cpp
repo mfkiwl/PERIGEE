@@ -48,28 +48,32 @@ int main( int argc, char * argv[] )
   const int dofMat = 1; // degree-of-freedom in the matrix problem
   const int elemType_myo = 501; //first order (4 node) tet element.
   const int elemType_LVpur = 512; //2-node line element in 3d. check if this
-  const int elemType_RVpur = 512; //2-node line element in 3d. check if this  
-  //element type number 512 coincides with another element type number.
+  const int elemType_RVpur = 512; //2-node line element in 3d. check if this
+  const int phy_tag_myo    = 1;   // tag number to be assigned to myocardium  
+  const int phy_tag_LVpur  = 2;   // tag number to be assigned to the LV
+  const int phy_tag_RVpur  = 3;   // and RV purkinje cells
+  // check if element type number 512 coincides with another element type number.
   //because I gave this number to this element.
   //WARNING:append myo and pur with same order everytime
-  std::vector< int > elemType_list {elemType_myo, elemType_LVpur, elemType_RVpur};
-  //std::vector< int > elemType_combined;
+  std::vector< int > elemType_list
+    {elemType_myo, elemType_LVpur, elemType_RVpur}; 
+  std::vector< int > phy_tag_list {phy_tag_myo, phy_tag_LVpur, phy_tag_RVpur}; 
 
   // Input files
   char * char_home_dir = getenv("HOME");
   std::string home_dir (char_home_dir);
   
-  // //test mesh 
-  // std::string geo_file_myo("./myo.vtu");
-  // std::string geo_file_LVpur("./pur1.vtu");
-  // std::string geo_file_RVpur("./pur2.vtu");
-  // std::string LVendnodes_file
-  //   (home_dir+"/PERIGEE/examples/EP-FEA/mesh/endnodes.txt");
-  // std::string RVendnodes_file
-  //   (home_dir+"/PERIGEE/examples/EP-FEA/mesh/endnodes.txt");
-  // //criteria (distance) for matching purkinje junction nodes to myocardium 
-  // const double LV_tol= 0.1;
-  // const double RV_tol= 0.1;
+  ////test mesh 
+  //std::string geo_file_myo("./myo.vtu");
+  //std::string geo_file_LVpur("./pur1.vtu");
+  //std::string geo_file_RVpur("./pur2.vtu");
+  //std::string LVendnodes_file
+  //  (home_dir+"/PERIGEE/examples/EP-FEA/mesh/endnodes.txt");
+  //std::string RVendnodes_file
+  //  (home_dir+"/PERIGEE/examples/EP-FEA/mesh/endnodes.txt");
+  ////criteria (distance) for matching purkinje junction nodes to myocardium 
+  //const double LV_tol= 0.1;
+  //const double RV_tol= 0.1;
   
   //heart mesh 
   std::string geo_file_myo
@@ -177,17 +181,17 @@ int main( int argc, char * argv[] )
   // Read the geometry files
   int nFunc_LVpur, nElem_LVpur, nFunc_RVpur, nElem_RVpur, nFunc_myo, nElem_myo;
   std::vector<int> vecIEN_LVpur, vecIEN_RVpur, vecIEN_myo;
-  std::vector<int> phy_tag_LVpur, phy_tag_RVpur, phy_tag_myo;
   std::vector<double> ctrlPts_LVpur, ctrlPts_RVpur, ctrlPts_myo, ctrlPts_combined;
   std::vector< std::vector< double > > myo_fiber;
   
-  // Warning: this function returns phy_tag as 1 only.
   TET_T::read_vtu_grid(geo_file_myo.c_str(), nFunc_myo, nElem_myo,
 		       ctrlPts_myo, vecIEN_myo, myo_fiber);
-  TET_T::read_purkinje_lines(geo_file_LVpur.c_str(),nFunc_LVpur, nElem_LVpur, 
-			     ctrlPts_LVpur, vecIEN_LVpur, phy_tag_LVpur);
-  TET_T::read_purkinje_lines(geo_file_RVpur.c_str(),nFunc_RVpur, nElem_RVpur, 
-			       ctrlPts_RVpur, vecIEN_RVpur, phy_tag_RVpur);
+  TET_T::read_purkinje_lines(geo_file_LVpur.c_str(), 
+			     nFunc_LVpur, nElem_LVpur, 
+			     ctrlPts_LVpur, vecIEN_LVpur);
+  TET_T::read_purkinje_lines(geo_file_RVpur.c_str(), 
+			     nFunc_RVpur, nElem_RVpur, 
+			     ctrlPts_RVpur, vecIEN_RVpur);
 
   //*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
   //std::cout << "nelem myo" << nElem_myo <<"\n"
@@ -294,7 +298,7 @@ int main( int argc, char * argv[] )
   
   //IMesh * mesh_combined = new Mesh_Mixed(nFunc_tot, nElem_tot);
   IMesh * mesh_combined = new Mesh_Mixed(mesh_list, elemType_list,
-					 IEN_combined, myo_fiber);
+					 IEN_combined, myo_fiber, phy_tag_list); 
   mesh_combined -> print_mesh_info();  
   
   // Partition

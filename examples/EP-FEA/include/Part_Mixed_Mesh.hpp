@@ -24,7 +24,6 @@ class Part_Mixed_Mesh : public IPart
 		   const Map_Node_Index * const &mnindex,
 		   const IIEN * const &IEN,
 		   const std::vector<double> &ctrlPts,	
-		   //const std::vector<std::vector<double>> &myo_fiber,	     
 		   const int &in_cpu_rank, const int &in_cpu_size,
 		   const int &in_dofNum, const int &in_dofMat,
 		   const bool isPrintInfo );
@@ -96,7 +95,8 @@ class Part_Mixed_Mesh : public IPart
   // 1. local element
   std::vector<int> elem_loc;
   int nlocalele;
-  std::vector< std::vector< double > > fiber_ori_loc; 
+  std::vector< std::vector< double > > fiber_ori_loc;
+  std::vector< int > phy_tag_loc; 
 
   // 2. local node
   std::vector<int> node_loc;
@@ -133,7 +133,6 @@ class Part_Mixed_Mesh : public IPart
 			   const Map_Node_Index * const &mnindex,
 			   const IIEN * const &IEN,
 			   const std::vector<double> &ctrlPts,
-			   //const std::vector<std::vector<double>> &myo_fiber,
 			   const bool &isPrintinfo );
 };
 

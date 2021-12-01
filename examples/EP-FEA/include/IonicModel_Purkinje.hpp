@@ -18,8 +18,7 @@ class IonicModel_Purkinje : public IonicModel
 {
 public:
   IonicModel_Purkinje(const double &cond_scale,
-		      const double &LV_delay_in,
-		      const double &RV_delay_in);
+		      const double &delay_in);
 
   IonicModel_Purkinje(const double &cond_scale);
   
@@ -46,7 +45,7 @@ protected:
 
 private:
   const double ap_1, ap_2, ap_3, m1, m2, alpha, gamma, b, c,
-    LV_pur_delay, RV_pur_delay; 
+    pur_delay; 
 };
 
 #endif

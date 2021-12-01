@@ -143,8 +143,7 @@ namespace TET_T
   void read_purkinje_lines( const std::string &filename,
 			    int &numpts, int &numcels,
 			    std::vector<double> &pt,
-			    std::vector<int> &ien_array,
-			    std::vector<int> &phy_tag );
+			    std::vector<int> &ien_array );
 
   // ----------------------------------------------------------------
   // ! read_vtp_grid: read the surface mesh from a .vtp file. The mesh

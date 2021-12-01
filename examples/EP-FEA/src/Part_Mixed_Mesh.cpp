@@ -6,7 +6,6 @@ Part_Mixed_Mesh::Part_Mixed_Mesh(
     const Map_Node_Index * const &mnindex,
     const IIEN * const &IEN,
     const std::vector<double> &ctrlPts,
-    //const std::vector<std::vector<double>> &myo_fiber,
     const int &in_cpu_rank, const int &in_cpu_size,
     const int &in_dofNum, const int &in_dofMat,
     const bool isPrintInfo )
@@ -49,7 +48,6 @@ void Part_Mixed_Mesh::Generate_Partition( const IMesh * const &mesh,
     const Map_Node_Index * const &mnindex,
     const IIEN * const &IEN,
     const std::vector<double> &ctrlPts,
-  //const std::vector<std::vector<double>> &myo_fiber,					  
     const bool &isPrintInfo )
 {
   // 1. Create local partition based on the epart & npart info
@@ -87,7 +85,8 @@ void Part_Mixed_Mesh::Generate_Partition( const IMesh * const &mesh,
 
   //2.5 get local copies stu degree, nlocbas ,  elemtypes and local fiber_orientations
   nLocBas_loc.resize(nlocalele);
-  mesh->get_fiber_ori_loc(fiber_ori_loc, elem_loc);  
+  mesh->get_fiber_ori_loc(fiber_ori_loc, elem_loc);
+  mesh->get_phy_tag_loc(phy_tag_loc, elem_loc);  
   //elemType_loc.resize(nlocalele);
   //stu_Degree_loc.resize(nlocalele);
   for( int e=0; e<nlocalele; ++e )  {
@@ -280,6 +279,7 @@ void Part_Mixed_Mesh::write( const char * inputFileName ) const
   h5w->write_intScalar( group_id_1, "nlocalele", nlocalele );
   h5w->write_intVector( group_id_1, "elem_loc", elem_loc );
   h5w->write_intVector( group_id_1, "nLocBas_loc", nLocBas_loc );
+  h5w->write_intVector( group_id_1, "phy_tag_loc", phy_tag_loc );
   h5w->write_doubleMatrix( group_id_1, "fiber_ori_loc_vec", fiber_ori_loc_vec,
 			   nlocalele, probDim);
   

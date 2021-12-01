@@ -22,7 +22,10 @@ ALocal_Elem_Fiber::ALocal_Elem_Fiber(const std::string &fileBaseName,
     fiber_ori_loc.push_back( std::vector<double> (it+ ii*col_num,
 						  it+((ii+1)*col_num) ) );
   }
-    
+
+  //read in the physical tag of each local element.
+  h5r->read_intVector( gname.c_str(), "phy_tag_loc", phy_tag_loc);
+
   delete h5r;
   H5Fclose( file_id );
 }

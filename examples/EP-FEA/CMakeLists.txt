@@ -178,6 +178,7 @@ INCLUDE(../../conf/message_compiler_setup.cmake)
 # 1.1 Preprocess
 ADD_EXECUTABLE( gmshIO3d gmsh_process_3d.cpp)
 ADD_EXECUTABLE( preprocess3d preprocess3d_main.cpp)
+#ADD_EXECUTABLE( preprocess3d_GrownMyo preprocess3d_GrownMyo.cpp)
 
 # 1.2 Analysis and tests
 ADD_EXECUTABLE( analysis_3d_EP EP_3d_driver.cpp)
@@ -190,11 +191,12 @@ ADD_EXECUTABLE( vis_3d_EP vis_3DEP.cpp)
 ADD_EXECUTABLE( compute_ECG compute_ECG.cpp)
 ADD_EXECUTABLE( activation_times activation_times.cpp)
 #
-## -------------------------------------------------------------------
+# -------------------------------------------------------------------
 # 2. Link libraries
 # 2.1 Preprocess
 TARGET_LINK_LIBRARIES( gmshIO3d perigee_preprocess )
 TARGET_LINK_LIBRARIES( preprocess3d ${EXTRA_LINK_LIBS} perigee_preprocess )
+#TARGET_LINK_LIBRARIES( preprocess3d_GrownMyo ${EXTRA_LINK_LIBS} perigee_preprocess )
 
 # 2.2 Analysis and tests
 TARGET_LINK_LIBRARIES( analysis_3d_EP ${EXTRA_LINK_LIBS} perigee_analysis )
@@ -202,10 +204,10 @@ TARGET_LINK_LIBRARIES( analysis_3d_EP ${EXTRA_LINK_LIBS} perigee_analysis )
 ## 2.3 Postprocess
 TARGET_LINK_LIBRARIES( prepostproc3d ${EXTRA_LINK_LIBS} perigee_preprocess
   perigee_analysis )
-#
+
 #TARGET_LINK_LIBRARIES( post_compare_manu_3d ${EXTRA_LINK_LIBS} 
 #  perigee_preprocess perigee_analysis perigee_postprocess )
-#
+
 TARGET_LINK_LIBRARIES( vis_3d_EP ${EXTRA_LINK_LIBS}
   perigee_preprocess perigee_analysis perigee_postprocess )
 

@@ -1,13 +1,12 @@
 #include "IonicModel_Purkinje.hpp"
 
 IonicModel_Purkinje::IonicModel_Purkinje(const double &cond_scale,
-					 const double &LV_delay_in,
-					 const double &RV_delay_in)
+					 const double &delay_in)
   //           d_iso,   d_ani, chi,   C_m  n_int_var
   : IonicModel(cond_scale*10.0, cond_scale*0.0,   140.0, 0.1, 1),
     ap_1{80.0}, ap_2{80.0}, ap_3{3.0}, m1{0.2},
     m2{0.3}, alpha{0.01}, gamma{0.002}, b{0.15}, c{8.0},
-    LV_pur_delay{LV_delay_in}, RV_pur_delay{RV_delay_in}
+    pur_delay{delay_in}
 {
   //SYS_T::commPrint("IonicModel_Purkinje constructor. \n");
 };
@@ -17,7 +16,7 @@ IonicModel_Purkinje::IonicModel_Purkinje(const double &cond_scale)
   : IonicModel(cond_scale*10.0, cond_scale*0.0,   140.0, 0.1, 1),
     ap_1{80.0}, ap_2{80.0}, ap_3{3.0}, m1{0.2},
     m2{0.3}, alpha{0.01}, gamma{0.002}, b{0.15}, c{8.0},
-    LV_pur_delay{0.0}, RV_pur_delay{0.0}
+    pur_delay{0.0}
 {
   //SYS_T::commPrint("IonicModel_Purkinje constructor. \n");
 };
@@ -48,7 +47,7 @@ void IonicModel_Purkinje::get_Istim(double &Istim,
   if ( std::sqrt(  std::pow(x-(-106.7), 2.0)
 		   + std::pow(y-(-301.9), 2.0)
 		   + std::pow(z-( 248.2), 2.0)  ) <= 1.0 ) {
-    if ((t >= LV_pur_delay) && (t <= 2.0 + LV_pur_delay)) {
+    if ((t >= pur_delay) && (t <= 2.0 + pur_delay)) {
       Istim = -300.0;
     } else {
       Istim = 0.0;
@@ -56,7 +55,7 @@ void IonicModel_Purkinje::get_Istim(double &Istim,
   } else if ( std::sqrt( std::pow(x-(-104.9), 2.0)
 			 + std::pow(y-(-304.0), 2.0)
 			 + std::pow(z-( 234.0), 2.0)  ) <= 1.0 ) {
-    if ((t >= RV_pur_delay) && (t <= 2.0 + RV_pur_delay)) {
+    if ((t >= pur_delay) && (t <= 2.0 + pur_delay)) {
       Istim = -300.0;
     } else {
       Istim = 0.0;

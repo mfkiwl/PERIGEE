@@ -1,13 +1,12 @@
 #include "IonicModel_AP.hpp"
 
 IonicModel_AP::IonicModel_AP(const double &cond_scale,
-			     const double &LV_delay_in,
-			     const double &RV_delay_in)
+			     const double &delay_in)
   //           d_iso,     d_ani,     chi,   C_m, n_int_vars
   : IonicModel(cond_scale*0.12, cond_scale*0.78, 140.0, 0.1, 1),
     ap_1{100.0}, ap_2{80.0}, ap_3{12.9}, m1{0.2},
     m2{0.3}, alpha{0.01}, gamma{0.002}, b{0.15}, c{8.0},
-    LV_pur_delay{LV_delay_in}, RV_pur_delay{RV_delay_in}
+    pur_delay{delay_in}
 {
   //SYS_T::commPrint("AP constructor. \n");
 };
@@ -17,7 +16,7 @@ IonicModel_AP::IonicModel_AP(const double &cond_scale)
   : IonicModel(cond_scale*0.12, cond_scale*0.78, 140.0, 0.1, 1),
     ap_1{100.0}, ap_2{80.0}, ap_3{12.9}, m1{0.2},
     m2{0.3}, alpha{0.01}, gamma{0.002}, b{0.15}, c{8.0},
-    LV_pur_delay{0.0}, RV_pur_delay{0.0}
+    pur_delay{0.0}
 {
   //SYS_T::commPrint("AP constructor. \n");
 };
@@ -71,13 +70,13 @@ void IonicModel_AP::get_Istim(double &Istim,
   Istim = 0.0;
   
   if (x <= -9.0 ) {
-    if ((t >= LV_pur_delay) && (t <= 2.0 + LV_pur_delay)) {
+    if ((t >= pur_delay) && (t <= 2.0 + pur_delay)) {
       Istim = -30.0;
     } else {
       Istim = 0.0;
     }
   } else if (x >= 29.0 ) {
-    if ((t >= RV_pur_delay) && (t <= 2.0 + RV_pur_delay)) {
+    if ((t >= pur_delay) && (t <= 2.0 + pur_delay)) {
       Istim = -30.0;
     } else {
       Istim = 0.0;

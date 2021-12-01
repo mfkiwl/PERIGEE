@@ -62,6 +62,7 @@
 
 int main(int argc, char *argv[])
 {
+  
   // Number of quadrature points for tets and triangles
   // Use: 1 / 1 for linear, 2 / 1 for quadratic
   int nqp_line = 1, nqp_vertex = 0;
@@ -95,9 +96,14 @@ int main(int argc, char *argv[])
 
   // parameters to optimize personalized EP
   double myo_cond_scaler = 1.0;
-  double pur_cond_scaler = 1.0;
-  double RV_pur_delay    = 0.0;
+  double LVpur_cond_scaler = 1.0;
+  double RVpur_cond_scaler = 1.0;
   double LV_pur_delay    = 0.0;
+  double RV_pur_delay    = 0.0;
+  //MAKE SURE: that these values below are consistent with preprocess.
+  const int phy_tag_myo    = 1;   // tag number to be assigned to myocardium  
+  const int phy_tag_LVpur  = 2;   // tag number to be assigned to the LV
+  const int phy_tag_RVpur  = 3;   // and RV purkinje cells
   
   //// Restart options
   //bool is_restart = false;
@@ -134,7 +140,8 @@ int main(int argc, char *argv[])
   SYS_T::GetOptionInt("-sol_rec_freq", sol_record_freq);
   SYS_T::GetOptionString("-sol_name", sol_bName);
   SYS_T::GetOptionReal("-myo_cond_scaler",   myo_cond_scaler);
-  SYS_T::GetOptionReal("-pur_cond_scaler",   pur_cond_scaler);
+  SYS_T::GetOptionReal("-LVpur_cond_scaler", LVpur_cond_scaler);
+  SYS_T::GetOptionReal("-RVpur_cond_scaler", RVpur_cond_scaler);
   SYS_T::GetOptionReal("-LV_pur_delay",      LV_pur_delay);
   SYS_T::GetOptionReal("-RV_pur_delay",      RV_pur_delay);
   
@@ -155,7 +162,8 @@ int main(int argc, char *argv[])
   SYS_T::cmdPrint("-sol_rec_freq:", sol_record_freq); 
   SYS_T::cmdPrint("-sol_name:", sol_bName);
   SYS_T::cmdPrint("-myo_cond_scaler:", myo_cond_scaler);
-  SYS_T::cmdPrint("-pur_cond_scaler:", pur_cond_scaler);
+  SYS_T::cmdPrint("-LVpur_cond_scaler:", LVpur_cond_scaler);
+  SYS_T::cmdPrint("-RVpur_cond_scaler:", RVpur_cond_scaler);
   SYS_T::cmdPrint("-LV_pur_delay:", LV_pur_delay);
   SYS_T::cmdPrint("-RV_pur_delay:", RV_pur_delay);
 
@@ -326,24 +334,23 @@ int main(int argc, char *argv[])
   //IonicModel * ionicmodel_myo = new IonicModel_AP (myo_cond_scaler) ;
   //
   //IonicModel * ionicmodel_pur = new IonicModel_TTP () ;
-  IonicModel * ionicmodel_pur = new IonicModel_Purkinje (pur_cond_scaler,
-							 LV_pur_delay,
-							 RV_pur_delay) ;
-  //IonicModel * ionicmodel_pur = new IonicModel_AP (pur_cond_scaler,
-  //						   LV_pur_delay,
-  //						   RV_pur_delay) ;
-  //IonicModel * ionicmodel_pur = new IonicModel_Passive () ;
+  IonicModel * ionicmodel_LVpur = new IonicModel_Purkinje (LVpur_cond_scaler,
+							   LV_pur_delay) ;
+  IonicModel * ionicmodel_RVpur = new IonicModel_Purkinje (RVpur_cond_scaler,
+							   RV_pur_delay) ;
   
   int ionicmodel_dof ; 
   ionicmodel_dof =   std::max( ionicmodel_myo->get_n_int_vars(),
-			       ionicmodel_pur->get_n_int_vars() );
+			       ionicmodel_LVpur->get_n_int_vars() );
 
   ionicmodel_myo -> print_info();
-  ionicmodel_pur -> print_info();
+  ionicmodel_LVpur -> print_info();
+  ionicmodel_RVpur -> print_info();
   
   //====== Local assembly pointer
   SYS_T::commPrint("===> Initialize local assembly routine ... \n");
 
+  int local_phy_tag;
   std::vector<IPLocAssem *> locAssem_array; 
   locAssem_array.resize(locElem->get_nlocalele());
   std::vector<IonicModel *> ionicmodel_array; 
@@ -351,21 +358,31 @@ int main(int argc, char *argv[])
 
   for(int ee=0; ee<locElem->get_nlocalele(); ++ee) {
 
-    local_elemType = GMIptr->get_elemType(locElem->get_elem_loc(ee));
+    locElem->get_phy_tag_e(local_phy_tag , ee);
 
-    if ( local_elemType == 512 ){
+    if ( local_phy_tag == phy_tag_LVpur ){
       locAssem_array[ee] =
-    	new PLocAssem_EP_3D(tm_galpha_ptr, ionicmodel_pur,
+    	new PLocAssem_EP_3D(tm_galpha_ptr, ionicmodel_LVpur,
     			    GMIptr->get_nLocBas(locElem->get_elem_loc(ee)),
 			    quad_line->get_num_quadPts() );
-      ionicmodel_array[ee]= ionicmodel_pur;
+      ionicmodel_array[ee]= ionicmodel_LVpur;
     }
-    else if ( local_elemType == 501 ){
+    else if ( local_phy_tag == phy_tag_RVpur ){
+      locAssem_array[ee] =
+    	new PLocAssem_EP_3D(tm_galpha_ptr, ionicmodel_RVpur,
+    			    GMIptr->get_nLocBas(locElem->get_elem_loc(ee)),
+			    quad_line->get_num_quadPts() );
+      ionicmodel_array[ee]= ionicmodel_RVpur;
+    }
+    else if ( local_phy_tag == phy_tag_myo ){
       locAssem_array[ee] =
 	new PLocAssem_EP_3D(tm_galpha_ptr, ionicmodel_myo,
 			    GMIptr->get_nLocBas(locElem->get_elem_loc(ee)),
 			    quadv->get_num_quadPts() );
       ionicmodel_array[ee]= ionicmodel_myo;
+    }
+    else {
+      SYS_T::print_exit( "Error: physical tag (from preprocess) do not match with the one provided (in EP_3d_driver). \n"); 
     }
   }
 
@@ -475,7 +492,8 @@ int main(int argc, char *argv[])
   delete timeinfo;
   delete gloAssem_ptr;
   delete tm_galpha_ptr;
-  delete ionicmodel_pur;
+  delete ionicmodel_LVpur;
+  delete ionicmodel_RVpur;
   delete ionicmodel_myo;
   delete lsolver;
   delete nsolver;

@@ -15,7 +15,7 @@ int main( int argc, char * argv[] )
 
   std::string gmshVol (char_home_dir);
   //gmshVol.append("/PERIGEE/examples/EP-FEA/mesh/HLHS-coarse.msh");
-  //gmshVol.append("/PERIGEE/examples/EP-FEA/mesh/tets_cube.msh");
+  gmshVol.append("/PERIGEE/examples/EP-FEA/mesh/single_tet.msh");
   //gmshVol.append("/niederer_meshes/niederer-01mm.msh");
   //gmshVol.append("/niederer_meshes/niederer-02mm.msh");
   //gmshVol.append("/niederer_meshes/niederer-05mm.msh");
@@ -24,11 +24,23 @@ int main( int argc, char * argv[] )
   std::cout<<" -gmsh_Vol: "<<gmshVol<<std::endl;
   Gmsh_FileIO * GIOVol = new Gmsh_FileIO( gmshVol );
   GIOVol -> print_info();
+
+  std::string gmshVol2 (char_home_dir);
+  //gmshVol2.append("/PERIGEE/examples/EP-FEA/mesh/HLHS-coarse.msh");
+  gmshVol2.append("/PERIGEE/examples/EP-FEA/mesh/single_tet_grown.msh");
+  //gmshVol2.append("/niederer_meshes/niederer-01mm.msh");
+  //gmshVol2.append("/niederer_meshes/niederer-02mm.msh");
+  //gmshVol2.append("/niederer_meshes/niederer-05mm.msh");
+  //gmshVol2.append("/PERIGEE/examples/EP-FEA/mesh/beam.msh");
+  SYS_T::GetOptionString("-gmsh_Vol2", gmshVol2);
+  std::cout<<" -gmsh_Vol2: "<<gmshVol2<<std::endl;
+  Gmsh_FileIO * GIOVol2 = new Gmsh_FileIO( gmshVol2 );
+  GIOVol2 -> print_info();
   
   std::string gmshPur1 (char_home_dir);
   //gmshPur1.append("/PERIGEE/examples/EP-FEA/mesh/longline1.msh");
   //gmshPur1.append("/PERIGEE/examples/EP-FEA/mesh/twolines1.msh");
-  //gmshPur1.append("/PERIGEE/examples/EP-FEA/mesh/oneline1.msh");
+  gmshPur1.append("/PERIGEE/examples/EP-FEA/mesh/oneline1.msh");
   SYS_T::GetOptionString("-gmsh_Pur1", gmshPur1);
   std::cout<<" -gmsh_Pur1: "<<gmshPur1<<std::endl;
   Gmsh_FileIO * GIOPur1 = new Gmsh_FileIO( gmshPur1 );
@@ -36,7 +48,7 @@ int main( int argc, char * argv[] )
 
   std::string gmshPur2 (char_home_dir);
   //gmshPur2.append("/PERIGEE/examples/EP-FEA/mesh/longline2.msh");
-  //gmshPur2.append("/PERIGEE/examples/EP-FEA/mesh/twolines2.msh");
+  gmshPur2.append("/PERIGEE/examples/EP-FEA/mesh/twolines2.msh");
   //gmshPur2.append("/PERIGEE/examples/EP-FEA/mesh/oneline2.msh");
   SYS_T::GetOptionString("-gmsh_Pur2", gmshPur2);
   std::cout<<" -gmsh_Pur2: "<<gmshPur2<<std::endl;
@@ -78,6 +90,10 @@ int main( int argc, char * argv[] )
   const std::string wmname_vol("myo");
   GIOVol -> write_vtu( wmname_vol, isXML );
   delete GIOVol;
+
+  const std::string wmname_vol2("myo2");
+  GIOVol2 -> write_vtu( wmname_vol2, isXML );
+  delete GIOVol2;
   
   const std::string wmname_pur1("pur1");
   GIOPur1 -> write_vtu_purkinje( wmname_pur1, isXML );
