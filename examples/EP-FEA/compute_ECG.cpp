@@ -57,9 +57,9 @@ int main( int argc, char * argv[] )
   const int dof = 1;
 
   int time_start = 0;
-  int time_step = 50;
-  int time_end = 10000;
-  double dt = 0.1;
+  int time_step = 2;
+  int time_end = 200;
+  double dt = 0.5;
 
   bool isXML = true;
 
@@ -72,14 +72,17 @@ int main( int argc, char * argv[] )
   //double electrode_x = -96.99;
   //double electrode_y = -303.80;  
   //double electrode_z =  248.30;
-  //v2 lead 
-  double electrode_x = -86.20;
-  double electrode_y = -280.17;  
-  double electrode_z =  229.31;
-  ////for slab example:
-  //double electrode_x = 10.00;
-  //double electrode_y = 10.00;
-  //double electrode_z = 10.00;
+  ////v2 lead
+  //double electrode_x =-81.6568;
+  //double electrode_y =-261.7974;  
+  //double electrode_z =226.3804;
+  //for slab example:
+  double v2coor_x = 0.00;
+  double v2coor_y = 10.00;
+  double v2coor_z = 10.00;
+  double v6coor_x = 20.00;
+  double v6coor_y = 10.00;
+  double v6coor_z = 10.00;
   
   PetscMPIInt rank, size;
   // ====== PETSc Initialize =====
@@ -97,9 +100,12 @@ int main( int argc, char * argv[] )
   SYS_T::GetOptionString("-sol_bname", sol_bname);
   //SYS_T::GetOptionString("-out_bname", out_bname);
   SYS_T::GetOptionBool("-xml", isXML);
-  SYS_T::GetOptionReal("-electrode_x", electrode_x);
-  SYS_T::GetOptionReal("-electrode_y", electrode_y);
-  SYS_T::GetOptionReal("-electrode_z", electrode_z);
+  SYS_T::GetOptionReal("-v2coor_x", v2coor_x);
+  SYS_T::GetOptionReal("-v2coor_y", v2coor_y);
+  SYS_T::GetOptionReal("-v2coor_z", v2coor_z);
+  SYS_T::GetOptionReal("-v6coor_x", v6coor_x);
+  SYS_T::GetOptionReal("-v6coor_y", v6coor_y);
+  SYS_T::GetOptionReal("-v6coor_z", v6coor_z);
 
   SYS_T::cmdPrint("-sol_bname:", sol_bname);
   //  SYS_T::cmdPrint("-out_bname:", out_bname);
@@ -107,14 +113,18 @@ int main( int argc, char * argv[] )
   SYS_T::cmdPrint("-time_step:", time_step);
   SYS_T::cmdPrint("-time_end:", time_end);
   SYS_T::cmdPrint("-dt:",dt);
-  SYS_T::cmdPrint("-electrode_x:",electrode_x);
-  SYS_T::cmdPrint("-electrode_y:",electrode_y);
-  SYS_T::cmdPrint("-electrode_z:",electrode_z);
+  SYS_T::cmdPrint("-v2coor_x:",v2coor_x);
+  SYS_T::cmdPrint("-v2coor_y:",v2coor_y);
+  SYS_T::cmdPrint("-v2coor_z:",v2coor_z);
+  SYS_T::cmdPrint("-v6coor_x:",v6coor_x);
+  SYS_T::cmdPrint("-v6coor_y:",v6coor_y);
+  SYS_T::cmdPrint("-v6coor_z:",v6coor_z);
   
   if(isXML) PetscPrintf(PETSC_COMM_WORLD, "-xml: true \n");
   else PetscPrintf(PETSC_COMM_WORLD, "-xml: false \n");
 
-  std::vector<double> electrode_coors {electrode_x, electrode_y, electrode_z};
+  std::vector<double> v2_coors {v2coor_x, v2coor_y, v2coor_z};
+  std::vector<double> v6_coors {v6coor_x, v6coor_y, v6coor_z};  
   
   // ===== Read Partition file =====
   SYS_T::commPrint("===> Reading mesh files ... \n");
@@ -165,18 +175,20 @@ int main( int argc, char * argv[] )
   int * IEN_e;
   double * ectrl_x; double * ectrl_y; double * ectrl_z;
   double * esol;
-  double ecg_el,   ecg_tn_proc, ecg_tn_tot;
+  double v2_el,   v2_tn_proc, v2_tn_tot;
+  double v6_el,   v6_tn_proc, v6_tn_tot;
   PostVectSolution * pSolu;
   FILE *fp;
   
   //std::ofstream out_str{ ecg_out_file };
   std::ostringstream time_index;
   PetscFOpen(PETSC_COMM_WORLD, ecg_out_file, "w", &fp);
-  PetscFPrintf(PETSC_COMM_WORLD, fp, "Time, \t ECG \n");
+  PetscFPrintf(PETSC_COMM_WORLD, fp, "Time, \t V2lead, \t V6lead \n");
   
   for(int time = time_start; time<=time_end; time+= time_step)  {
 
-    ecg_tn_proc = 0.0;
+    v2_tn_proc = 0.0;
+    v6_tn_proc = 0.0;
     
     std::string name_to_read(sol_bname);
     std::string name_to_write(out_bname);
@@ -199,7 +211,8 @@ int main( int argc, char * argv[] )
 
       //PetscPrintf(PETSC_COMM_WORLD, " local Element : %d \n", ee);
 
-      ecg_el = 0.0;
+      v2_el = 0.0;
+      v6_el = 0.0;
       
       int nlocbas_ee= locIEN->get_nLocBas_loc(ee);
       IEN_e   = new int [nlocbas_ee];
@@ -216,16 +229,20 @@ int main( int argc, char * argv[] )
 
       if ((elemArray[ee]->get_elemDim())  ==3) {
 	//only 3 dimensional elements contribute to ecg 
-	ecg_el = POST_T::calculate_ecg(esol, elemArray[ee], quadArray[ee],
+	v2_el = POST_T::calculate_ecg(esol, elemArray[ee], quadArray[ee],
 				       ectrl_x, ectrl_y, ectrl_z, 
-				       electrode_coors, nlocbas_ee, time);
+				       v2_coors, nlocbas_ee, time);
+	v6_el = POST_T::calculate_ecg(esol, elemArray[ee], quadArray[ee],
+				       ectrl_x, ectrl_y, ectrl_z, 
+				       v6_coors, nlocbas_ee, time);
       }
 
-      //if(ecg_el > 1e-10) {
-      //std::cout << "ecg_el= " << ecg_el <<std::endl;
+      //if(v2_el > 1e-10) {
+      //std::cout << "v2_el= " << v2_el <<std::endl;
       //}
 
-      ecg_tn_proc = ecg_tn_proc + ecg_el;
+      v2_tn_proc = v2_tn_proc + v2_el;
+      v6_tn_proc = v6_tn_proc + v6_el;      
       
       delete [] IEN_e    ; IEN_e    =nullptr;
       delete [] ectrl_x  ; ectrl_x  =nullptr;
@@ -234,18 +251,25 @@ int main( int argc, char * argv[] )
       delete [] esol     ; esol     =nullptr;
     }
 
-    ecg_tn_tot = 0.0;
+    v2_tn_tot = 0.0;
+    v6_tn_tot = 0.0;
     PetscBarrier(NULL);
     
-    MPI_Reduce(&ecg_tn_proc, &ecg_tn_tot, 1, MPI_DOUBLE, MPI_SUM, 0, PETSC_COMM_WORLD);
+    MPI_Reduce(&v2_tn_proc, &v2_tn_tot, 1, MPI_DOUBLE, MPI_SUM, 0,
+	       PETSC_COMM_WORLD);
+    MPI_Reduce(&v6_tn_proc, &v6_tn_tot, 1, MPI_DOUBLE, MPI_SUM, 0,
+	       PETSC_COMM_WORLD);
+    
 
     ////write the ecg signal at the current time point.
     //std::cout << "time: " << time*dt << "\t"
-    //	      << "ecg_tn_proc= " << ecg_tn_proc <<std::endl;
+    //	      << "v2_tn_proc= " << v2_tn_proc <<std::endl;
     ////out_str << time*dt << "\t" << ecg_tn  << '\n';
     
-    PetscFPrintf(PETSC_COMM_WORLD, fp, "%e, \t %e \n", time*dt, ecg_tn_tot);
-    PetscPrintf(PETSC_COMM_WORLD, "Time: %e \t ECG: %e \n", time*dt, ecg_tn_tot);
+    PetscFPrintf(PETSC_COMM_WORLD, fp, "%e, \t %e, \t %e \n", time*dt,
+		 v2_tn_tot, v6_tn_tot);
+    PetscPrintf(PETSC_COMM_WORLD, "Time: %e \t V2: %e \t V6: %e \n", time*dt,
+		v2_tn_tot, v6_tn_tot); 
     
     delete pSolu;
   }

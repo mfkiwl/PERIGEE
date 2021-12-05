@@ -22,8 +22,7 @@ class IonicModel_TTP : public IonicModel
 {
 public:
   IonicModel_TTP(const double &cond_scale,
-		const double &LV_delay_in,
-		const double &RV_delay_in);
+		 const double &delay_in);
 
   IonicModel_TTP(const double &cond_scale);
   
@@ -167,7 +166,7 @@ private:
   //Resting potential
   //   Vrest = don't set it here 
 
-  const double LV_pur_delay, RV_pur_delay; 
+  const double pur_delay; 
 
 };
 

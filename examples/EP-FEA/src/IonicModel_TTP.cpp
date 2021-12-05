@@ -1,8 +1,7 @@
 #include "IonicModel_TTP.hpp"
 
 IonicModel_TTP::IonicModel_TTP(const double &cond_scale,
-			       const double &LV_delay_in,
-			       const double &RV_delay_in)
+			       const double &delay_in)
   //           d_iso,     d_ani,     chi,   C_m, n_int_vars
   : IonicModel( cond_scale*0.012571,  cond_scale*0.070144, 140.0, 0.01, 18),
     // niederer conductivities: transversal=0.0176,  longitudinal=0.1158 Sm-1 
@@ -20,7 +19,7 @@ IonicModel_TTP::IonicModel_TTP(const double &cond_scale,
     EC{1.5e0}, max_sr{2.5e0}, min_sr{1.0e0}, V_leak{3.6e-4},
     V_xfer{3.8e-3}, Buf_c{0.2e0}, K_bufc{1.0e-3}, Buf_sr{10.0e0},
     K_bufsr{0.3e0}, Buf_ss{0.4e0}, K_bufss{2.5e-4},
-    LV_pur_delay{LV_delay_in}, RV_pur_delay{RV_delay_in}
+    pur_delay{delay_in}
 {
   //SYS_T::commPrint("AP constructor. \n");
 };
@@ -43,7 +42,7 @@ IonicModel_TTP::IonicModel_TTP(const double &cond_scale)
     EC{1.5e0}, max_sr{2.5e0}, min_sr{1.0e0}, V_leak{3.6e-4},
     V_xfer{3.8e-3}, Buf_c{0.2e0}, K_bufc{1.0e-3}, Buf_sr{10.0e0},
     K_bufsr{0.3e0}, Buf_ss{0.4e0}, K_bufss{2.5e-4},
-    LV_pur_delay{0.0}, RV_pur_delay{0.0}
+    pur_delay{0.0}
 {
   //SYS_T::commPrint("AP constructor. \n");
 };
@@ -385,15 +384,23 @@ void IonicModel_TTP::get_Istim(double &Istim,
   //   		      + std::pow(y-(-304.0), 2.0)
   //   		      + std::pow(z-( 234.0), 2.0)  ) <= 1.0 ) ){
   //
-  //
-  //if (( x <= 1.5 ) && ( y <= 1.5 ) && ( z <= 1.5 )) {
-  //  if(t <= 2.0){
-  //    Istim = -50.0;
-  //  }
-  //}
-  //else {
-  //  Istim = 0.0 ;
-  //}
+  //  
+  if (x <= -9.0) {
+    if ((t >= pur_delay) && (t <= 2.0 + pur_delay)) {
+      Istim = -50.0;
+    } else {
+      Istim = 0.0;
+    }
+  } else if (y >= 29.0) {
+    if ((t >= pur_delay) && (t <= 2.0 + pur_delay)) {
+      Istim = -50.0;
+    } else {
+      Istim = 0.0;
+    }
+  } else {
+    Istim = 0.0;
+  }
+
 };
 
 void IonicModel_TTP::get_int_vars(double* val) const
