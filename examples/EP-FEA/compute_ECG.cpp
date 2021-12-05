@@ -83,7 +83,7 @@ int main( int argc, char * argv[] )
   double v6coor_x = 20.00;
   double v6coor_y = 10.00;
   double v6coor_z = 10.00;
-  
+
   PetscMPIInt rank, size;
   // ====== PETSc Initialize =====
   PetscInitialize(&argc, &argv, (char *)0, PETSC_NULL);
@@ -119,13 +119,15 @@ int main( int argc, char * argv[] )
   SYS_T::cmdPrint("-v6coor_x:",v6coor_x);
   SYS_T::cmdPrint("-v6coor_y:",v6coor_y);
   SYS_T::cmdPrint("-v6coor_z:",v6coor_z);
-  
+
+  double n_electrodes = 2;
+  std::vector< std::vector<double> > electrode_coors(n_electrodes);
+  electrode_coors.at(0)={v2coor_x, v2coor_y, v2coor_z};
+  electrode_coors.at(1)={v6coor_x, v6coor_y, v6coor_z};  
+
   if(isXML) PetscPrintf(PETSC_COMM_WORLD, "-xml: true \n");
   else PetscPrintf(PETSC_COMM_WORLD, "-xml: false \n");
 
-  std::vector<double> v2_coors {v2coor_x, v2coor_y, v2coor_z};
-  std::vector<double> v6_coors {v6coor_x, v6coor_y, v6coor_z};  
-  
   // ===== Read Partition file =====
   SYS_T::commPrint("===> Reading mesh files ... \n");
   FEANode * fNode = new FEANode(part_file, rank);
@@ -175,20 +177,23 @@ int main( int argc, char * argv[] )
   int * IEN_e;
   double * ectrl_x; double * ectrl_y; double * ectrl_z;
   double * esol;
-  double v2_el,   v2_tn_proc, v2_tn_tot;
-  double v6_el,   v6_tn_proc, v6_tn_tot;
+  std::vector<double> ecg_el(n_electrodes), ecg_tn_proc(n_electrodes),
+    ecg_tn_tot(n_electrodes) ;
   PostVectSolution * pSolu;
   FILE *fp;
   
   //std::ofstream out_str{ ecg_out_file };
   std::ostringstream time_index;
   PetscFOpen(PETSC_COMM_WORLD, ecg_out_file, "w", &fp);
-  PetscFPrintf(PETSC_COMM_WORLD, fp, "Time, \t V2lead, \t V6lead \n");
+  PetscFPrintf(PETSC_COMM_WORLD, fp, "Time");
+  for (int ii=0; ii<n_electrodes; ++ii){
+    PetscFPrintf(PETSC_COMM_WORLD, fp, ",\t Lead %d",ii);
+  }
+  PetscFPrintf(PETSC_COMM_WORLD, fp, " \n");
   
   for(int time = time_start; time<=time_end; time+= time_step)  {
 
-    v2_tn_proc = 0.0;
-    v6_tn_proc = 0.0;
+    std::fill(ecg_tn_proc.begin(), ecg_tn_proc.end(), 0.0);
     
     std::string name_to_read(sol_bname);
     std::string name_to_write(out_bname);
@@ -211,8 +216,7 @@ int main( int argc, char * argv[] )
 
       //PetscPrintf(PETSC_COMM_WORLD, " local Element : %d \n", ee);
 
-      v2_el = 0.0;
-      v6_el = 0.0;
+      std::fill(ecg_el.begin(), ecg_el.end(), 0.0);
       
       int nlocbas_ee= locIEN->get_nLocBas_loc(ee);
       IEN_e   = new int [nlocbas_ee];
@@ -228,21 +232,21 @@ int main( int argc, char * argv[] )
       pSolu -> get_esol(0, nlocbas_ee, IEN_e, esol);
 
       if ((elemArray[ee]->get_elemDim())  ==3) {
-	//only 3 dimensional elements contribute to ecg 
-	v2_el = POST_T::calculate_ecg(esol, elemArray[ee], quadArray[ee],
-				       ectrl_x, ectrl_y, ectrl_z, 
-				       v2_coors, nlocbas_ee, time);
-	v6_el = POST_T::calculate_ecg(esol, elemArray[ee], quadArray[ee],
-				       ectrl_x, ectrl_y, ectrl_z, 
-				       v6_coors, nlocbas_ee, time);
+	//only 3 dimensional elements contribute to ecg
+	for (int ii=0; ii<n_electrodes; ++ii){
+	  ecg_el.at(ii) = POST_T::calculate_ecg(esol, elemArray[ee],
+						quadArray[ee], ectrl_x, ectrl_y,
+						ectrl_z, electrode_coors.at(ii),
+						nlocbas_ee, time); 
+	}
       }
 
       //if(v2_el > 1e-10) {
       //std::cout << "v2_el= " << v2_el <<std::endl;
       //}
-
-      v2_tn_proc = v2_tn_proc + v2_el;
-      v6_tn_proc = v6_tn_proc + v6_el;      
+      for (int ii=0; ii<n_electrodes; ++ii){
+	ecg_tn_proc.at(ii) = ecg_tn_proc.at(ii) + ecg_el.at(ii);
+      }
       
       delete [] IEN_e    ; IEN_e    =nullptr;
       delete [] ectrl_x  ; ectrl_x  =nullptr;
@@ -251,26 +255,28 @@ int main( int argc, char * argv[] )
       delete [] esol     ; esol     =nullptr;
     }
 
-    v2_tn_tot = 0.0;
-    v6_tn_tot = 0.0;
-    PetscBarrier(NULL);
-    
-    MPI_Reduce(&v2_tn_proc, &v2_tn_tot, 1, MPI_DOUBLE, MPI_SUM, 0,
-	       PETSC_COMM_WORLD);
-    MPI_Reduce(&v6_tn_proc, &v6_tn_tot, 1, MPI_DOUBLE, MPI_SUM, 0,
-	       PETSC_COMM_WORLD);
-    
+    std::fill(ecg_tn_tot.begin(), ecg_tn_tot.end(), 0.0);
 
+    PetscBarrier(NULL);
+
+    for (int ii=0; ii<n_electrodes; ++ii){
+      MPI_Reduce(&(ecg_tn_proc.at(ii)), &(ecg_tn_tot.at(ii)), 1, MPI_DOUBLE,
+		 MPI_SUM, 0,  PETSC_COMM_WORLD);
+    }
+    
     ////write the ecg signal at the current time point.
     //std::cout << "time: " << time*dt << "\t"
     //	      << "v2_tn_proc= " << v2_tn_proc <<std::endl;
     ////out_str << time*dt << "\t" << ecg_tn  << '\n';
-    
-    PetscFPrintf(PETSC_COMM_WORLD, fp, "%e, \t %e, \t %e \n", time*dt,
-		 v2_tn_tot, v6_tn_tot);
-    PetscPrintf(PETSC_COMM_WORLD, "Time: %e \t V2: %e \t V6: %e \n", time*dt,
-		v2_tn_tot, v6_tn_tot); 
-    
+
+    PetscFPrintf(PETSC_COMM_WORLD, fp, "%e", time*dt);
+    PetscPrintf(PETSC_COMM_WORLD, "Time: %e", time*dt);
+    for (int ii=0; ii<n_electrodes; ++ii){
+      PetscFPrintf(PETSC_COMM_WORLD, fp, ", \t %e", ecg_tn_tot.at(ii));
+      PetscPrintf(PETSC_COMM_WORLD, " \t Lead%d: %e", ii, ecg_tn_tot.at(ii));
+    }
+    PetscFPrintf(PETSC_COMM_WORLD, fp, " \n");
+    PetscPrintf(PETSC_COMM_WORLD, " \n");	
     delete pSolu;
   }
   
