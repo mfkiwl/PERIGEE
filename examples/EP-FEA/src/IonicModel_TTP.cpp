@@ -385,21 +385,21 @@ void IonicModel_TTP::get_Istim(double &Istim,
   //   		      + std::pow(z-( 234.0), 2.0)  ) <= 1.0 ) ){
   //
   //  
-  if (x <= -9.0) {
-    if ((t >= pur_delay) && (t <= 2.0 + pur_delay)) {
-      Istim = -50.0;
-    } else {
-      Istim = 0.0;
-    }
-  } else if (y >= 29.0) {
-    if ((t >= pur_delay) && (t <= 2.0 + pur_delay)) {
-      Istim = -50.0;
-    } else {
-      Istim = 0.0;
-    }
-  } else {
-    Istim = 0.0;
-  }
+  //if (x <= -9.0) {
+  //  if ((t >= pur_delay) && (t <= 2.0 + pur_delay)) {
+  //    Istim = -50.0;
+  //  } else {
+  //    Istim = 0.0;
+  //  }
+  //} else if (y >= 29.0) {
+  //  if ((t >= pur_delay) && (t <= 2.0 + pur_delay)) {
+  //    Istim = -50.0;
+  //  } else {
+  //    Istim = 0.0;
+  //  }
+  //} else {
+  //  Istim = 0.0;
+  //}
 
 };
 
