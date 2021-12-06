@@ -57,9 +57,9 @@ int main( int argc, char * argv[] )
   const int dof = 1;
 
   int time_start = 0;
-  int time_step = 2;
-  int time_end = 200;
-  double dt = 0.5;
+  int time_step = 50;
+  int time_end = 10000;
+  double dt = 0.1;
 
   bool isXML = true;
 
@@ -72,17 +72,21 @@ int main( int argc, char * argv[] )
   //double electrode_x = -96.99;
   //double electrode_y = -303.80;  
   //double electrode_z =  248.30;
-  ////v2 lead
-  //double electrode_x =-81.6568;
-  //double electrode_y =-261.7974;  
-  //double electrode_z =226.3804;
-  //for slab example:
-  double v2coor_x = 0.00;
-  double v2coor_y = 10.00;
-  double v2coor_z = 10.00;
-  double v6coor_x = 20.00;
-  double v6coor_y = 10.00;
-  double v6coor_z = 10.00;
+  //v2 lead
+  double v2coor_x =-81.6568;
+  double v2coor_y =-261.7974;  
+  double v2coor_z = 226.3804;
+  double v6coor_x =-130.5825;
+  double v6coor_y =-299.4580;  
+  double v6coor_z = 191.9137;
+
+  ////for slab example:
+  //double v2coor_x = 0.00;
+  //double v2coor_y = 10.00;
+  //double v2coor_z = 10.00;
+  //double v6coor_x = 20.00;
+  //double v6coor_y = 10.00;
+  //double v6coor_z = 10.00;
 
   PetscMPIInt rank, size;
   // ====== PETSc Initialize =====
