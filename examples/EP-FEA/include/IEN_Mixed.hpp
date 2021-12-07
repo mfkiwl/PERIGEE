@@ -28,11 +28,21 @@ class IEN_Mixed : public IIEN
 //	    const IIEN * const &IEN2 );
   IEN_Mixed(const std::vector< std::vector<int> > &IEN_list,
 	    const std::vector<IMesh *>  &mesh_list,
-	    //const std::vector< int > &elemType_list,
 	    const std::vector< std::vector<double> > &ctrlPts_list,	    
 	    const std::string &LVendnodes_filename,
 	    const std::string &RVendnodes_filename,
-	    //std::vector< int > &elemType_combined,
+	    std::vector<double> &ctrlPts_combined,
+	    const double &LV_tol,
+	    const double &RV_tol);
+
+  IEN_Mixed(const std::vector< std::vector<int> > &IEN_list,
+	    const std::vector< std::vector<int> > &IEN_list_G,
+	    const std::vector<IMesh *>  &mesh_list,
+	    const std::vector<IMesh *>  &mesh_list_G,
+	    const std::vector< std::vector<double> > &ctrlPts_list,
+	    const std::vector< std::vector<double> > &ctrlPts_list_G,  
+	    const std::string &LVendnodes_filename,
+	    const std::string &RVendnodes_filename,
 	    std::vector<double> &ctrlPts_combined,
 	    const double &LV_tol,
 	    const double &RV_tol);
