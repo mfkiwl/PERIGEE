@@ -55,6 +55,20 @@ int main( int argc, char * argv[] )
   Gmsh_FileIO * GIOPur2 = new Gmsh_FileIO( gmshPur2 );
   GIOPur2 -> print_info();
 
+  std::string gmshPur3 (char_home_dir);
+  gmshPur3.append("/PERIGEE/examples/EP-FEA/mesh/oneline1_grown.msh");
+  SYS_T::GetOptionString("-gmsh_Pur3", gmshPur3);
+  std::cout<<" -gmsh_Pur3: "<<gmshPur3<<std::endl;
+  Gmsh_FileIO * GIOPur3 = new Gmsh_FileIO( gmshPur3 );
+  GIOPur3 -> print_info();
+
+  std::string gmshPur4 (char_home_dir);
+  gmshPur4.append("/PERIGEE/examples/EP-FEA/mesh/twolines2_grown.msh");
+  SYS_T::GetOptionString("-gmsh_Pur4", gmshPur4);
+  std::cout<<" -gmsh_Pur4: "<<gmshPur4<<std::endl;
+  Gmsh_FileIO * GIOPur4 = new Gmsh_FileIO( gmshPur4 );
+  GIOPur4 -> print_info();
+
   ////three lines
   //GIO -> write_vtp_purkinje(0,0,true);//tip0
   //GIO -> write_vtp_purkinje(1,0,true);//tip1
@@ -101,6 +115,12 @@ int main( int argc, char * argv[] )
   const std::string wmname_pur2("pur2");
   GIOPur2 -> write_vtu_purkinje( wmname_pur2, isXML );
   delete GIOPur2;
+  const std::string wmname_pur3("pur3");
+  GIOPur3 -> write_vtu_purkinje( wmname_pur3, isXML );
+  delete GIOPur3;
+  const std::string wmname_pur4("pur4");
+  GIOPur4 -> write_vtu_purkinje( wmname_pur4, isXML );
+  delete GIOPur4;  
 
   PetscFinalize();
   return 0;

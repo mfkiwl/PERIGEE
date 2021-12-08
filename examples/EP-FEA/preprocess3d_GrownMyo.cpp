@@ -1,14 +1,8 @@
 // ==================================================================
-// preprocess_3d_main.cpp for purkinje line model
-// ------------------------------------------------------------------
-// This preprocess code is used for handling the 3D geometry described
-// by tetrahdral elements 
-//
-//?? Users should call the sv_fsi_converter to convert the node and
-//?? element indices before calling this routine.
-//
-// The users are also responsible for providing the proper file names
-// for this routine to handle.
+// this script is based on preprocess_main.cpp . it takes the grown(deformed)
+// and non-grown purkinje and myocardium 
+// mesh. couples the grown purkinje-myocardium meshes based on undeformed
+// geometries. Main Implementation is in IEN_Mixed.cpp
 //
 // Author: Ju Liu
 // ModifiedL: Oguz Ziya Tikenogullari
@@ -68,23 +62,32 @@ int main( int argc, char * argv[] )
   std::string geo_file_Gmyo("./myo2.vtu");
   std::string geo_file_LVpur("./pur1.vtu");
   std::string geo_file_RVpur("./pur2.vtu");
+  std::string geo_file_GLVpur("./pur3.vtu");
+  std::string geo_file_GRVpur("./pur4.vtu");
   std::string LVendnodes_file
     (home_dir+"/PERIGEE/examples/EP-FEA/mesh/endnodes.txt");
   std::string RVendnodes_file
     (home_dir+"/PERIGEE/examples/EP-FEA/mesh/endnodes.txt");
   //criteria (distance) for matching purkinje junction nodes to myocardium 
-  const double LV_tol= 0.1;
-  const double RV_tol= 0.1;
+  const double LV_tol= 0.21;
+  const double RV_tol= 0.21;
   
   ////heart mesh 
   //std::string geo_file_myo
   //  (home_dir+"/PERIGEE/examples/EP-FEA/mesh/HLHS_fibers.vtu");
   //std::string geo_file_Gmyo
   //  (home_dir+"/PERIGEE/examples/EP-FEA/mesh/HLHS_grown_fibers.vtu");
+  //
   //std::string geo_file_LVpur
   //  (home_dir+"/PERIGEE/examples/EP-FEA/mesh/LV-purkinje.vtu");
   //std::string geo_file_RVpur
   //  (home_dir+"/PERIGEE/examples/EP-FEA/mesh/RV-purkinje.vtu");
+  //
+  //std::string geo_file_GLVpur
+  //  (home_dir+"/PERIGEE/examples/EP-FEA/mesh/LV-purkinje_grown.vtu");
+  //std::string geo_file_GRVpur
+  //  (home_dir+"/PERIGEE/examples/EP-FEA/mesh/RV-purkinje_grown.vtu");
+  //
   ////warning: check that the first node of purkinje is not in the endnodes list.
   //std::string LVendnodes_file
   //  (home_dir+"/PERIGEE/examples/EP-FEA/mesh/LV_endnodes-picked.txt");
@@ -112,6 +115,8 @@ int main( int argc, char * argv[] )
   SYS_T::GetOptionString("-geo_file_Gmyo", geo_file_Gmyo);  
   SYS_T::GetOptionString("-geo_file_LVpur", geo_file_LVpur);
   SYS_T::GetOptionString("-geo_file_RVpur", geo_file_RVpur);
+  SYS_T::GetOptionString("-geo_file_GLVpur", geo_file_GLVpur);
+  SYS_T::GetOptionString("-geo_file_GRVpur", geo_file_GRVpur);
   SYS_T::GetOptionString("-LVendnodes_file", LVendnodes_file);
   SYS_T::GetOptionString("-RVendnodes_file", RVendnodes_file);
 
@@ -120,6 +125,8 @@ int main( int argc, char * argv[] )
   std::cout<<" -geo_file_Gmyo: "<<geo_file_Gmyo<<std::endl;
   std::cout<<" -geo_file_LVpur: "<<geo_file_LVpur<<std::endl;
   std::cout<<" -geo_file_RVpur: "<<geo_file_RVpur<<std::endl;
+  std::cout<<" -geo_file_GLVpur: "<<geo_file_GLVpur<<std::endl;
+  std::cout<<" -geo_file_GRVpur: "<<geo_file_GRVpur<<std::endl;  
   std::cout<<" -LVendnodes_file: "<<LVendnodes_file<<std::endl;
   std::cout<<" -RVendnodes_file: "<<RVendnodes_file<<std::endl;
 
@@ -140,6 +147,8 @@ int main( int argc, char * argv[] )
   SYS_T::file_check(geo_file_Gmyo); std::cout<<geo_file_Gmyo<<" found. \n";  
   SYS_T::file_check(geo_file_LVpur); std::cout<<geo_file_LVpur<<" found. \n";
   SYS_T::file_check(geo_file_RVpur); std::cout<<geo_file_RVpur<<" found. \n";
+  SYS_T::file_check(geo_file_GLVpur); std::cout<<geo_file_GLVpur<<" found. \n";
+  SYS_T::file_check(geo_file_GRVpur); std::cout<<geo_file_GRVpur<<" found. \n";  
   SYS_T::file_check(LVendnodes_file); std::cout<<LVendnodes_file<<" found. \n";
   SYS_T::file_check(RVendnodes_file); std::cout<<RVendnodes_file<<" found. \n";
 
@@ -160,23 +169,26 @@ int main( int argc, char * argv[] )
   cmdh5w->write_string("geo_file_myo", geo_file_myo);
   cmdh5w->write_string("geo_file_Gmyo", geo_file_Gmyo);
   cmdh5w->write_string("geo_file_LVpur", geo_file_LVpur);
-  cmdh5w->write_string("geo_file_RVpur", geo_file_RVpur);  
+  cmdh5w->write_string("geo_file_RVpur", geo_file_RVpur);
+  cmdh5w->write_string("geo_file_GLVpur", geo_file_GLVpur);
+  cmdh5w->write_string("geo_file_GRVpur", geo_file_GRVpur);  
   cmdh5w->write_string("part_file", part_file);
 
   delete cmdh5w; H5Fclose(cmd_file_id);
   std::cout<< "// ----- Finish writing" << std::endl;
 
   // Read the geometry files
-  int nFunc_LVpur, nElem_LVpur, nFunc_RVpur, nElem_RVpur, nFunc_myo, nElem_myo,
-    nFunc_Gmyo, nElem_Gmyo ;
-  std::vector<int> vecIEN_LVpur, vecIEN_RVpur, vecIEN_myo, vecIEN_Gmyo;
-  std::vector<double> ctrlPts_LVpur, ctrlPts_RVpur, ctrlPts_myo,
-    ctrlPts_Gmyo, ctrlPts_combined; 
+  int nFunc_LVpur, nElem_LVpur, nFunc_RVpur, nElem_RVpur,
+    nFunc_GLVpur,  nElem_GLVpur, nFunc_GRVpur, nElem_GRVpur,
+    nFunc_myo, nElem_myo, nFunc_Gmyo, nElem_Gmyo ;
+  std::vector<int> vecIEN_LVpur, vecIEN_RVpur, vecIEN_GLVpur, vecIEN_GRVpur,
+  vecIEN_myo, vecIEN_Gmyo; 
+  std::vector<double> ctrlPts_LVpur, ctrlPts_RVpur, ctrlPts_GLVpur,
+  ctrlPts_GRVpur, ctrlPts_myo, ctrlPts_Gmyo, ctrlPts_combined; 
   std::vector< std::vector< double > > myo_fiber, Gmyo_fiber;
   
   TET_T::read_vtu_grid(geo_file_myo.c_str(), nFunc_myo, nElem_myo,
 		       ctrlPts_myo, vecIEN_myo, myo_fiber);
-  //
   TET_T::read_vtu_grid(geo_file_Gmyo.c_str(), nFunc_Gmyo,
 		       nElem_Gmyo, ctrlPts_Gmyo, vecIEN_Gmyo,
 		       Gmyo_fiber);
@@ -184,14 +196,22 @@ int main( int argc, char * argv[] )
   TET_T::read_purkinje_lines(geo_file_LVpur.c_str(), 
 			     nFunc_LVpur, nElem_LVpur, 
 			     ctrlPts_LVpur, vecIEN_LVpur);
+  TET_T::read_purkinje_lines(geo_file_GLVpur.c_str(), 
+			     nFunc_GLVpur, nElem_GLVpur, 
+			     ctrlPts_GLVpur, vecIEN_GLVpur);
   //
   TET_T::read_purkinje_lines(geo_file_RVpur.c_str(), 
 			     nFunc_RVpur, nElem_RVpur, 
 			     ctrlPts_RVpur, vecIEN_RVpur);
+  TET_T::read_purkinje_lines(geo_file_GRVpur.c_str(), 
+			     nFunc_GRVpur, nElem_GRVpur, 
+			     ctrlPts_GRVpur, vecIEN_GRVpur);  
   //
-  if (( nFunc_myo != nFunc_Gmyo ) || ( nElem_myo != nElem_Gmyo ))  {
+  if ( ( nFunc_myo != nFunc_Gmyo ) || ( nElem_myo != nElem_Gmyo )
+       || ( nFunc_LVpur != nFunc_GLVpur ) || ( nElem_RVpur != nElem_GRVpur )
+       || ( nFunc_LVpur != nFunc_GLVpur ) || ( nElem_RVpur != nElem_GRVpur ) )  {
     std::cerr<<"ERROR: number of functions or number of elements"
-	     <<" do not match between base and grown myocardium mesh."
+	     <<" do not match between base and grown meshes."
 	     <<" => grown mesh is not the deformed version of the base mesh"
 	     <<std::endl;
   }
@@ -225,7 +245,9 @@ int main( int argc, char * argv[] )
   //IEN_myo->print_IEN();
 
   IIEN * IEN_LVpur = new IEN_Line_P1(nElem_LVpur, vecIEN_LVpur);
-  IIEN * IEN_RVpur = new IEN_Line_P1(nElem_RVpur, vecIEN_RVpur);  
+  IIEN * IEN_RVpur = new IEN_Line_P1(nElem_RVpur, vecIEN_RVpur);
+  IIEN * IEN_GLVpur = new IEN_Line_P1(nElem_GLVpur, vecIEN_GLVpur);
+  IIEN * IEN_GRVpur = new IEN_Line_P1(nElem_GRVpur, vecIEN_GRVpur);
   //std::cout << "IEN LVpur" << std::endl;
   //IEN_LVpur->print_IEN();
   //std::cout << "IEN RVpur" << std::endl;
@@ -259,18 +281,23 @@ int main( int argc, char * argv[] )
   IMesh * mesh_myo = new Mesh_Tet4(nFunc_myo, nElem_myo);
   std::cout << "Myocardium Mesh:" << std::endl;
   mesh_myo -> print_mesh_info();
-
   IMesh * mesh_Gmyo = new Mesh_Tet4(nFunc_Gmyo, nElem_Gmyo);
   std::cout << "Grown Myocardium Mesh:" << std::endl;
   mesh_Gmyo -> print_mesh_info();
-
+  //
   IMesh * mesh_LVpur = new Mesh_Line_3D(nFunc_LVpur, nElem_LVpur);
   std::cout << "LV-Purkinje Mesh:" << std::endl;
   mesh_LVpur -> print_mesh_info();
-
+  IMesh * mesh_GLVpur = new Mesh_Line_3D(nFunc_GLVpur, nElem_GLVpur);
+  std::cout << "Grown LV-Purkinje Mesh:" << std::endl;
+  mesh_GLVpur -> print_mesh_info();
+  //
   IMesh * mesh_RVpur = new Mesh_Line_3D(nFunc_RVpur, nElem_RVpur);
   std::cout << "RV-Purkinje Mesh:" << std::endl;
   mesh_RVpur -> print_mesh_info();
+  IMesh * mesh_GRVpur = new Mesh_Line_3D(nFunc_GRVpur, nElem_GRVpur);
+  std::cout << "Grown RV-Purkinje Mesh:" << std::endl;
+  mesh_GRVpur -> print_mesh_info();
 
   //WARNING:APPEND MYO AND PUR WITH SAME ORDER EVERYTIME
   std::vector<IMesh *> mesh_list;
@@ -282,8 +309,8 @@ int main( int argc, char * argv[] )
   std::vector<IMesh *> mesh_list_Gmyo;
   mesh_list_Gmyo.clear();
   mesh_list_Gmyo.push_back(mesh_Gmyo);
-  mesh_list_Gmyo.push_back(mesh_LVpur);
-  mesh_list_Gmyo.push_back(mesh_RVpur);  
+  mesh_list_Gmyo.push_back(mesh_GLVpur);
+  mesh_list_Gmyo.push_back(mesh_GRVpur);  
 
   std::vector< std::vector< int > > IEN_list;
   IEN_list.clear();
@@ -294,8 +321,8 @@ int main( int argc, char * argv[] )
   std::vector< std::vector< int > > IEN_list_Gmyo;
   IEN_list_Gmyo.clear();
   IEN_list_Gmyo.push_back(vecIEN_Gmyo);
-  IEN_list_Gmyo.push_back(vecIEN_LVpur);
-  IEN_list_Gmyo.push_back(vecIEN_RVpur);  
+  IEN_list_Gmyo.push_back(vecIEN_GLVpur);
+  IEN_list_Gmyo.push_back(vecIEN_GRVpur);  
 
   std::vector< std::vector<double> > ctrlPts_list;
   ctrlPts_list.clear();
@@ -306,8 +333,8 @@ int main( int argc, char * argv[] )
   std::vector< std::vector<double> > ctrlPts_list_Gmyo;
   ctrlPts_list_Gmyo.clear();
   ctrlPts_list_Gmyo.push_back(ctrlPts_Gmyo);
-  ctrlPts_list_Gmyo.push_back(ctrlPts_LVpur);
-  ctrlPts_list_Gmyo.push_back(ctrlPts_RVpur);  
+  ctrlPts_list_Gmyo.push_back(ctrlPts_GLVpur);
+  ctrlPts_list_Gmyo.push_back(ctrlPts_GRVpur);  
 
   IIEN * IEN_combined= new IEN_Mixed ( IEN_list, IEN_list_Gmyo,
 				       mesh_list, mesh_list_Gmyo,
@@ -482,11 +509,15 @@ int main( int argc, char * argv[] )
   delete mesh_Gmyo;
   delete mesh_LVpur;
   delete mesh_RVpur;
+  delete mesh_GLVpur;
+  delete mesh_GRVpur;
   delete IEN_combined;
   delete IEN_myo;
   delete IEN_Gmyo;
   delete IEN_LVpur;
-  delete IEN_RVpur;   
+  delete IEN_RVpur;
+  delete IEN_GLVpur;
+  delete IEN_GRVpur;
   delete mytimer;
 
   PetscFinalize();
