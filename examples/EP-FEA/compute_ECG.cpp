@@ -73,12 +73,12 @@ int main( int argc, char * argv[] )
   //double electrode_y = -303.80;  
   //double electrode_z =  248.30;
   //v2 lead
-  double v2coor_x =-81.6568;
-  double v2coor_y =-261.7974;  
-  double v2coor_z = 226.3804;
-  double v6coor_x =-130.5825;
-  double v6coor_y =-299.4580;  
-  double v6coor_z = 191.9137;
+  double v2coor_x = -76.8372;
+  double v2coor_y = -253.2063;
+  double v2coor_z =  224.6585;
+  double v6coor_x = -145.4791;
+  double v6coor_y = -296.2812;
+  double v6coor_z =  166.0681;
 
   ////for slab example:
   //double v2coor_x = 0.00;
