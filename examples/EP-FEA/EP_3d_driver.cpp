@@ -57,7 +57,8 @@
 #include "PTime_Solver_EP_OperatorSplit.hpp"
 #include "IonicModel_AP.hpp"
 #include "IonicModel_TTP.hpp"
-#include "IonicModel_Purkinje.hpp"
+#include "IonicModel_APPurkinje.hpp"
+#include "IonicModel_TTPPurkinje.hpp"
 #include "IonicModel_Passive.hpp"
 
 int main(int argc, char *argv[])
@@ -334,10 +335,10 @@ int main(int argc, char *argv[])
   //IonicModel * ionicmodel_myo = new IonicModel_AP (myo_cond_scaler) ;
   //
   //IonicModel * ionicmodel_pur = new IonicModel_TTP () ;
-  IonicModel * ionicmodel_LVpur = new IonicModel_Purkinje (LVpur_cond_scaler,
-							   LV_pur_delay) ;
-  IonicModel * ionicmodel_RVpur = new IonicModel_Purkinje (RVpur_cond_scaler,
-							   RV_pur_delay) ;
+  IonicModel * ionicmodel_LVpur = new IonicModel_TTPPurkinje (LVpur_cond_scaler,
+							      LV_pur_delay) ;
+  IonicModel * ionicmodel_RVpur = new IonicModel_TTPPurkinje (RVpur_cond_scaler,
+							      RV_pur_delay) ;
   
   int ionicmodel_dof ; 
   ionicmodel_dof =   std::max( ionicmodel_myo->get_n_int_vars(),

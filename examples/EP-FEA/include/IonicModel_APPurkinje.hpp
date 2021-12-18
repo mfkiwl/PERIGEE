@@ -1,7 +1,7 @@
-#ifndef IONICMODEL_PURKINJE_HPP
-#define IONICMODEL_PURKINJE_HPP
+#ifndef IONICMODEL_APPURKINJE_HPP
+#define IONICMODEL_APPURKINJE_HPP
 // ==================================================================
-// IonicModel_Purkinje.hpp
+// IonicModel_APPurkinje.hpp
 // 
 // Aliev-Panfilov model from Goktepe&Kuhl,2009
 //
@@ -14,15 +14,15 @@
 #include "Math_Tools.hpp"
 #include "IonicModel.hpp"
 
-class IonicModel_Purkinje : public IonicModel
+class IonicModel_APPurkinje : public IonicModel
 {
 public:
-  IonicModel_Purkinje(const double &cond_scale,
+  IonicModel_APPurkinje(const double &cond_scale,
 		      const double &delay_in);
 
-  IonicModel_Purkinje(const double &cond_scale);
+  IonicModel_APPurkinje(const double &cond_scale);
   
-  virtual ~IonicModel_Purkinje();
+  virtual ~IonicModel_APPurkinje();
   
   virtual void print_info() const; //const =0 ;
 
