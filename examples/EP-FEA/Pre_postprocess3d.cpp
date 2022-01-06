@@ -52,14 +52,14 @@ int main(int argc, char *argv[])
   const int phy_tag_RVpur  = 3;   // and RV purkinje cells
   std::vector< int > phy_tag_list {phy_tag_myo, phy_tag_LVpur, phy_tag_RVpur}; 
 
-  ////test mesh endnodes
-  //std::string LVendnodes_file
-  //  (home_dir+"/PERIGEE/examples/EP-FEA/mesh/endnodes.txt");
-  //std::string RVendnodes_file
-  //  (home_dir+"/PERIGEE/examples/EP-FEA/mesh/endnodes.txt");
-  ////criteria (distance) for matching purkinje junction nodes to myocardium 
-  //const double LV_tol= 0.1;
-  //const double RV_tol= 0.1;
+  // //test mesh endnodes
+  // std::string LVendnodes_file
+  //   (home_dir+"/PERIGEE/examples/EP-FEA/mesh/endnodes.txt");
+  // std::string RVendnodes_file
+  //   (home_dir+"/PERIGEE/examples/EP-FEA/mesh/endnodes.txt");
+  // //criteria (distance) for matching purkinje junction nodes to myocardium 
+  // const double LV_tol= 0.1;
+  // const double RV_tol= 0.1;
   
   //heart mesh endnodes.
   std::string LVendnodes_file
@@ -67,8 +67,8 @@ int main(int argc, char *argv[])
   std::string RVendnodes_file
     (home_dir+"/PERIGEE/examples/EP-FEA/mesh/RV_endnodes-picked.txt");
   //  criteria (distance) for matching purkinje junction nodes to myocardium 
-  const double LV_tol= 1.1;
-  const double RV_tol= 1.0;
+  const double LV_tol= 10.1;
+  const double RV_tol= 10.0;
   
   int sysret = system("rm -rf postpart_p*.h5");
   SYS_T::print_fatal_if(sysret != 0, "Error: system call failed. \n");

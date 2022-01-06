@@ -14,8 +14,8 @@ int main( int argc, char * argv[] )
   char * char_home_dir = getenv("HOME");
 
   std::string gmshVol (char_home_dir);
-  //gmshVol.append("/PERIGEE/examples/EP-FEA/mesh/HLHS-coarse.msh");
-  gmshVol.append("/PERIGEE/examples/EP-FEA/mesh/single_tet.msh");
+  gmshVol.append("/PERIGEE/examples/EP-FEA/mesh/tets_cube.msh");
+  //gmshVol.append("/PERIGEE/examples/EP-FEA/mesh/single_tet.msh");
   //gmshVol.append("/niederer_meshes/niederer-01mm.msh");
   //gmshVol.append("/niederer_meshes/niederer-02mm.msh");
   //gmshVol.append("/niederer_meshes/niederer-05mm.msh");
@@ -26,8 +26,8 @@ int main( int argc, char * argv[] )
   GIOVol -> print_info();
 
   std::string gmshVol2 (char_home_dir);
-  //gmshVol2.append("/PERIGEE/examples/EP-FEA/mesh/HLHS-coarse.msh");
-  gmshVol2.append("/PERIGEE/examples/EP-FEA/mesh/single_tet_grown.msh");
+  gmshVol2.append("/PERIGEE/examples/EP-FEA/mesh/tets_cube_grown.msh");
+  //gmshVol2.append("/PERIGEE/examples/EP-FEA/mesh/single_tet_grown.msh");
   //gmshVol2.append("/niederer_meshes/niederer-01mm.msh");
   //gmshVol2.append("/niederer_meshes/niederer-02mm.msh");
   //gmshVol2.append("/niederer_meshes/niederer-05mm.msh");
@@ -40,6 +40,7 @@ int main( int argc, char * argv[] )
   std::string gmshPur1 (char_home_dir);
   //gmshPur1.append("/PERIGEE/examples/EP-FEA/mesh/longline1.msh");
   //gmshPur1.append("/PERIGEE/examples/EP-FEA/mesh/twolines1.msh");
+  //gmshPur1.append("/PERIGEE/examples/EP-FEA/mesh/threelines.msh");
   gmshPur1.append("/PERIGEE/examples/EP-FEA/mesh/oneline1.msh");
   SYS_T::GetOptionString("-gmsh_Pur1", gmshPur1);
   std::cout<<" -gmsh_Pur1: "<<gmshPur1<<std::endl;
@@ -48,26 +49,26 @@ int main( int argc, char * argv[] )
 
   std::string gmshPur2 (char_home_dir);
   //gmshPur2.append("/PERIGEE/examples/EP-FEA/mesh/longline2.msh");
-  gmshPur2.append("/PERIGEE/examples/EP-FEA/mesh/twolines2.msh");
-  //gmshPur2.append("/PERIGEE/examples/EP-FEA/mesh/oneline2.msh");
+  //gmshPur2.append("/PERIGEE/examples/EP-FEA/mesh/twolines2.msh");
+  gmshPur2.append("/PERIGEE/examples/EP-FEA/mesh/oneline2.msh");
   SYS_T::GetOptionString("-gmsh_Pur2", gmshPur2);
   std::cout<<" -gmsh_Pur2: "<<gmshPur2<<std::endl;
   Gmsh_FileIO * GIOPur2 = new Gmsh_FileIO( gmshPur2 );
   GIOPur2 -> print_info();
 
-  std::string gmshPur3 (char_home_dir);
-  gmshPur3.append("/PERIGEE/examples/EP-FEA/mesh/oneline1_grown.msh");
-  SYS_T::GetOptionString("-gmsh_Pur3", gmshPur3);
-  std::cout<<" -gmsh_Pur3: "<<gmshPur3<<std::endl;
-  Gmsh_FileIO * GIOPur3 = new Gmsh_FileIO( gmshPur3 );
-  GIOPur3 -> print_info();
-
-  std::string gmshPur4 (char_home_dir);
-  gmshPur4.append("/PERIGEE/examples/EP-FEA/mesh/twolines2_grown.msh");
-  SYS_T::GetOptionString("-gmsh_Pur4", gmshPur4);
-  std::cout<<" -gmsh_Pur4: "<<gmshPur4<<std::endl;
-  Gmsh_FileIO * GIOPur4 = new Gmsh_FileIO( gmshPur4 );
-  GIOPur4 -> print_info();
+  //std::string gmshPur3 (char_home_dir);
+  //gmshPur3.append("/PERIGEE/examples/EP-FEA/mesh/oneline1_grown.msh");
+  //SYS_T::GetOptionString("-gmsh_Pur3", gmshPur3);
+  //std::cout<<" -gmsh_Pur3: "<<gmshPur3<<std::endl;
+  //Gmsh_FileIO * GIOPur3 = new Gmsh_FileIO( gmshPur3 );
+  //GIOPur3 -> print_info();
+  //
+  //std::string gmshPur4 (char_home_dir);
+  //gmshPur4.append("/PERIGEE/examples/EP-FEA/mesh/twolines2_grown.msh");
+  //SYS_T::GetOptionString("-gmsh_Pur4", gmshPur4);
+  //std::cout<<" -gmsh_Pur4: "<<gmshPur4<<std::endl;
+  //Gmsh_FileIO * GIOPur4 = new Gmsh_FileIO( gmshPur4 );
+  //GIOPur4 -> print_info();
 
   ////three lines
   //GIO -> write_vtp_purkinje(0,0,true);//tip0
@@ -115,12 +116,12 @@ int main( int argc, char * argv[] )
   const std::string wmname_pur2("pur2");
   GIOPur2 -> write_vtu_purkinje( wmname_pur2, isXML );
   delete GIOPur2;
-  const std::string wmname_pur3("pur3");
-  GIOPur3 -> write_vtu_purkinje( wmname_pur3, isXML );
-  delete GIOPur3;
-  const std::string wmname_pur4("pur4");
-  GIOPur4 -> write_vtu_purkinje( wmname_pur4, isXML );
-  delete GIOPur4;  
+  //const std::string wmname_pur3("pur3");
+  //GIOPur3 -> write_vtu_purkinje( wmname_pur3, isXML );
+  //delete GIOPur3;
+  //const std::string wmname_pur4("pur4");
+  //GIOPur4 -> write_vtu_purkinje( wmname_pur4, isXML );
+  //delete GIOPur4;  
 
   PetscFinalize();
   return 0;

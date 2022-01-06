@@ -88,12 +88,12 @@ int main(int argc, char *argv[])
   double initial_time = 0.0;
   double initial_step = 0.1;
   int initial_index = 0;
-  double final_time = 1000.0;
+  double final_time = 1.0;
 
   // Time solver parameters
   std::string sol_bName("SOL_");
-  int ttan_renew_freq = 5;
-  int sol_record_freq = 50;
+  int ttan_renew_freq = 1;
+  int sol_record_freq = 1;
 
   // parameters to optimize personalized EP
   double myo_cond_scaler = 1.0;
@@ -334,11 +334,14 @@ int main(int argc, char *argv[])
   IonicModel * ionicmodel_myo = new IonicModel_TTP ( myo_cond_scaler) ;
   //IonicModel * ionicmodel_myo = new IonicModel_AP (myo_cond_scaler) ;
   //
-  //IonicModel * ionicmodel_pur = new IonicModel_TTP () ;
-  IonicModel * ionicmodel_LVpur = new IonicModel_TTPPurkinje (LVpur_cond_scaler,
-							      LV_pur_delay) ;
-  IonicModel * ionicmodel_RVpur = new IonicModel_TTPPurkinje (RVpur_cond_scaler,
-							      RV_pur_delay) ;
+  //IonicModel * ionicmodel_LVpur = new IonicModel_TTPPurkinje (LVpur_cond_scaler,
+  //							      LV_pur_delay) ;
+  //IonicModel * ionicmodel_RVpur = new IonicModel_TTPPurkinje (RVpur_cond_scaler,
+  //							      RV_pur_delay) ;
+  IonicModel * ionicmodel_LVpur = new IonicModel_APPurkinje (LVpur_cond_scaler,
+							     LV_pur_delay) ;
+  IonicModel * ionicmodel_RVpur = new IonicModel_APPurkinje (RVpur_cond_scaler,
+							     RV_pur_delay) ;
   
   int ionicmodel_dof ; 
   ionicmodel_dof =   std::max( ionicmodel_myo->get_n_int_vars(),

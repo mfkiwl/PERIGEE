@@ -97,8 +97,7 @@ def getrmse(x):
 
 #===================================================================================
 
-os.system("trash *.png")
-os.system("trash *logfile*")
+os.system("rm -rf *.png")
 
 global Aim
 outfile = "ecg_logfile.dat"

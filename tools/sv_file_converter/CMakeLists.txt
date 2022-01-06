@@ -1,9 +1,10 @@
 PROJECT(perigee)
 
-CMAKE_MINIMUM_REQUIRED(VERSION 2.4)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.10)
 
 IF(COMMAND cmake_policy)
   cmake_policy(SET CMP0003 NEW)
+  cmake_policy(SET CMP0074 NEW)
 ENDIF(COMMAND cmake_policy)
 
 SET(perigee_VERSION_MAJOR 0)
@@ -28,21 +29,19 @@ SET(CMAKE_VERBOSE_MAKEFILE FALSE)
 
 INCLUDE(../../conf/basic_variable_log.cmake)
 INCLUDE(../../conf/system_lib_loading.cmake)
-INCLUDE(../../conf/setup_external_libs.cmake)
 
 # ===============================================
 # Set my own source code
 # ===============================================
 SET( perigee_source ${perigee_SOURCE_DIR}/../../src )
 SET( perigee_lib_src 
-  ${perigee_source}/System/Sys_Tools.cpp
+#       ${perigee_source}/System/Vector_3.cpp
   ${perigee_source}/System/SV_Tools.cpp
-  ${perigee_source}/Mesh/Tet_Tools.cpp
-  ${perigee_source}/System/Vec_Tools.cpp
   ${perigee_source}/System/Math_Tools.cpp
   ${perigee_source}/System/Matrix_double_3by3_Array.cpp
   ${perigee_source}/System/HDF5_Writer.cpp
   ${perigee_source}/System/HDF5_Reader.cpp
+  ${perigee_source}/Mesh/Tet_Tools.cpp
   )
 
 # ===============================================
@@ -52,8 +51,7 @@ SET( perigee_lib_src
 INCLUDE_DIRECTORIES( ../../include )
 
 # -------------------------------------------------------------------
-# MAKE MY OWN LIBRARIES
-# 1. Preprocess libs
+# MAKE MY OWN LIBRARY
 ADD_LIBRARY( perigee ${perigee_lib_src} )
 TARGET_LINK_LIBRARIES( perigee ${EXTRA_LINK_LIBS} )
 # -------------------------------------------------------------------
@@ -73,9 +71,9 @@ ADD_EXECUTABLE( svrcr_converter convert_rcrt_dat_file.cpp)
 
 # -------------------------------------------------------------------
 # 2. Link libraries
-TARGET_LINK_LIBRARIES( sv_converter ${EXTRA_LINK_LIBS} perigee )
-TARGET_LINK_LIBRARIES( quad_sv_converter ${EXTRA_LINK_LIBS} perigee )
-TARGET_LINK_LIBRARIES( svpre_converter ${EXTRA_LINK_LIBS} perigee )
-TARGET_LINK_LIBRARIES( svrcr_converter ${EXTRA_LINK_LIBS} perigee )
+TARGET_LINK_LIBRARIES( sv_converter perigee )
+TARGET_LINK_LIBRARIES( quad_sv_converter perigee )
+TARGET_LINK_LIBRARIES( svpre_converter perigee )
+TARGET_LINK_LIBRARIES( svrcr_converter perigee )
 
 #EOF
