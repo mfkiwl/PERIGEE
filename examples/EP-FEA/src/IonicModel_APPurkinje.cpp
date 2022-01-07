@@ -45,7 +45,7 @@ void IonicModel_APPurkinje::get_Istim(double &Istim,
   //excite 1st node of purkinje network of RV and LV networks
   // with the specified delay times
   if ( std::sqrt(  std::pow(x-(4.0), 2.0)
-		   + std::pow(y-(2.0), 2.0)
+		   + std::pow(y-(0.0), 2.0)
 		   + std::pow(z-(0.0), 2.0)  ) <= 1.0 ) {
     if ((t >= pur_delay) && (t <= 2.0 + pur_delay)) {
       Istim = -300.0;
@@ -53,7 +53,7 @@ void IonicModel_APPurkinje::get_Istim(double &Istim,
       Istim = 0.0;
     }
   } else if ( std::sqrt( std::pow(x-(0.0), 2.0)
-			 + std::pow(y-(3.0), 2.0)
+			 + std::pow(y-(4.0), 2.0)
 			 + std::pow(z-(0.0), 2.0)  ) <= 1.0 ) {
     if ((t >= pur_delay) && (t <= 2.0 + pur_delay)) {
       Istim = -300.0;

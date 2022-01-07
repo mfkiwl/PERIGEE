@@ -181,6 +181,148 @@ void TET_T::read_vtu_grid( const std::string &filename,
 }
 
 void TET_T::read_vtu_grid( const std::string &filename,
+			   int &numpts, int &numcels,
+			   std::vector<double> &pt, std::vector<int> &ien_array,
+			   std::vector< std::vector< double > > &myo_fiber,
+			   std::vector< double > &myo_displacements)
+{
+  vtkXMLUnstructuredGridReader * reader = vtkXMLUnstructuredGridReader::New();
+  reader -> SetFileName( filename.c_str() );
+  reader -> Update();
+  vtkUnstructuredGrid * vtkugrid = reader -> GetOutput();
+
+  //check if fibers data is available and if so get it.
+  bool fibers_present=false;
+  vtkCellData *cellData = vtkugrid->GetCellData();
+  vtkDataArray* data;
+  vtkDataArray* tmpdata;
+  std::regex reg_ex_fib ("(.*)(fib)(.*)",std::regex_constants::icase);
+  
+  for (int i = 0; i < cellData->GetNumberOfArrays(); i++)    {
+    tmpdata = cellData->GetArray(i);
+    if (std::regex_match(tmpdata->GetName(), reg_ex_fib)) {
+      fibers_present = true; 
+      data = tmpdata;
+      std::cout << "Found fibers orientations under the name: "
+		<< data->GetName() << std::endl;
+      break;
+    }
+  }
+  if(!fibers_present) {
+    std::cout << "WARNING (Tet_Tools::read_vtu_grid): Fibers are not given  " 
+	      << "in the input file, so default orientations  will be assigned"
+	      << std::endl; 
+  }
+
+  //check if displacement data is available and if so get it.
+  bool displacement_present=false;
+  vtkPointData *pointData = vtkugrid->GetPointData();
+  vtkDataArray* data2;
+  vtkDataArray* tmpdata2;
+  std::regex reg_ex_disp ("(.*)(disp)(.*)",std::regex_constants::icase);
+  
+  for (int i = 0; i < pointData->GetNumberOfArrays(); i++)    {
+    tmpdata2 = pointData->GetArray(i);
+    if (std::regex_match(tmpdata2->GetName(), reg_ex_disp)) {
+      displacement_present = true; 
+      data2 = tmpdata2;
+      std::cout << "Found displacements under the name: "
+		<< data2->GetName() << std::endl;
+      break;
+    }
+  }
+  if(!displacement_present) {
+    SYS_T::print_fatal("Error: TET_T::read_vtu_grid couldn't find a displacement field in the provided mesh file. \n");
+  }  
+	 
+  // Number of grid points in the mesh
+  numpts  = static_cast<int>( vtkugrid -> GetNumberOfPoints() );
+  
+  // Number of cells in the mesh
+  numcels = static_cast<int>( vtkugrid -> GetNumberOfCells() );
+
+  // xyz coordinates of the points and displacements
+  myo_displacements.clear();
+  double pt_xyz[3];
+  pt.clear();
+  for(int ii=0; ii<numpts; ++ii)
+  {
+    vtkugrid -> GetPoint(ii, pt_xyz);
+    pt.push_back(pt_xyz[0]);
+    pt.push_back(pt_xyz[1]);
+    pt.push_back(pt_xyz[2]);
+
+    //if displacements are not present, then assign (0,0,0)
+    
+    if (displacement_present) {
+      double* array3 = data2->GetTuple3(ii);
+      myo_displacements.insert(myo_displacements.end(), array3, array3+3);
+    } else {
+      std::cout << "WARNING (Tet_Tools::read_vtu_grid): displacements are not given  " 
+		<< "in the input file, so 0,0,0 will be assigned"
+		<< std::endl; 
+      double array3[]= {0, 0, 0};
+      myo_displacements.insert(myo_displacements.end(), array3, array3+3);
+    }
+  }
+ 
+  // Connectivity of the mesh
+  //and fiber orientation that are defined at cell 
+  ien_array.clear();
+  myo_fiber.clear();
+  myo_fiber.resize(numcels);
+
+  for(int ii=0; ii<numcels; ++ii)  {
+    
+    vtkCell * cell = vtkugrid -> GetCell(ii);
+    
+    //if fibers are not present, then assign (1,0,0) as default orientation
+    if (fibers_present ) {
+      double* array3 = data->GetTuple3(ii);  
+      (myo_fiber.at(ii)).insert((myo_fiber.at(ii)).begin(), array3, array3+3);
+    } else {
+      double array3[]= {1, 0, 0};
+      (myo_fiber.at(ii)).insert((myo_fiber.at(ii)).begin(), array3, array3+3);
+    }
+    //
+    if( cell->GetCellType() == 10 ) 
+      {
+	// cell type 10 is four-node tet
+	ien_array.push_back( static_cast<int>( cell->GetPointId(0) ) );
+	ien_array.push_back( static_cast<int>( cell->GetPointId(1) ) );
+	ien_array.push_back( static_cast<int>( cell->GetPointId(2) ) );
+	ien_array.push_back( static_cast<int>( cell->GetPointId(3) ) );
+      }
+    // else if( cell-> GetCellType() == 22 )
+    // {
+    //   // cell type 22 is six-node triangle
+    //   ien_array.push_back( static_cast<int>( cell->GetPointId(0) ) );
+    //   ien_array.push_back( static_cast<int>( cell->GetPointId(1) ) );
+    //   ien_array.push_back( static_cast<int>( cell->GetPointId(2) ) );
+    //   ien_array.push_back( static_cast<int>( cell->GetPointId(3) ) );
+    //   ien_array.push_back( static_cast<int>( cell->GetPointId(4) ) );
+    //   ien_array.push_back( static_cast<int>( cell->GetPointId(5) ) );
+    // }
+    // else if( cell-> GetCellType() == 24 )
+    // {
+    //   // cell type 24 is ten-node tet
+    //   ien_array.push_back( static_cast<int>( cell->GetPointId(0) ) );
+    //   ien_array.push_back( static_cast<int>( cell->GetPointId(1) ) );
+    //   ien_array.push_back( static_cast<int>( cell->GetPointId(2) ) );
+    //   ien_array.push_back( static_cast<int>( cell->GetPointId(3) ) );
+    //   ien_array.push_back( static_cast<int>( cell->GetPointId(4) ) );
+    //   ien_array.push_back( static_cast<int>( cell->GetPointId(5) ) );
+    //   ien_array.push_back( static_cast<int>( cell->GetPointId(6) ) );
+    //   ien_array.push_back( static_cast<int>( cell->GetPointId(7) ) );
+    //   ien_array.push_back( static_cast<int>( cell->GetPointId(8) ) );
+    //   ien_array.push_back( static_cast<int>( cell->GetPointId(9) ) );
+    // }
+    else SYS_T::print_fatal("Error: TET_T::read_vtu_grid read a mesh with VTK cell type 10, 24, or 22. \n");
+  }
+  reader->Delete();
+}
+
+void TET_T::read_vtu_grid( const std::string &filename,
     int &numpts, int &numcels,
     std::vector<double> &pt, std::vector<int> &ien_array,
     std::vector<int> &phy_tag )

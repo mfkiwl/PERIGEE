@@ -63,57 +63,39 @@ int main( int argc, char * argv[] )
   char * char_home_dir = getenv("HOME");
   std::string home_dir (char_home_dir);
   
-  ////test mesh 
+  //test mesh 
   //std::string geo_file_myo("./myo.vtu");
-  //std::string geo_file_LVpur("./pur1.vtu");
-  //std::string geo_file_RVpur("./pur2.vtu");
-  //std::string LVendnodes_file
-  //  (home_dir+"/PERIGEE/examples/EP-FEA/mesh/endnodes.txt");
-  //std::string RVendnodes_file
-  //  (home_dir+"/PERIGEE/examples/EP-FEA/mesh/endnodes.txt");
-  ////criteria (distance) for matching purkinje junction nodes to myocardium 
-  //const double LV_tol= 0.1;
-  //const double RV_tol= 0.1;
-  
-  //heart mesh 
   std::string geo_file_myo
-    (home_dir+"/PERIGEE/examples/EP-FEA/mesh/HLHS_fibers.vtu");
-  std::string geo_file_LVpur
-    (home_dir+"/PERIGEE/examples/EP-FEA/mesh/LV-purkinje.vtu");
-  std::string geo_file_RVpur
-    (home_dir+"/PERIGEE/examples/EP-FEA/mesh/RV-purkinje.vtu");
-  //warning: check that the first node of purkinje is not in the endnodes list.
+    (home_dir+"/PERIGEE/examples/EP-FEA/mesh/growth_test.vtu");  
+  std::string geo_file_LVpur("./pur1.vtu");
+  std::string geo_file_RVpur("./pur2.vtu");
   std::string LVendnodes_file
-    (home_dir+"/PERIGEE/examples/EP-FEA/mesh/LV_endnodes-picked.txt");
+    (home_dir+"/PERIGEE/examples/EP-FEA/mesh/endnodes.txt");
   std::string RVendnodes_file
-    (home_dir+"/PERIGEE/examples/EP-FEA/mesh/RV_endnodes-picked.txt");
+    (home_dir+"/PERIGEE/examples/EP-FEA/mesh/endnodes.txt");
   //criteria (distance) for matching purkinje junction nodes to myocardium 
-  const double LV_tol= 1.1;
-  const double RV_tol= 1.0;
+  const double LV_tol= 0.1;
+  const double RV_tol= 0.1;
+  
+  // //heart mesh 
+  // std::string geo_file_myo
+  //   (home_dir+"/PERIGEE/examples/EP-FEA/mesh/HLHS_fibers.vtu");
+  // std::string geo_file_LVpur
+  //   (home_dir+"/PERIGEE/examples/EP-FEA/mesh/LV-purkinje.vtu");
+  // std::string geo_file_RVpur
+  //   (home_dir+"/PERIGEE/examples/EP-FEA/mesh/RV-purkinje.vtu");
+  // //warning: check that the first node of purkinje is not in the endnodes list.
+  // std::string LVendnodes_file
+  //   (home_dir+"/PERIGEE/examples/EP-FEA/mesh/LV_endnodes-picked.txt");
+  // std::string RVendnodes_file
+  //   (home_dir+"/PERIGEE/examples/EP-FEA/mesh/RV_endnodes-picked.txt");
+  // //criteria (distance) for matching purkinje junction nodes to myocardium 
+  // const double LV_tol= 1.1;
+  // const double RV_tol= 1.0;
 
-
-  //  // volume & faces purkinje mesh  
-  //  std::string geo_file("./purkinje.vtu");
-  //  std::string sur_file_tip0("./tip0_curve.vtp");
-  //  std::string sur_file_tip1("./tip1_curve.vtp");
-    
-  //  // faces for HLHS mesh  
-  //  std::string sur_file_Base("./Base_Vol.vtp");
-  //  std::string sur_file_Epi ("./Epi_Vol.vtp");
-  //  std::string sur_file_RV  ("./RV_Vol.vtp");
-  //  std::string sur_file_LV  ("./LV_Vol.vtp");
-  //  
-  //  // faces for cube/beam mesh  
-  //  //std::string sur_file_top("./top_vol.vtp");
-  //  //std::string sur_file_bot("./bot_vol.vtp");
-  //  //std::string sur_file_lef("./lef_vol.vtp");
-  //  //std::string sur_file_rig("./rig_vol.vtp");
-  //  //std::string sur_file_fro("./fro_vol.vtp");
-  //  //std::string sur_file_bac("./bac_vol.vtp");
-  //
   const std::string part_file("part");
 
-  int cpu_size = 6; 
+  int cpu_size = 1; 
   int in_ncommon = 1;
   const bool isDualGraph = true;
 
@@ -181,11 +163,12 @@ int main( int argc, char * argv[] )
   // Read the geometry files
   int nFunc_LVpur, nElem_LVpur, nFunc_RVpur, nElem_RVpur, nFunc_myo, nElem_myo;
   std::vector<int> vecIEN_LVpur, vecIEN_RVpur, vecIEN_myo;
-  std::vector<double> ctrlPts_LVpur, ctrlPts_RVpur, ctrlPts_myo, ctrlPts_combined;
+  std::vector<double> ctrlPts_LVpur, ctrlPts_RVpur, ctrlPts_myo,
+    ctrlPts_combined, displacement_myo, displacement_LVpur, displacement_RVpur;
   std::vector< std::vector< double > > myo_fiber;
   
   TET_T::read_vtu_grid(geo_file_myo.c_str(), nFunc_myo, nElem_myo,
-		       ctrlPts_myo, vecIEN_myo, myo_fiber);
+		       ctrlPts_myo, vecIEN_myo, myo_fiber, displacement_myo);
   TET_T::read_purkinje_lines(geo_file_LVpur.c_str(), 
 			     nFunc_LVpur, nElem_LVpur, 
 			     ctrlPts_LVpur, vecIEN_LVpur);
@@ -282,14 +265,30 @@ int main( int argc, char * argv[] )
   ctrlPts_list.clear();
   ctrlPts_list.push_back(ctrlPts_myo);
   ctrlPts_list.push_back(ctrlPts_LVpur);
-  ctrlPts_list.push_back(ctrlPts_RVpur);  
+  ctrlPts_list.push_back(ctrlPts_RVpur);
 
-  IIEN * IEN_combined= new IEN_Mixed ( IEN_list, mesh_list, 
-				       ctrlPts_list,
-				       LVendnodes_file.c_str(),
-				       RVendnodes_file.c_str(),
-				       ctrlPts_combined, LV_tol, RV_tol);
+  std::vector< std::vector<double> > displacement_list;
+  displacement_LVpur.resize(nFunc_LVpur*3);
+  displacement_RVpur.resize(nFunc_RVpur*3);
+  displacement_list.clear();
+  displacement_list.push_back(displacement_myo);
+  displacement_list.push_back(displacement_LVpur);
+  displacement_list.push_back(displacement_RVpur);  
   
+  // std::cout << "disp LVpur:" << std::endl;
+  // VEC_T::print( displacement_LVpur );
+  // std::cout << "disp RVpur:" << std::endl;
+  // VEC_T::print( displacement_RVpur );
+  // std::cout << "disp myo:" << std::endl;
+  // VEC_T::print( displacement_myo );
+  
+  IIEN * IEN_combined= new IEN_Mixed ( IEN_list, mesh_list, 
+   				       ctrlPts_list,
+   				       displacement_list,
+   				       LVendnodes_file.c_str(),
+   				       RVendnodes_file.c_str(),
+   				       ctrlPts_combined, LV_tol, RV_tol);
+
   //  std::cout << "ctrlpts combined:" << std::endl;
   //  VEC_T::print( ctrlPts_combined );
   //  

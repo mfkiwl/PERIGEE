@@ -52,23 +52,23 @@ int main(int argc, char *argv[])
   const int phy_tag_RVpur  = 3;   // and RV purkinje cells
   std::vector< int > phy_tag_list {phy_tag_myo, phy_tag_LVpur, phy_tag_RVpur}; 
 
-  // //test mesh endnodes
-  // std::string LVendnodes_file
-  //   (home_dir+"/PERIGEE/examples/EP-FEA/mesh/endnodes.txt");
-  // std::string RVendnodes_file
-  //   (home_dir+"/PERIGEE/examples/EP-FEA/mesh/endnodes.txt");
-  // //criteria (distance) for matching purkinje junction nodes to myocardium 
-  // const double LV_tol= 0.1;
-  // const double RV_tol= 0.1;
-  
-  //heart mesh endnodes.
+  //test mesh endnodes
   std::string LVendnodes_file
-    (home_dir+"/PERIGEE/examples/EP-FEA/mesh/LV_endnodes-picked.txt");
+    (home_dir+"/PERIGEE/examples/EP-FEA/mesh/endnodes.txt");
   std::string RVendnodes_file
-    (home_dir+"/PERIGEE/examples/EP-FEA/mesh/RV_endnodes-picked.txt");
-  //  criteria (distance) for matching purkinje junction nodes to myocardium 
-  const double LV_tol= 10.1;
-  const double RV_tol= 10.0;
+    (home_dir+"/PERIGEE/examples/EP-FEA/mesh/endnodes.txt");
+  //criteria (distance) for matching purkinje junction nodes to myocardium 
+  const double LV_tol= 0.1;
+  const double RV_tol= 0.1;
+  
+  // //heart mesh endnodes.
+  // std::string LVendnodes_file
+  //   (home_dir+"/PERIGEE/examples/EP-FEA/mesh/LV_endnodes-picked.txt");
+  // std::string RVendnodes_file
+  //   (home_dir+"/PERIGEE/examples/EP-FEA/mesh/RV_endnodes-picked.txt");
+  // //  criteria (distance) for matching purkinje junction nodes to myocardium 
+  // const double LV_tol= 10.1;
+  // const double RV_tol= 10.0;
   
   int sysret = system("rm -rf postpart_p*.h5");
   SYS_T::print_fatal_if(sysret != 0, "Error: system call failed. \n");
@@ -77,7 +77,7 @@ int main(int argc, char *argv[])
   int dofNum, dofMat, elemType_myo, elemType_LVpur, elemType_RVpur, in_ncommon, probDim;
 
   std::string part_file("postpart");
-  int cpu_size = 6;
+  int cpu_size = 1;
   bool isDualGraph = true;
   bool isread_part = true;
 
@@ -133,24 +133,18 @@ int main(int argc, char *argv[])
   // Read the geo_file
   int nFunc_LVpur,  nFunc_RVpur, nElem_LVpur, nElem_RVpur, nFunc_myo, nElem_myo;
   std::vector<int> vecIEN_LVpur, vecIEN_RVpur, vecIEN_myo;
-  std::vector<double> ctrlPts_LVpur, ctrlPts_RVpur, ctrlPts_myo, ctrlPts_combined;
+  std::vector<double> ctrlPts_LVpur, ctrlPts_RVpur, ctrlPts_myo,
+    ctrlPts_combined, displacement_myo, displacement_LVpur, displacement_RVpur;
   std::vector< std::vector< double > > myo_fiber;
   std::vector< int > elemType_list {elemType_myo, elemType_LVpur, elemType_RVpur};
-  
-  //int nFunc, nElem;
-  //std::vector<int> vecIEN;
-  //std::vector<double> ctrlPts;
-  //std::vector<int> phy_tag;
   
   // Check if the given geo file exist
   SYS_T::file_exist_check( geo_file_myo.c_str() );
   SYS_T::file_exist_check( geo_file_LVpur.c_str() );
   SYS_T::file_exist_check( geo_file_RVpur.c_str() );
   
-  // Warning: this function returns phy_tag as 1 only, for now.
-  //TET_T::read_purkinje_lines(geo_file.c_str(), nFunc, nElem, ctrlPts, vecIEN, phy_tag);
   TET_T::read_vtu_grid(geo_file_myo.c_str(), nFunc_myo, nElem_myo,
-		       ctrlPts_myo, vecIEN_myo, myo_fiber);
+		       ctrlPts_myo, vecIEN_myo, myo_fiber, displacement_myo); 
   TET_T::read_purkinje_lines(geo_file_LVpur.c_str(),nFunc_LVpur, nElem_LVpur, 
 			     ctrlPts_LVpur, vecIEN_LVpur );
   TET_T::read_purkinje_lines(geo_file_RVpur.c_str(),nFunc_RVpur, nElem_RVpur, 
@@ -236,15 +230,22 @@ int main(int argc, char *argv[])
   ctrlPts_list.push_back(ctrlPts_LVpur);
   ctrlPts_list.push_back(ctrlPts_RVpur);  
 
+  std::vector< std::vector<double> > displacement_list;
+  displacement_LVpur.resize(nFunc_LVpur*3);
+  displacement_RVpur.resize(nFunc_RVpur*3);
+  displacement_list.clear();
+  displacement_list.push_back(displacement_myo);
+  displacement_list.push_back(displacement_LVpur);
+  displacement_list.push_back(displacement_RVpur);  
   //
   
   IIEN * IEN_combined= new IEN_Mixed ( IEN_list, mesh_list, 
-				       ctrlPts_list,
-				       LVendnodes_file.c_str(),
-				       RVendnodes_file.c_str(),
-				       ctrlPts_combined, LV_tol, RV_tol);
-
-  
+   				       ctrlPts_list,
+   				       displacement_list,
+   				       LVendnodes_file.c_str(),
+   				       RVendnodes_file.c_str(),
+   				       ctrlPts_combined, LV_tol, RV_tol);
+    
   //std::cout << "ctrlpts combined:" << std::endl;
   //VEC_T::print( ctrlPts_combined );
   ////std::cout << "elemType combined:" << std::endl;

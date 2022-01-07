@@ -4,17 +4,17 @@
 IEN_Mixed::IEN_Mixed(const std::vector< std::vector<int> > &IEN_list,
 		     const std::vector< IMesh * >  &mesh_list,
 		     const std::vector< std::vector<double> > &ctrlPts_list,
+		     const std::vector< std::vector< double > > &displacement_list,
 		     const std::string &LVendnodes_filename,
 		     const std::string &RVendnodes_filename,
 		     std::vector<double> &ctrlPts_combined,
 		     const double &LV_tol,
 		     const double &RV_tol)
 {
-  if(mesh_list.size() != IEN_list.size())
-    {
-      std::cerr<<"ERROR: IEN_list and mesh_list sizes don't match. \n";
-      exit(1);
-    }
+  if(mesh_list.size() != IEN_list.size())    {
+    std::cerr<<"ERROR: IEN_list and mesh_list sizes don't match. \n";
+    exit(1);
+  }
 
   auto vecIEN_1= IEN_list.at(0);
   auto vecIEN_2= IEN_list.at(1);
@@ -30,7 +30,11 @@ IEN_Mixed::IEN_Mixed(const std::vector< std::vector<int> > &IEN_list,
   int nelem3= Mesh_3->get_nElem();
   int nLocBas1= Mesh_1->get_nLocBas();
   int nLocBas2= Mesh_2->get_nLocBas();
-  int nLocBas3= Mesh_3->get_nLocBas();  
+  int nLocBas3= Mesh_3->get_nLocBas();
+  std::vector<double> displacement_1= displacement_list.at(0);
+  std::vector<double> displacement_2= displacement_list.at(1);
+  std::vector<double> displacement_3= displacement_list.at(2);
+
   
   //1- read endnodes file contents
   std::vector<int> LVendnodes; 
@@ -217,11 +221,13 @@ IEN_Mixed::IEN_Mixed(const std::vector< std::vector<int> > &IEN_list,
     ii++;
   }
 
-  //  std::cout<< "LVendnodes reverse erases ctrlpts" << std::endl;
+  //  std::cout<< "LVendnodes reverse erases ctrlpts and displacements" << std::endl;
   for( auto it = LVendnodes_reverse.begin(); it != LVendnodes_reverse.end(); it++ ){
     //std::cout << "LVendnode: " << *it << "\n";
     locs2_reorder.erase(locs2_reorder.begin() + (*it));
     ctrlPts_2.erase(ctrlPts_2.begin()+(*it)*3, ctrlPts_2.begin()+(*it)*3+3);
+    displacement_2.erase(displacement_2.begin()+(*it)*3,
+			 displacement_2.begin()+(*it)*3+3); 
   }
 
   std::vector<int> RVendnodes_reverse;
@@ -245,7 +251,25 @@ IEN_Mixed::IEN_Mixed(const std::vector< std::vector<int> > &IEN_list,
     //std::cout << "RVendnode: " << *it << "\n";
     locs3_reorder.erase(locs3_reorder.begin() + (*it));
     ctrlPts_3.erase(ctrlPts_3.begin()+(*it)*3, ctrlPts_3.begin()+(*it)*3+3);
+    displacement_3.erase(displacement_3.begin()+(*it)*3,
+			 displacement_3.begin()+(*it)*3+3); 
   }
+
+  //4.5- update the control point coordinates according to the displacement
+  //values
+  if ( (ctrlPts_1.size() != displacement_1.size())
+       || (ctrlPts_2.size() != displacement_2.size())
+       || (ctrlPts_3.size() != displacement_3.size()) )  {
+    std::cerr<<"ERROR: control points and displacement vector sizes don't match. \n";
+    exit(1);
+  }
+  std::transform(ctrlPts_1.begin(), ctrlPts_1.end(), displacement_1.begin(),
+		 ctrlPts_1.begin(),std::plus<double>()); 
+  std::transform(ctrlPts_2.begin(), ctrlPts_2.end(),displacement_2.begin(),
+		 ctrlPts_2.begin(),std::plus<double>());
+  std::transform(ctrlPts_3.begin(), ctrlPts_3.end(),displacement_3.begin(),
+		 ctrlPts_3.begin(), std::plus<double>()); 
+		 
   
   //std::cout<< "ctrlpts2 before replace- first 10" << std::endl;
   //for( auto it = ctrlPts_2.begin(); it != ctrlPts_2.begin()+30; it=it+3 ){
@@ -336,7 +360,6 @@ IEN_Mixed::IEN_Mixed(const std::vector< std::vector<int> > &IEN_list,
   IEN1.insert(IEN1.end(), IEN2.begin(), IEN2.end());
   IEN1.insert(IEN1.end(), IEN3.begin(), IEN3.end());
 
-
   //copy IEN1 to IEN
   IEN=IEN1;
   //std::cout<< "ien  " << std::endl;
@@ -360,7 +383,7 @@ IEN_Mixed::IEN_Mixed(const std::vector< std::vector<int> > &IEN_list,
   
   std::cout << "nElem_tot= " << nElem_tot << std::endl;
   std::cout << "nFunc_tot= " << nFunc_tot << std::endl;
-
+  
 }
 
 IEN_Mixed::IEN_Mixed(const std::vector< std::vector<int> > &IEN_list,
