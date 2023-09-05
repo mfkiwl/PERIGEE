@@ -140,13 +140,12 @@ int main( int argc, char * argv[] )
       v_vecIEN[ global_ele_idx[ee]*4+3 ] };
 
     // Locate the interior node's global node index
-    bool gotnode[4];
     int node_check = 0;
     for(int ii=0; ii<4; ++ii)
     {
-      gotnode[ii] = VEC_T::is_invec( trn, ten[ii] );
+      const bool gotnode = VEC_T::is_invec( trn, ten[ii] );
 
-      if(!gotnode[ii]) interior_node[ee] = ten[ii];
+      if( !gotnode ) interior_node[ee] = ten[ii];
       else node_check += 1;
     }
 
@@ -197,9 +196,6 @@ int main( int argc, char * argv[] )
   // Read the node mappings
   const auto analysis_new2old = ReadNodeMapping("node_mapping.h5", "new_2_old", v_nFunc );
 
-  // Read solutions
-  std::ostringstream time_index;
-
   // Container for TAWSS & OSI
   std::vector<double> tawss( nFunc, 0.0 ); 
   std::vector<double> osi( nFunc, 0.0 ); 
@@ -212,6 +208,7 @@ int main( int argc, char * argv[] )
     // Generate the file name
     std::string name_to_read(sol_bname);
     std::string name_to_write(out_bname);
+    std::ostringstream time_index;
     time_index.str("");
     time_index << 900000000 + time;
     name_to_read.append(time_index.str());
@@ -433,7 +430,6 @@ std::vector<double> ReadPETSc_Vec( const std::string &solution_file_name,
 
   return sol;
 }
-
 
 void write_triangle_grid_wss( const std::string &filename,
     const int &numpts, const int &numcels,
