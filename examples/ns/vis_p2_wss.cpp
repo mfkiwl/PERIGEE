@@ -17,10 +17,9 @@ std::vector<int> range_generator( const int &ii );
 std::vector<int> ReadNodeMapping( const char * const &node_mapping_file,
     const char * const &mapping_type, const int &node_size );
 
-void ReadPETSc_Vec( const std::string &solution_file_name,
+std::vector<double> ReadPETSc_Vec( const std::string &solution_file_name,
     const std::vector<int> &nodemap,
-    const int &vec_size, const int &in_dof,
-    std::vector<double> &sol );
+    const int &vec_size, const int &in_dof );
 
 int get_tri_local_id( const double * const &coor_x,
     const double * const &coor_y,
@@ -33,7 +32,7 @@ void write_triangle_grid_wss( const std::string &filename,
     const int &numpts, const int &numcels,
     const std::vector<double> &pt,
     const std::vector<int> &ien_array,
-    const std::vector< std::vector<double> > &wss_on_node );
+    const std::vector< Vector_3 > &wss_on_node );
 
 void write_triangle_grid_tawss_osi( const std::string &filename,
     const int &numpts, const int &numcels,
@@ -220,11 +219,8 @@ int main( int argc, char * argv[] )
 
     std::cout<<"Time "<<time<<": Read "<<name_to_read<<" and Write "<<name_to_write<<std::endl;
   
-    // Container for the solution vector
-    std::vector<double> sol;
-
     // Read the solution vector and renumber them based on the nodal mappings
-    ReadPETSc_Vec( name_to_read, analysis_new2old, v_nFunc*dof, dof, sol );
+    const auto sol = ReadPETSc_Vec( name_to_read, analysis_new2old, v_nFunc*dof, dof );
 
     // Zero the container for the averaged WSS
     // Container for (averaged) WSS
@@ -492,10 +488,9 @@ std::vector<int> ReadNodeMapping( const char * const &node_mapping_file,
 }
 
 
-void ReadPETSc_Vec( const std::string &solution_file_name,
+std::vector<double> ReadPETSc_Vec( const std::string &solution_file_name,
     const std::vector<int> &nodemap,
-    const int &vec_size, const int &in_dof,
-    std::vector<double> &sol )
+    const int &vec_size, const int &in_dof )
 {
   Vec sol_temp;
   VecCreate(PETSC_COMM_SELF, &sol_temp);
@@ -530,8 +525,7 @@ void ReadPETSc_Vec( const std::string &solution_file_name,
   VecDestroy(&sol_temp);
 
   // copy the solution varibles to the correct location
-  sol.clear();
-  sol.resize(vec_size);
+  std::vector<double> sol(vec_size, 0.0);
 
   // check the nodemap size
   if( (int)nodemap.size() * in_dof != vec_size ) SYS_T::print_fatal("Error: node map size is incompatible with the solution length. \n");
@@ -542,8 +536,9 @@ void ReadPETSc_Vec( const std::string &solution_file_name,
     for(int jj=0; jj<in_dof; ++jj)
       sol[in_dof*index+jj] = veccopy[in_dof*ii+jj];
   }
-}
 
+  return sol;
+}
 
 int get_tri_local_id( const double * const &coor_x,
     const double * const &coor_y,
@@ -573,7 +568,7 @@ void write_triangle_grid_wss( const std::string &filename,
     const int &numpts, const int &numcels,
     const std::vector<double> &pt,
     const std::vector<int> &ien_array,
-    const std::vector< std::vector<double> > &wss_on_node )
+    const std::vector< Vector_3 > &wss_on_node )
 {
   if(int(pt.size()) != 3*numpts) SYS_T::print_fatal("Error: point vector size does not match the number of points. \n");
 
@@ -624,9 +619,9 @@ void write_triangle_grid_wss( const std::string &filename,
   ptindex -> SetName("WSS");
   for(int ii=0; ii<numpts; ++ii)
   {
-    ptindex -> InsertComponent(ii, 0, wss_on_node[ii][0]);
-    ptindex -> InsertComponent(ii, 1, wss_on_node[ii][1]);
-    ptindex -> InsertComponent(ii, 2, wss_on_node[ii][2]);
+    ptindex -> InsertComponent(ii, 0, wss_on_node[ii].x());
+    ptindex -> InsertComponent(ii, 1, wss_on_node[ii].y());
+    ptindex -> InsertComponent(ii, 2, wss_on_node[ii].z());
   }
   grid_w -> GetPointData() -> AddArray( ptindex );
   ptindex->Delete();
@@ -641,7 +636,6 @@ void write_triangle_grid_wss( const std::string &filename,
   writer->Delete();
   grid_w->Delete();
 }
-
 
 void write_triangle_grid_tawss_osi( const std::string &filename,
     const int &numpts, const int &numcels,
